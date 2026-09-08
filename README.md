@@ -74,36 +74,16 @@ Additional capabilities:
 
 ## System Architecture
 
+```mermaid
+flowchart TB
+    GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1276<br/>tamper loop · LIS3DH · 18650"]
+    LOOP["Tamper loop + reed"] --> TBEAM
+    TBEAM <-. "LoRa 433 MHz · offline radio link" .-> BASE["BASE STATION<br/>ESP32 DevKit + SX1278 · alarm rules engine<br/>geofence / tamper / 24 h no-move<br/>siren driver · local app server"]
+    BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]
+    BASE <-. "local WiFi / USB — offline" .-> APP["OFFLINE APP (PWA)<br/>mobile / desktop<br/>map + geofence editor"]
 ```
-                 ┌─────────────────────────────────┐
-                 │            CARABAO              │
-                 │  ┌───────────────────────────┐  │
-                 │  │       SMART COLLAR         │  │
-                 │  │  • ESP32 (T-Beam)          │  │
-                 │  │  • GPS fix (periodic)       │  │
-                 │  │  • Tamper loop monitor     │  │
-                 │  │  • 18650 battery            │  │
-                 │  │  • Solar-ready enclosure   │  │
-                 │  └─────────────┬─────────────┘  │
-                 └────────────────│────────────────┘
-                                  │  LoRa 433/915 MHz
-                                  │  (offline radio link)
-                                  ▼
-                 ┌─────────────────────────────────┐
-                 │         BASE STATION           │
-                 │  • LoRa receiver + antenna     │
-                 │  • Alarm rules engine:         │
-                 │     geofence / tamper / 24h    │
-                 │  • Siren driver                │
-                 │  • Local app server (offline)  │
-                 └───────┬───────────────┬───────┘
-                         │               │
-                 ┌───────▼──────┐  ┌─────▼──────────────┐
-                 │ SIREN ALARM  │  │   OFFLINE APP      │
-                 │ (12V, loud)  │  │ mobile / desktop   │
-                 │              │  │ map + geofence     │
-                 └──────────────┘  └────────────────────┘
-```
+
+Details: [docs/BLOCK-DIAGRAM.md](docs/BLOCK-DIAGRAM.md) · [docs/SYSTEM-ARCHITECTURE.md](docs/SYSTEM-ARCHITECTURE.md) · [docs/FLOWCHART.md](docs/FLOWCHART.md) · [docs/STACK.md](docs/STACK.md)
 
 ## Hardware
 
@@ -150,7 +130,11 @@ smartcollar/
 │   ├── FIRMWARE.md         ← collar & base station firmware, LoRa protocol
 │   ├── BASE-STATION.md     ← receiver, siren, coverage planning
 │   ├── APP.md              ← offline dashboard, geofence editor
-│   └── TESTING.md          ← test & evaluation protocol
+│   ├── TESTING.md          ← test & evaluation protocol
+│   ├── STACK.md            ← full technology stack reference
+│   ├── BLOCK-DIAGRAM.md    ← hardware blocks & signal chains
+│   ├── FLOWCHART.md        ← runtime decision logic
+│   └── SYSTEM-ARCHITECTURE.md ← layers, interfaces, failure modes
 └── references/             ← datasheets, farm video, related material
 ```
 
@@ -183,6 +167,10 @@ The build is organized into stages. Follow in order:
 | [BASE-STATION.md](docs/BASE-STATION.md) | Hardware, antenna placement, siren wiring, range planning |
 | [APP.md](docs/APP.md) | Offline maps, dashboard, geofence editor, tech options |
 | [TESTING.md](docs/TESTING.md) | Range, GPS, tamper, immersion, endurance, mechanical tests |
+| [STACK.md](docs/STACK.md) | Full technology stack — collar, base station, app, radio link |
+| [BLOCK-DIAGRAM.md](docs/BLOCK-DIAGRAM.md) | Hardware blocks, tamper sense circuit, signal chains |
+| [FLOWCHART.md](docs/FLOWCHART.md) | Runtime logic — collar duty cycle, base alarm pipeline, app session |
+| [SYSTEM-ARCHITECTURE.md](docs/SYSTEM-ARCHITECTURE.md) | Layers, component responsibilities, interfaces, failure modes |
 
 ## Power Strategy
 
