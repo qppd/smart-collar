@@ -76,7 +76,7 @@ Additional capabilities:
 
 ```mermaid
 flowchart TB
-    GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1276<br/>tamper loop · MPU6050 · 18650"]
+    GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1278 (433 MHz)<br/>tamper loop · MPU6050 · 18650"]
     LOOP["Tamper loop + reed"] --> TBEAM
     TBEAM <-. "LoRa 433 MHz · offline radio link" .-> BASE["BASE STATION<br/>ESP32 DevKit + SX1278 · alarm rules engine<br/>geofence / tamper / 24 h no-move<br/>siren driver · local app server"]
     BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]

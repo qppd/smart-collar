@@ -9,7 +9,7 @@ Two-phase strategy, driven by the farm's own recommendation:
 
 ## Phase 1 — Battery Budget (per collar)
 
-Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1276 LoRa + AXP2101 PMU) on one protected 18650 (3,500 mAh, ~11.5 Wh).
+Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1278-class LoRa, 433 MHz variant, + AXP2101 PMU) on one protected 18650 (3,500 mAh, ~11.5 Wh).
 
 ### Component current draw (order-of-magnitude, datasheet-typical)
 

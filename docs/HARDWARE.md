@@ -11,37 +11,61 @@ Covers the smart collar's electronics (T-Beam + tamper loop + accelerometer), wi
 | Signal | T-Beam pin | Notes |
 |---|---|---|
 | Tamper loop ADC | GPIO36 (input-only, ADC1_CH0) | Loop sense node via 10 kΩ bias resistor |
-| Tamper loop drive | GPIO4 | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks) |
+| Tamper loop drive | GPIO25 (RTC-capable, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks). **Not GPIO4** — GPIO4 is the onboard status LED; driving it LOW to idle the loop keeps the LED lit (~2 mA) and wrecks the sleep budget |
 | Accelerometer SDA | GPIO21 (I²C SDA) | MPU6050 (GY-521) at addr 0x68 (AD0 low) |
-| Accelerometer SCL | GPIO22 (I²C SCL) | |
-| Accelerometer INT | GPIO39 (input-only) | Motion-detect interrupt (wake-on-motion) |
-| Service-mode hall sensor | GPIO34 (input-only) | Hold service magnet here 10 s → maintenance window |
-| LED status | Onboard / NeoPixel | Fix quality + alarm indication |
+| Accelerometer SCL | GPIO22 (I²C SCL) | Shared bus: AXP2101 (0x34) + MPU6050 (0x68) + optional OLED (0x3C) — no address clash |
+| Accelerometer INT | GPIO39 (input-only, RTC) | Motion-detect interrupt (wake-on-motion) — free on T-Beam, deep-sleep wake-capable |
+| Service-mode hall sensor | GPIO13 (RTC, wake-capable) | Hold service magnet here 10 s → maintenance window. **Not GPIO34** — GPIO34 is the GPS NMEA input on every T-Beam; a hall output there fights the GPS line and kills fixes |
+| LED status | Onboard LED, GPIO4 (active-low) | Fix quality + alarm indication — T-Beam v2.x has no NeoPixel; single red LED behind 1 kΩ on GPIO4 |
 
-> **Version warning:** T-Beam **v1.x uses AXP192**, **v2.x uses AXP2101** — power-control code differs. Confirm your board version (silk or `adb`/serial boot log) before flashing, and set the matching PMU profile in firmware config.
+> **Version warning:** T-Beam **v1.x uses AXP192**, **v2.x uses AXP2101** — power-control code differs. Confirm your board version (silk print or serial boot log) before flashing, and set the matching PMU profile in firmware config.
+
+
+### T-Beam v2.x onboard pin budget (verified: LilyGO `utilities.h` + Meshtastic `tbeam` variant)
+
+Why these pins — every GPIO below is already committed on-board:
+
+| GPIO | Onboard role (T-Beam v2.x) | Verdict |
+|---|---|---|
+| 34 | GPS NMEA input (input-only) | taken — hall sensor moved off it |
+| 12 | GPS command output (u-blox config) | taken |
+| 4 | Status LED (red, active-low, via 1 kΩ) | keep as LED status; loop drive moved off it |
+| 35 | AXP2101 PMU IRQ (input-only) | taken |
+| 38 | user button | taken |
+| 5/18/19/23/26/27/32/33 | LoRa radio (SPI, CS, DIO0/1/2, RST) | taken |
+| 21/22 | I²C bus — AXP2101 (0x34) + MPU6050 (0x68) | shared bus, addresses coexist |
+| 16/17 | PSRAM (8 MB) | taken — do not touch |
+| 0/2/12/15 | boot straps (boot mode / must be low at boot / MTDI / debug-UART at boot) | avoid |
+| 13/14/25 | free, strap-free, exposed on the header | **13 → hall · 25 → loop drive** (14 spare) |
+| 36/39 | free, input-only, RTC-domain | **36 → loop ADC · 39 → MPU6050 INT** |
+
+Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function, so the hall sensor and loop drive cannot disturb flashing or boot. GPIO12 doubles as the MTDI flash-voltage strap — never repurpose it. GPIO37 is the GPS I²C (DDC) line — leave unused.
+
+> **Radio variant check:** T-Beam v2.x ships as **SX1278 (433 MHz)**, **SX1276 (868/915 MHz)** or **SX1262 (dual-band)**. For the 433 MHz plan buy the **SX1278** variant. On an SX1262 board the SPI pins are identical but init differs (BUSY = GPIO32, IRQ = GPIO33, RadioLib `SX1262` class).
+
 
 ### Wiring table
 
 | # | From | To | Wire | Notes |
 |---|---|---|---|---|
-| 1 | GPIO36 + 10 kΩ to 3V3 | Loop sense node | Kynar 30 AWG | Sense node junction |
+| 1 | GPIO25 (drive) via 10 kΩ | Loop sense node | Kynar 30 AWG | Sense node junction — GPIO36 (ADC) taps the same node |
 | 2 | Loop far-end | GND via 100 Ω series (at far end) | via loop | Sets the "signature" resistance |
 | 3 | Tamper wire rope end A | Sense node | crimp lug | at enclosure gland A |
 | 4 | Tamper wire rope end B | GND rail | crimp lug | at enclosure gland B |
 | 5 | Reed switch (buckle) | In series into loop, with 220 Ω shunt across it | enameled wire | Distinguishes "buckle open" from "strap cut" by resistance step |
 | 6 | MPU6050 (GY-521) VCC/GND/SDA/SCL/INT | 3V3/GND/21/22/39 | 6-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md) |
-| 7 | Hall sensor (service) | 3V3 + GPIO34 with 10 kΩ pulldown | — | Inside enclosure wall |
+| 7 | Service sensor (reed, or DRV5032DU hall) | GPIO13 with 10 kΩ pull-up to 3V3, other end to GND (no 3V3 rail needed for a passive reed) | — | Inside enclosure wall. Idle HIGH, magnet → LOW (reed closes). 0 µA sleep draw for a reed; 1.8 µA for DRV5032. RTC pin — deep-sleep wake on magnet hold |
 
 ### Tamper loop electrical summary
 
 (design rationale in [TAMPER.md](TAMPER.md))
 
 ```
-GPIO4 ──[10k]──●──[ wire rope + buckle reed + far-end 100Ω ]──●── GND
+GPIO25 ──[10k]──●──[ wire rope + buckle reed + far-end 100Ω ]──●── GND
                └── GPIO36 (ADC)  →  expected window 40–260 Ω
 ```
 
-- Read ADC with loop excited (GPIO4 high), average 8 samples, debounce 100 ms.
+- Read ADC with loop excited (GPIO25 high), average 8 samples, debounce 100 ms.
 - **> 2 kΩ → OPEN (cut/buckle removed)** · **< 30 Ω → SHORT (bypass)** · else OK.
 - Reed shunt 220 Ω: buckle-open shifts reading into a distinct mid step (~sub-window band) so firmware can label the alarm `BUCKLE` vs `CUT`.
 

@@ -18,7 +18,7 @@ firmware/
 DeepSleep (accelerometer wake-on-motion armed, tamper ADC on RTC-timer)
    │  every REPORT_INTERVAL (default 10 min) or on motion interrupt
    ▼
-Wake → measure tamper loop (excite GPIO4, ADC, window check)
+Wake → measure tamper loop (excite GPIO25, ADC, window check)
    ▼
 GPS fix attempt (max GPS_TIMEOUT 90 s; warm-start ephemeris kept in RTC RAM)
    │  if no fix → reuse last fix, flag STALE
@@ -44,7 +44,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1276 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
 2. **Motion-gated GPS:** if the accelerometer activity counter hasn't moved since the last fix, skip GPS — resend last position with `moved=false`. Saves up to 80% of energy.
-3. **Tamper excitation only during measurement** (GPIO4 drive) — no constant current through the loop (also prevents electrolytic corrosion of the rope).
+3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (also prevents electrolytic corrosion of the rope).
 4. **Ephemeris warm start:** with RTC RAM retained across deep sleep, warm fixes take 5–15 s instead of 30–60 s — the single biggest energy lever after duty cycling.
 5. **Latched alarms:** any tamper event (even one that "re-closes" — see LOOP_SUSPECT logic in [TAMPER.md](TAMPER.md)) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.)
 
@@ -52,7 +52,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 | Library | Use |
 |---|---|
-| `RadioLib` | SX1276 LoRa (better power control than LoRa.h) |
+| `RadioLib` | SX127x LoRa — `SX1278` class for the 433 MHz variant (better power control than LoRa.h) |
 | `TinyGPSPlus` | NEO-M8N NMEA parsing |
 | `Adafruit_MPU6050` | Accelerometer + motion-detect interrupt (wake-on-motion via registers: MOT_THR / MOT_DUR, accel-only cycle mode) |
 | `AXP2101` (LilyGO / x-lqi) | PMU rail management on T-Beam v2.x |
