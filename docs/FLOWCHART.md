@@ -10,7 +10,7 @@ One duty cycle, every `REPORT_INTERVAL` (default 10 min) or motion interrupt:
 
 ```mermaid
 flowchart TB
-    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1276 sleep · AXP rails down<br/>LIS3DH wake-on-motion armed · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
+    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1276 sleep · AXP rails down<br/>MPU6050 motion detect armed · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
     SLEEP -- "every 10 min<br/>or motion INT" --> WAKE["Wake"]
     WAKE --> TAMPER["Measure tamper loop<br/>GPIO4 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>window 40–260 Ω?"]
     TAMPER --> GFIX{"GPS fix<br/>≤ 90 s?<br/>(warm-start RTC RAM)"}

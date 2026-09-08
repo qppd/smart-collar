@@ -17,7 +17,7 @@ Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1276 LoRa + AXP2101 P
 |---|---|---:|---|
 | GPS fix acquisition | ESP32 active + GPS | ~90 mA | 30–60 s (TTFF from cold; warm fix ~5–15 s) |
 | LoRa TX (1 packet, SF7–SF9) | ESP32 active + radio | ~120 mA | 0.1–0.3 s |
-| Accelerometer watch (movement rule) | LIS3DH in low-power motion detect | ~10 µA | continuous while sleeping |
+| Accelerometer watch (movement rule) | MPU6050 in accel-only cycle mode | ~10–70 µA | continuous while sleeping |
 | Deep sleep between cycles | AXP2101 + RTC + tamper ADC wakeup | ~0.5–2 mA* | rest of interval |
 
 \* T-Beam deep sleep is famously **not** sub-100 µA unless PMU rails are turned off carefully — budget 1.5 mA average and measure the real figure early (see test below).
@@ -39,7 +39,9 @@ Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + sleep 539 s × 1.5
 
 ### The 24-hour no-movement rule and power
 
-The accelerometer must run *while the collar sleeps* — use the **LIS3DH "wake on motion" interrupt**: it detects activity at ~2–10 µA and wakes the ESP32 only on movement. The collar keeps a rolling activity counter; if the counter hasn't incremented in 24 h, the next LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm. This costs almost nothing energetically, which is the whole reason the rule is practical on battery.
+The accelerometer must run *while the collar sleeps* — use the **MPU6050 motion-detect interrupt**: accel-only cycle mode (register PWR_MGMT_1 = accel on, gyro + temp off; LP_WAKE_CTRL rate 5 Hz) detects activity at ~10–70 µA and wakes the ESP32 only on movement (MOT_THR / MOT_DUR configured for head-shake / grazing-scale motion, not vibration noise). The collar keeps a rolling activity counter; if the counter hasn't incremented in 24 h, the next LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm.
+
+**GY-521 module caution (sleeper current):** the common purple GY-521 breakout has a power LED (~1–2 mA) and an LDO (~1 mA quiescent) that never sleep — 2–3 mA that would dominate the whole sleep budget. Fix at assembly: **strip the power LED** and **bypass the LDO** (feed 3V3 straight to VCC), or budget for it. Bare-die MPU6050 on a custom board avoids this entirely. Verify with the µA meter — same rule as the T-Beam rails.
 
 ### Measured-first policy
 

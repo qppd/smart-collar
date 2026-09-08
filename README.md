@@ -76,7 +76,7 @@ Additional capabilities:
 
 ```mermaid
 flowchart TB
-    GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1276<br/>tamper loop · LIS3DH · 18650"]
+    GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1276<br/>tamper loop · MPU6050 · 18650"]
     LOOP["Tamper loop + reed"] --> TBEAM
     TBEAM <-. "LoRa 433 MHz · offline radio link" .-> BASE["BASE STATION<br/>ESP32 DevKit + SX1278 · alarm rules engine<br/>geofence / tamper / 24 h no-move<br/>siren driver · local app server"]
     BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]
@@ -96,7 +96,7 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 | Conductive tamper loop (stainless wire rope / conductive thread) + reed switch | Tamper detection on the adjustable strap |
 | IP67 enclosure + PG7 glands + Suxun T7000 silicone sealant | Waterproof housing (carabaos wallow in water/mud) |
 | Flexible whip antenna (433/915 MHz) | LoRa uplink, bulkhead-mounted, strain-relieved |
-| Accelerometer (LIS3DH/MPU6050) | Movement activity for the 24-hour no-movement rule |
+| MPU6050 accelerometer (GY-521) | Movement activity for the 24-hour no-movement rule |
 | ESP32 DevKit + SX1278 LoRa module | Base station receiver |
 | 12V waterproof siren + relay/MOSFET | Audible alarm at the base station |
 | 5V solar panel + Li charge module (future) | Phase 2 solar upgrade — farm-recommended |

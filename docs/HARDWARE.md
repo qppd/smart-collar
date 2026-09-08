@@ -12,9 +12,9 @@ Covers the smart collar's electronics (T-Beam + tamper loop + accelerometer), wi
 |---|---|---|
 | Tamper loop ADC | GPIO36 (input-only, ADC1_CH0) | Loop sense node via 10 kΩ bias resistor |
 | Tamper loop drive | GPIO4 | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks) |
-| Accelerometer SDA | GPIO21 (I²C SDA) | LIS3DH at addr 0x19 |
+| Accelerometer SDA | GPIO21 (I²C SDA) | MPU6050 (GY-521) at addr 0x68 (AD0 low) |
 | Accelerometer SCL | GPIO22 (I²C SCL) | |
-| Accelerometer INT1 | GPIO39 (input-only) | Wake-on-motion interrupt |
+| Accelerometer INT | GPIO39 (input-only) | Motion-detect interrupt (wake-on-motion) |
 | Service-mode hall sensor | GPIO34 (input-only) | Hold service magnet here 10 s → maintenance window |
 | LED status | Onboard / NeoPixel | Fix quality + alarm indication |
 
@@ -29,7 +29,7 @@ Covers the smart collar's electronics (T-Beam + tamper loop + accelerometer), wi
 | 3 | Tamper wire rope end A | Sense node | crimp lug | at enclosure gland A |
 | 4 | Tamper wire rope end B | GND rail | crimp lug | at enclosure gland B |
 | 5 | Reed switch (buckle) | In series into loop, with 220 Ω shunt across it | enameled wire | Distinguishes "buckle open" from "strap cut" by resistance step |
-| 6 | LIS3DH VCC/GND/SDA/SCL/INT1 | 3V3/GND/21/22/39 | 6-wire ribbon | Mount flat, axis Z up |
+| 6 | MPU6050 (GY-521) VCC/GND/SDA/SCL/INT | 3V3/GND/21/22/39 | 6-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md) |
 | 7 | Hall sensor (service) | 3V3 + GPIO34 with 10 kΩ pulldown | — | Inside enclosure wall |
 
 ### Tamper loop electrical summary

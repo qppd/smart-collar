@@ -12,7 +12,7 @@ flowchart TB
         subgraph COLLAR["SMART COLLAR (IP67)"]
             TBEAM["LilyGO T-Beam v2.x<br/>ESP32 · NEO-M8N GPS · SX1276 LoRa · AXP2101 PMU"]
             LOOP["Supervised tamper loop<br/>wire rope + buckle reed + far-end 100 Ω<br/>+ 10 kΩ bias → GPIO36 ADC · GPIO4 drive"]
-            ACCEL["LIS3DH accelerometer<br/>INT1 → GPIO39 wake-on-motion"]
+            ACCEL["MPU6050 accelerometer (GY-521)<br/>INT → GPIO39 wake-on-motion"]
             HALL["Service-mode hall sensor<br/>GPIO34 (maintenance magnet)"]
             CELL["18650 Li-ion cell<br/>3,500 mAh (Phase 2: solar lid)"]
             WHIP["Whip antenna<br/>bulkhead + strain relief"]
@@ -79,7 +79,7 @@ flowchart LR
 | GPS fix | NEO-M8N → ESP32 UART (TinyGPSPlus) | warm-start ephemeris in RTC RAM | position; no fix → last fix flagged STALE |
 | Tamper ADC | loop → GPIO36 via 10 kΩ bias | 8-sample avg, 100 ms debounce, window 40–260 Ω | resistance signature vs. cut/bypass |
 | Loop drive | GPIO4 → loop | excited only during measurement | power save + defeats corrosion-offset attacks |
-| Motion INT | LIS3DH INT1 → GPIO39 | wake-on-motion, low-power detect | activity counter for 24 h rule + wake |
+| Motion INT | MPU6050 INT → GPIO39 | motion-detect interrupt (accel-only cycle mode) | activity counter for 24 h rule + wake |
 | Service mode | hall sensor → GPIO34 | magnet held 10 s | maintenance window (no alarms) |
 | Battery telemetry | AXP2101 → ESP32 | BAT_PERCENT in packet | low-battery app alert (< 20%) |
 | LoRa uplink | SX1276 → SX1278 | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |

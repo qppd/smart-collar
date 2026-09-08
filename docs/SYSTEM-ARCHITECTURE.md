@@ -12,7 +12,7 @@ flowchart TB
     L4["L4 · APPLICATION (base)<br/>app server: WiFi AP + WebSocket · config endpoints<br/>siren driver · ACK/re-arm handling"]
     L3["L3 · RULES &amp; DATA (base)<br/>alarm engine: geofence / tamper / 24 h no-move<br/>ring buffer + LittleFS history (CSV/JSON)"]
     L2["L2 · EDGE DEVICES<br/>collar firmware: duty-cycle state machine, GPS,<br/>tamper sense, activity counter, LoRa MAC<br/>base firmware: RX, dedupe, rules feed"]
-    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · LIS3DH<br/>SX1276/SX1278 LoRa radio · 18650 + AXP2101"]
+    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1276/SX1278 LoRa radio · 18650 + AXP2101"]
     L1 -- "GPIO electrical" --> L2
     L2 -- "LoRa 433 MHz radio" --> L3
     L3 --- L4
@@ -32,7 +32,7 @@ flowchart TB
 |---|---|---|
 | NEO-M8N GPS | position fixes (warm-start ephemeris in RTC RAM) | alarm decisions |
 | Supervised tamper loop | resistance signature of the intact collar (40–260 Ω window) | power switching |
-| LIS3DH | motion activity + wake-on-motion interrupt | position (GPS's job) |
+| MPU6050 | motion activity + motion-detect interrupt | position (GPS's job) |
 | Collar ESP32 | duty cycle, tamper ADC, packet build/TX, latch handling | point-in-polygon verdicts (early flag only) |
 | Base ESP32 | RX/dedupe, alarm rules, siren patterns, app server, history | GPS fixes |
 | LittleFS history | durable per-collar log (position, flags, loop R, batt) | alarm logic |
@@ -45,7 +45,7 @@ flowchart TB
 |---|---|---|---|
 | I1 | GPS → collar UART | NMEA (TinyGPSPlus) | fix within 90 s or STALE reuse |
 | I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO4 excite | window 40–260 Ω; outside = latched alarm |
-| I3 | LIS3DH INT1 → GPIO39 | digital interrupt | wake-on-motion + activity counting |
+| I3 | MPU6050 INT → GPIO39 | digital interrupt | wake-on-motion (accel-only cycle mode) + activity counting |
 | I4 | Hall sensor → GPIO34 | digital, 10 s magnet hold | service/maintenance window |
 | I5 | Collar → base SX1276→SX1278 | raw LoRa 433 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
 | I6 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |

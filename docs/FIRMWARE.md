@@ -54,7 +54,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 |---|---|
 | `RadioLib` | SX1276 LoRa (better power control than LoRa.h) |
 | `TinyGPSPlus` | NEO-M8N NMEA parsing |
-| `Adafruit_LIS3DH` | Accelerometer + wake-on-motion |
+| `Adafruit_MPU6050` | Accelerometer + motion-detect interrupt (wake-on-motion via registers: MOT_THR / MOT_DUR, accel-only cycle mode) |
 | `AXP2101` (LilyGO / x-lqi) | PMU rail management on T-Beam v2.x |
 | `ArduinoJson` | Packet serialization + app/base config messages |
 

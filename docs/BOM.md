@@ -10,7 +10,7 @@
 | 18650 Li-ion cell | Protected, 3,500 mAh | 1 (+1 spare) | Collar power | 250–400 |
 | Flexible whip antenna | 433 or 915 MHz, SMA/u.FL, flexible | 1 | LoRa uplink | 100–250 |
 | GPS antenna | Passive patch, 25×25 mm, u.FL (usually bundled with T-Beam) | 1 | GPS reception | 0–150 |
-| Accelerometer | MPU6050 or LIS3DH (I²C) | 1 | Movement activity / no-movement rule | 60–150 |
+| Accelerometer | MPU6050 (GY-521 module, I²C) | 1 | Movement activity / no-movement rule | 60–150 |
 | Reed switch | Normally-open, glass | 1 | Buckle-open detection | 20–50 |
 | Stainless steel wire rope | ~1 mm, 7×7 strand, ~1.5 m | 1 | Tamper loop through the strap | 100–200 |
 | *Alternative:* conductive thread | Stainless, ~2–3 m | 1 | Tamper loop sewn into webbing | 100–300 |
