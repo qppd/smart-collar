@@ -69,16 +69,36 @@ Sizing logic (10-min interval, ~10.5 mA avg @ 3.7 V ≈ **~39 mW** continuous):
 |---|---:|
 | Daily energy need | ~0.93 Wh |
 | PH sun (conservative effective) | 3 h/day full-sun equivalent |
-| Panel needed (with 70% path efficiency incl. shading/dirt/charge loss) | ~0.45 W → **spec a 0.5–1 W panel** |
+| Array needed (with 70% path efficiency incl. shading/dirt/charge loss) | ~0.45 W STC → **6–8× 2×2 cm panels** |
 
-So a 0.5 W panel *in perfect conditions* breaks even; **1 W with partial-shading tolerance is the safe spec**. Target: battery as buffer, solar as trickle — the collar rides through nights and rainy days on the 18650, and the panel tops it up during grazing. Rainy-season expectations: solar extends the swap interval from 2 weeks toward 1–2 months rather than making it infinite.
+**Panel choice: 2×2 cm (20×20 mm) mini panels, all the same voltage class, wired in parallel.** Physics check: 4 cm² of cell at 18–23% efficiency ≈ **0.04–0.06 W per panel** (Imp ~9–15 mA @ 5–5.5 V), so the array scales by count:
 
-Electrical chain: panel → **CN3065** (solar Li-ion charger, MPPT-ish, load sharing) → 18650 → T-Beam. The T-Beam v2.x charges 18650 via its AXP2101 USB path — bypass that for solar (USB charger stays for bench charging) and feed the solar charge module directly to the cell terminals, with the T-Beam drawing from the cell as normal.
+| Array (parallel) | STC power | Harvest/day (3 h, 70%) | Coverage of 0.93 Wh |
+|---|---:|---:|---|
+| 4 panels | ~0.2 W | ~0.44 Wh | ~50% — halves the swap rate |
+| 6 panels (2×3 grid) | ~0.3 W | ~0.68 Wh | ~75% — swap every ~4 weeks |
+| **8 panels (2×4 grid)** | ~0.44 W | ~0.93 Wh | **~100% — break-even at 10-min interval** |
+
+At a 30-min reporting interval the need drops to ~0.42 Wh/day → **4–6 panels break even** there. Target stays: battery as buffer, solar as trickle — the collar rides through nights and rainy days on the 18650, and the array tops it up during grazing. Rainy-season expectations: solar extends the swap interval from 2 weeks toward 1–2 months rather than making it infinite.
+
+### Wiring (validated against CN3065 + T-Beam v2.x)
+
+Chain: **array → per-panel Schottky → potted junction → PG7 gland → sealed JST 2-pin → CN3065 VIN; CN3065 BAT → 18650 tabs (in parallel with the T-Beam battery connection)**. The T-Beam v2.x charges its 18650 via the AXP2101 USB path — bypass that for solar (USB charger stays for bench charging); the CN3065 feeds the cell directly and the T-Beam draws from the cell as normal.
+
+1. **Parallel only, never series.** Series stacking pushes input past the CN3065's 6.5 V absolute maximum (operating range 4.4–6.0 V). Parallel adds current only — exactly what a trickle array wants.
+2. **One Schottky diode (1N5819/SS14) in series with each panel.** Without it, a shaded panel *sinks* current from the lit ones — the animal's head shadow is the common case, not an edge case. Diodes cost ~₱2 each and cut shading loss to roughly the shaded fraction.
+3. **Voltage class:** prefer 5 V-class panels (Voc ~6.0–6.3 V); 5.5 V-class (Voc 6.6 V) rides close to the CN3065's 6.5 V abs-max on a cold bright morning. In PH heat the real Voc sits well under the STC figure (−0.33 %/°C), so both classes work — but verify with a multimeter at build time (checklist below).
+4. **Charge rate is inherently safe.** ~80–160 mA from the array into a 3,500 mAh cell = **0.02–0.05 C trickle** — thermally gentle even when the enclosure interior warms past ambient (Li-ion charge window 0–45 °C; PH never approaches 0 °C). The Phase-1 rule "0.5 C charging happens indoors" stays for USB smart-charger swaps.
+5. **TS/TEMP pin grounded** (stock module default) — no NTC on tab-soldered 18650s; the low trickle rate is the safety margin instead.
+6. **Night drain:** the CN3065 sleeps at < 3 µA with no input (datasheet) — negligible against the 1.5 mA deep-sleep budget.
+7. **Telemetry unaffected:** the AXP2101 gauge reads the cell regardless of charge source — the battery % in every LoRa packet stays truthful with solar in parallel.
+8. **Feed the cell, not the T-Beam USB/5V pin.** The AXP2101 charge path has no input-voltage regulation — in weak light the panel sags below its VBUS threshold and charging stops entirely; the CN3065 throttles charge current to hold the panel near its power point (its "MPPT-ish" behavior). This is why a solar charge module is required, not just a diode.
 
 ## Solar Roadmap Checklist
 
 - [ ] Verify Phase-1 enclosure accepts the solar lid with no case redesign
-- [ ] Bench-test CN3065 + 1 W panel → 18650 charge profile in sun/window light
+- [ ] Measure each 2×2 cm panel's Voc before wiring (must be ≤ 6.5 V class — 5 V-class preferred; identical voltage class across all panels)
+- [ ] Bench-test CN3065 + 2×2 cm panel array → 18650 charge profile in sun/window light
 - [ ] Partial shading test (animal's head blocks half the panel) — charge current still positive?
 - [ ] Lid gasket survives 50 lid-swaps (service simulation)
 - [ ] 2-week field trial on one animal → log battery % vs sun exposure

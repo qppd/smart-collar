@@ -45,9 +45,12 @@
 
 | Component | Spec | Qty | Role | Est. price (₱) |
 |---|---|---:|---|---:|
-| Solar panel | 5V 0.5–1 W, PET/ETFE laminate, ~55×30 mm window size | 1 | Trickle charge during grazing | 150–300 |
-| Li charge module | CN3065 (solar Li-ion charger) or TP4056 with solar input | 1 | Safe solar charging of the 18650 | 30–80 |
-| Solar lid | Enclosure top with panel cutout + gasket | 1 | Drop-in replacement lid | 50–150 |
+| Solar panel | 2×2 cm (20×20 mm), 5–5.5 V class, PET/ETFE laminate, ~0.04–0.06 W each | 6–8 | Parallel array on the lid — trickle charge during grazing | 120–320 |
+| Schottky diode | 1N5819 / SS14, one per panel (series) | 6–8 | Shading isolation + protects charger input | 10–30 |
+| Li charge module | CN3065 mini solar charger (VIN 4.4–6 V, ≤500 mA, micro-USB backup input) | 1 | Safe solar charging of the 18650 | 65–85 |
+| Solar lid | Enclosure top carrying the panel array + gasket | 1 | Drop-in replacement lid | 50–150 |
+
+> PH stock (checked Sept 2026): CN3065 boards at **Circuitrocks (₱65, Manila stock)** and **Erovoutika (₱85)**; 20×20 mm mini panels from Shopee/Lazada solar sellers (~₱15–40 each). TP4056 is a **fallback only** — it has no input-voltage regulation and stalls in weak light, unlike the CN3065.
 
 ## Tools & Consumables
 
