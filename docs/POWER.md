@@ -33,6 +33,8 @@ Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + sleep 539 s × 1.5
 | 15 min | ~7.5 mA | ~3 weeks |
 | 30 min | ~4.5 mA | ~4.5 weeks |
 
+> **Worst-case note:** the budget above assumes a **60 s GPS fix per cycle** (warm start). If cold fixes run to the firmware's `GPS_TIMEOUT` of 90 s (see [FIRMWARE.md](FIRMWARE.md)) every cycle, average current rises to **~14.8 mA → ~10 days** on 3,500 mAh. `moved=false` motion-gating and warm-start ephemeris exist precisely to keep real-world duty below this line; measure actual fix duration during bench bring-up.
+
 **Design target: ≥ 2 weeks per charge at a 10-minute interval**, with a swap rotation (one charged spare per collar) so animals are never un-collared. The interval is configurable from the app per collar — racehorses get 5 min, calm herds 30 min.
 
 > GPS duty-cycling dominates the budget. Two easy wins: (1) **warm starts** — keep GPS ephemeris in RAM (fix in 5–15 s instead of 30–60 s); (2) **motion-gated fixes** — if the accelerometer says the animal hasn't moved since the last fix, skip GPS and re-send the last known position (movement ≤ threshold), saving up to ~80% of GPS energy.
