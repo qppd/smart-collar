@@ -8,9 +8,9 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Board | **LilyGO T-Beam v2.x** — ESP32 + NEO-M8N GPS + SX1276 LoRa + AXP2101 PMU + 18650 holder | One board = the whole collar |
+| Board | **LilyGO T-Beam v2.x** — ESP32 + NEO-M8N GPS + SX1278 LoRa + AXP2101 PMU + 18650 holder | One board = the whole collar |
 | IDE / toolchain | **Arduino IDE 2.x** + esp32 by Espressif (core v2.x+) | |
-| LoRa driver | **RadioLib** | Better SX1276 power control than the stock LoRa.h |
+| LoRa driver | **RadioLib** | Better SX127x power control than the stock LoRa.h |
 | GPS parsing | **TinyGPSPlus** | NEO-M8N NMEA sentences |
 | Motion / activity | **Adafruit MPU6050** | Motion-detect interrupt: MOT_THR / MOT_DUR + accel-only cycle mode for wake-on-motion |
 | Power management | **AXP2101** library (LilyGO / x-lqi) | Rail shutoff for sub-2 mA deep sleep |

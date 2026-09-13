@@ -54,20 +54,21 @@ Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function
 | 4 | Tamper wire rope end B | GND rail | crimp lug | at enclosure gland B |
 | 5 | Reed switch (buckle) | In series into loop, with 220 Ω shunt across it | enameled wire | Distinguishes "buckle open" from "strap cut" by resistance step |
 | 6 | MPU6050 (GY-521) VCC/GND/SDA/SCL/INT | 3V3/GND/21/22/39 | 6-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md) |
-| 7 | Service sensor (reed, or DRV5032DU hall) | GPIO13 with 10 kΩ pull-up to 3V3, other end to GND (no 3V3 rail needed for a passive reed) | — | Inside enclosure wall. Idle HIGH, magnet → LOW (reed closes). 0 µA sleep draw for a reed; 1.8 µA for DRV5032. RTC pin — deep-sleep wake on magnet hold |
+| 7 | Service sensor (reed, or DRV5032DU hall) | GPIO13 with 10 kΩ pull-up to 3V3, other end to GND (passive reed is 2-wire — no power pin, unlike the DRV5032) | — | Inside enclosure wall. Idle HIGH, magnet → LOW (reed closes). 0 µA sleep draw for a reed; 1.8 µA for DRV5032. RTC pin — deep-sleep wake on magnet hold |
 
 ### Tamper loop electrical summary
 
 (design rationale in [TAMPER.md](TAMPER.md))
 
-```
-GPIO25 ──[10k]──●──[ wire rope + buckle reed + far-end 100Ω ]──●── GND
-               └── GPIO36 (ADC)  →  expected window 40–260 Ω
+```mermaid
+flowchart LR
+    G25["GPIO25 drive<br/>(excites only during measurement)"] -- "10 kΩ bias" --> NODE["● sense node"]
+    NODE -- "wire rope + buckle reed<br/>+ far-end 100 Ω" --> GND["GND"]
+    NODE --> ADC["GPIO36 ADC<br/>expected window 40–260 Ω"]
 ```
 
 - Read ADC with loop excited (GPIO25 high), average 8 samples, debounce 100 ms.
-- **> 2 kΩ → OPEN (cut/buckle removed)** · **< 30 Ω → SHORT (bypass)** · else OK.
-- Reed shunt 220 Ω: buckle-open shifts reading into a distinct mid step (~sub-window band) so firmware can label the alarm `BUCKLE` vs `CUT`.
+- Classification: **< 30 Ω → SHORT (bypass)** · **40–260 Ω → OK** · **≈ normal + 220 Ω → BUCKLE opened** (the reed shunt is now in series — a distinct upper band, so firmware labels the alarm `BUCKLE` vs `CUT`) · **> 2 kΩ → OPEN (cut / buckle removed)** · anything between bands → `LOOP_SUSPECT` (latch + re-check; telemetry warning, not a siren trigger).
 
 ## 2. Assembly Order
 
@@ -107,7 +108,7 @@ Fit two fingers of slack (no more — a tight strap causes sores; loose = hoof c
 
 ## 3. Verification Checklist
 
-- [ ] GPS fix outdoors < 60 s cold / < 15 s warm
+- [ ] GPS fix outdoors < 90 s cold (GPS_TIMEOUT; typical 30–60 s) / < 15 s warm
 - [ ] LoRa packet round-trip to base rig at 100 m line-of-sight
 - [ ] Tamper: cut / bypass / buckle all alarm distinctly
 - [ ] Sleep current measured and logged (µA-level reading taken)

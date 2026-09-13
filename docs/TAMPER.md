@@ -14,10 +14,11 @@ The core challenge: run a **continuous, supervised electrical loop through the a
 
 A simple "wire broken = alarm" loop is easy to bypass (short the two ends, then cut freely). Instead we use a **supervised loop** — the collar firmware continuously measures loop **resistance**, not just continuity:
 
-```
-ESP32 GPIO ──[ Rbias (e.g. 10kΩ) ]──●──[ tamper loop wire ]──●── GND
-                                    │                      │
-                                   ADC reads voltage at the ● junction
+```mermaid
+flowchart LR
+    GPIO["ESP32 GPIO (drive)"] -- "Rbias · 10 kΩ" --> NODE["● sense junction"]
+    NODE -- "tamper loop wire<br/>+ far-end series resistor" --> GND["GND"]
+    NODE -- "voltage at the junction" --> ADC["ADC — loop resistance signature"]
 ```
 
 - The tamper loop itself has a **known, designed resistance** (e.g., ~50–200 Ω from the wire rope + a small series resistor at the far end).
@@ -36,15 +37,10 @@ The far end of the loop carries a resistor that the attacker cannot skip without
 
 ## Loop Routing on the Adjustable Strap
 
-```
-        ┌──────────────── ENCLOSURE (electronics) ────────────────┐
-        │  loop out ──●                                      ●── loop in   │
-        └─────────────│────────────────────────────────────────│──────────────┘
-                      │                                        │
-   ══════╪════════════╪════ TAMPER WIRE (wire rope) ══════════╪═════╪══════
-        │             │    runs the FULL strap length          │     │
-        │             │    including through/around the buckle │     │
-        └── buckle side ----[ reed switch ]---- adjustment side ┘
+```mermaid
+flowchart LR
+    OUT["ENCLOSURE (electronics)<br/>● loop out"] -- "tamper wire — wire rope,<br/>runs the FULL working strap length<br/>(adjustable tail included)" --> BUCKLE["BUCKLE — wire passes through/around<br/>the frame; reed switch in the path"]
+    BUCKLE -- "returns along the strap" --> IN["ENCLOSURE<br/>● loop in"]
 ```
 
 Requirements:
@@ -80,20 +76,22 @@ Adjusting the collar means opening the buckle — so the buckle itself must be p
 ## Firmware Detection Logic
 
 ```cpp
-// Loop supervision state machine (runs every wake cycle + on-change interrupt)
-enum LoopState { LOOP_OK, LOOP_OPEN, LOOP_SHORT, LOOP_SUSPECT };
+// Loop supervision state machine (runs every wake cycle — RTC-timer / motion-INT wake)
+enum LoopState { LOOP_OK, LOOP_OPEN, LOOP_SHORT, LOOP_BUCKLE, LOOP_SUSPECT };
 
 LoopState readTamperLoop() {
   // ADC average over 8 samples, debounced 100 ms
   float r = loopResistanceOhms();
-  if (r > CUT_THRESHOLD)   return LOOP_OPEN;    // ~> 2 kΩ  → strap cut / buckle removed
-  if (r < SHORT_THRESHOLD) return LOOP_SHORT;   // ~< 30 Ω  → bypass attempt / jumper
-  // brief glitch while inside window edges → latch and re-check
+  if (r > CUT_THRESHOLD)    return LOOP_OPEN;    // ~> 2 kΩ  → strap cut / buckle removed
+  if (r < SHORT_THRESHOLD)  return LOOP_SHORT;   // ~< 30 Ω  → bypass attempt / jumper
+  if (inBuckleBand(r))      return LOOP_BUCKLE;  // ≈ normal + 220 Ω shunt → buckle opened
+  // brief out-of-window glitch that re-closed within the debounce window:
+  if (glitchLatch)          return LOOP_SUSPECT; // telemetry warning — no siren (see below)
   return LOOP_OK;
 }
 ```
 
-- Any `LOOP_OPEN` or `LOOP_SHORT` → **immediate LoRa tamper alarm packet** (sent with highest priority + retries) and locally latched until cleared via service mode.
+- Any `LOOP_OPEN`, `LOOP_BUCKLE`, or `LOOP_SHORT` → **immediate LoRa tamper alarm packet** (sent with highest priority + retries) and locally latched until cleared via service mode.
 - A momentary open that re-closes within the window (adjustment friction) still latches a `LOOP_SUSPECT` event — reported in telemetry as a warning, not a siren trigger (prevents false alarms from strap flex).
 - Alarm packets include collar ID + battery + last GPS fix so the farmer can go straight to where the collar *was*.
 

@@ -14,20 +14,16 @@ firmware/
 
 ### Main state machine
 
-```
-DeepSleep (accelerometer wake-on-motion armed, tamper ADC on RTC-timer)
-   │  every REPORT_INTERVAL (default 10 min) or on motion interrupt
-   ▼
-Wake → measure tamper loop (excite GPIO25, ADC, window check)
-   ▼
-GPS fix attempt (max GPS_TIMEOUT 90 s; warm-start ephemeris kept in RTC RAM)
-   │  if no fix → reuse last fix, flag STALE
-   ▼
-Build + send LoRa packet (see format below; retries 3× on no-ACK)
-   ▼
-Latched alarm? → immediate high-priority packet now (not waiting for cycle)
-   ▼
-Deep sleep
+```mermaid
+flowchart TB
+    SLEEP["Deep sleep<br/>accelerometer wake-on-motion armed · tamper ADC on RTC-timer wake"] -- "every REPORT_INTERVAL (default 10 min)<br/>or motion interrupt" --> WAKE["Wake"]
+    WAKE --> LOOPM["Measure tamper loop<br/>GPIO25 excite → ADC → window check"]
+    LOOPM --> GPSF["GPS fix attempt<br/>max GPS_TIMEOUT 90 s · warm-start ephemeris in RTC RAM<br/>(no fix → reuse last fix, flag STALE)"]
+    GPSF --> SND["Build + send LoRa packet<br/>retries 3× on no-ACK"]
+    SND --> LATCH{"Latched alarm?"}
+    LATCH -- "yes" --> NOW["send high-priority packet NOW<br/>(not waiting for the next cycle)"]
+    LATCH -- "no" --> BACK["Deep sleep"]
+    NOW --> BACK
 ```
 
 Key configuration (stored in NVS, editable over-the-air from app via base station):
@@ -42,11 +38,11 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 ### Power-critical implementation notes
 
-1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1276 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
+1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1278 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
 2. **Motion-gated GPS:** if the accelerometer activity counter hasn't moved since the last fix, skip GPS — resend last position with `moved=false`. Saves up to 80% of energy.
 3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (also prevents electrolytic corrosion of the rope).
 4. **Ephemeris warm start:** with RTC RAM retained across deep sleep, warm fixes take 5–15 s instead of 30–60 s — the single biggest energy lever after duty cycling.
-5. **Latched alarms:** any tamper event (even one that "re-closes" — see LOOP_SUSPECT logic in [TAMPER.md](TAMPER.md)) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.)
+5. **Latched alarms:** a *confirmed* tamper event (`LOOP_OPEN` / `LOOP_BUCKLE` / `LOOP_SHORT` — steady out-of-window reading, debounced) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.) A *brief* out-of-window glitch that re-closes within the debounce window latches `LOOP_SUSPECT` instead — a telemetry warning, never a siren trigger (strap-flex false-alarm guard; see [TAMPER.md](TAMPER.md)).
 
 ### Libraries
 
@@ -86,12 +82,14 @@ Byte  Field        Meaning
                     bit6 STALE_FIX (reused position)
                     bit7 EMERGENCY (send now, ACK required)
 3     BAT_PERCENT  uint8 (0–100)
-4-11  LAT          int32  (1e-6 deg, signed)
-12-19 LON          int32  (1e-6 deg)
-20    ACTIVITY     uint8 (0–255, rolling motion score)
-21    LOOP_R       uint8 (tamper loop resistance / 8, 0–2040 Ω)
-22    SEQ          uint8 (packet sequence, wrap)
+4-7   LAT          int32  (1e-6 deg, signed)
+8-11  LON          int32  (1e-6 deg)
+12    ACTIVITY     uint8 (0–255, rolling motion score)
+13    LOOP_R       uint8 (tamper loop resistance / 8, 0–2040 Ω)
+14    SEQ          uint8 (packet sequence, wrap)
 ```
+
+Fixed fields total **15 bytes** — the ≤ 23-byte body budget reserves headroom for future telemetry (e.g., collar temperature). `LOOP_SUSPECT` warnings surface via the `LOOP_R` reading (no dedicated flag bit).
 
 Base → collar downlink (sent when base has app data to push): geofence update (polygon), interval change, ACK for emergency packets, clear-tamper-latch (service mode).
 
@@ -103,18 +101,22 @@ Base → collar downlink (sent when base has app data to push): geofence update 
 
 ## Base Station Firmware
 
-```
-LoRa RX interrupt → packet validated (MAGIC, SEQ dedupe)
-   → store in ring buffer (last N positions per collar)
-   → evaluate alarm rules:
-        GEOFENCE: point-in-polygon on latest position
-        TAMPER:   FLAGS bits straight from collar
-        NO_MOVE:  ACTIVITY == 0 (or below threshold) continuously for 24 h
-   → alarm state machine:
-        NEW alarm → siren ON (pattern per type), app push queued
-        ACK from app → siren OFF, event archived
-   → app server: local WiFi AP + WebSocket (see APP.md)
-   → store-and-forward history on SD/LittleFS
+```mermaid
+flowchart TB
+    RXINT["LoRa RX interrupt"] --> VAL{"packet valid?<br/>MAGIC + SEQ dedupe"}
+    VAL -- "valid" --> RING["ring buffer — last N positions per collar"]
+    RING --> RULES["evaluate alarm rules"]
+    RULES --> GEO["GEOFENCE — point-in-polygon<br/>on latest position"]
+    RULES --> TMP["TAMPER — FLAGS bits<br/>straight from collar"]
+    RULES --> NMV["NO_MOVE — ACTIVITY below threshold<br/>continuously for 24 h"]
+    GEO --> ALARM["NEW alarm → siren ON (pattern per type)<br/>app push queued"]
+    TMP --> ALARM
+    NMV --> ALARM
+    ALARM --> ACK{"ACK from app?"}
+    ACK -- "yes" --> OFF["siren OFF · event archived"]
+    RING --> SRV["app server — local WiFi AP + WebSocket"]
+    SRV --> HIST["store-and-forward history on LittleFS"]
+    OFF --> HIST
 ```
 
 - **Siren:** relay-driven 12 V siren; distinct patterns: geofence = 3 short/2 min pause repeat; tamper = continuous; no-movement = long 10 s every 5 min. Auto re-arm.

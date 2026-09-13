@@ -12,7 +12,7 @@ flowchart TB
     L4["L4 · APPLICATION (base)<br/>app server: WiFi AP + WebSocket · config endpoints<br/>siren driver · ACK/re-arm handling"]
     L3["L3 · RULES &amp; DATA (base)<br/>alarm engine: geofence / tamper / 24 h no-move<br/>ring buffer + LittleFS history (CSV/JSON)"]
     L2["L2 · EDGE DEVICES<br/>collar firmware: duty-cycle state machine, GPS,<br/>tamper sense, activity counter, LoRa MAC<br/>base firmware: RX, dedupe, rules feed"]
-    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1276/SX1278 LoRa radio · 18650 + AXP2101"]
+    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1278 LoRa radios (433 MHz) · 18650 + AXP2101"]
     L1 -- "GPIO electrical" --> L2
     L2 -- "LoRa 433 MHz radio" --> L3
     L3 --- L4
@@ -47,7 +47,7 @@ flowchart TB
 | I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO25 excite | window 40–260 Ω; outside = latched alarm |
 | I3 | MPU6050 INT → GPIO39 | digital interrupt | wake-on-motion (accel-only cycle mode) + activity counting |
 | I4 | Hall sensor → GPIO13 | digital, 10 s magnet hold (RTC pin, wake-capable) | service/maintenance window |
-| I5 | Collar → base SX1276→SX1278 | raw LoRa 433 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
+| I5 | Collar → base (SX1278 → Ra-02 SX1278) | raw LoRa 433 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
 | I6 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
 | I7 | Base → browser | local WiFi AP + WebSocket JSON | live positions, alarms, config push |
 | I8 | Base ↔ USB device | Web Serial (Chrome) | most-reliable zero-WiFi channel |

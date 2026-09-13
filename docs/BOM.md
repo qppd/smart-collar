@@ -23,7 +23,7 @@
 | Conformal coating (optional) | Acrylic PCB lacquer spray | 1 | PCB protection vs internal condensation | 150–300 |
 | Rubber grommets / dampeners | M3–M4 | 4 | Vibration isolation, strap slots | 50 |
 
-**Collar subtotal: ~₱2,800–5,000** (typical build lands near **~₱3,500–4,000**)
+**Collar subtotal: ~₱2,800–5,250** (typical build lands near **~₱3,500–4,000**)
 
 ## Base Station (one per farm)
 
@@ -39,7 +39,7 @@
 | Enclosure | IP65 junction box, medium | 1 | Outdoor protection | 100–250 |
 | Mast + mounting hardware | Pole, U-bolts, CAT5/antenna cable as needed | 1 | Antenna at 3–5 m height | 200–500 |
 
-**Base station subtotal: ~₱1,000–2,600**
+**Base station subtotal: ~₱1,150–2,600**
 
 ## Phase 2 — Solar Upgrade (per collar, optional)
 

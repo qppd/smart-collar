@@ -57,17 +57,14 @@ Design rules:
 
 ## Collar Form Factor & Mechanical Layout
 
-```
-                    (top of neck — antennas UP)
-              ┌─────────────────────────┐
-              │   ╭─────────────────╮   │◄ anti-rotation strap sleeves
-   STRAP ═════╡   │  [GPS window]   │   ╞═════ STRAP
-   (webbing)  │   ├─────────────────┤   │
-              │   │  T-Beam + 18650 │   │◄ ~100×60×30 mm box
-              │   │  [tamper term's]│   │
-              │   ╰────[glands]─────╯   │
-              └─────────────────────────┘
-                    (bottom — faces neck, rounded corners)
+```mermaid
+flowchart TB
+    TOP["TOP OF NECK — ANTENNAS UP<br/>GPS window: RF-transparent lid region, no metal above<br/>LoRa whip: bulkhead SMA top-rear + strain-relief boot"]
+    BOX["ENCLOSURE · ~100×60×30 mm<br/>T-Beam + 18650 · tamper terminal block · desiccant<br/>PG7 glands + vent patch at the lower edge"]
+    PAD["BOTTOM — FACES NECK<br/>rounded corners · closed-cell foam padding (never open-cell)"]
+    TOP --- BOX
+    BOX --- PAD
+    STRAP["STRAP · 38–50 mm webbing, breaking strength ≥ 500 kgf<br/>captive slide-through slots + rubber grommets<br/>anti-rotation keeper blocks / sleeves both sides"] --- BOX
 ```
 
 - **Strap:** 38–50 mm **nylon/polyester webbing** (same material as tie-out/tow straps), breaking strength ≥ 500 kgf. Wide strap = pressure spread = no neck sores.

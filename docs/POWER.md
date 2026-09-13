@@ -18,7 +18,7 @@ Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1278-class LoRa, 433 
 | GPS fix acquisition | ESP32 active + GPS | ~90 mA | 30–60 s (TTFF from cold; warm fix ~5–15 s) |
 | LoRa TX (1 packet, SF7–SF9) | ESP32 active + radio | ~120 mA | 0.1–0.3 s |
 | Accelerometer watch (movement rule) | MPU6050 in accel-only cycle mode | ~10–70 µA | continuous while sleeping |
-| Deep sleep between cycles | AXP2101 + RTC + tamper ADC wakeup | ~0.5–2 mA* | rest of interval |
+| Deep sleep between cycles | AXP2101 + RTC (wake: RTC timer · MPU6050 motion INT) | ~0.5–2 mA* | rest of interval |
 
 \* T-Beam deep sleep is famously **not** sub-100 µA unless PMU rails are turned off carefully — budget 1.5 mA average and measure the real figure early (see test below).
 
@@ -31,7 +31,7 @@ Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + sleep 539 s × 1.5
 | 5 min | ~19 mA | ~7.5 days |
 | **10 min (chosen)** | ~10.5 mA | **~2 weeks** |
 | 15 min | ~7.5 mA | ~3 weeks |
-| 30 min | ~4.7 mA | ~4.5 weeks |
+| 30 min | ~4.5 mA | ~4.5 weeks |
 
 **Design target: ≥ 2 weeks per charge at a 10-minute interval**, with a swap rotation (one charged spare per collar) so animals are never un-collared. The interval is configurable from the app per collar — racehorses get 5 min, calm herds 30 min.
 

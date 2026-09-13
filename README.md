@@ -42,8 +42,11 @@ The collar is worn by the animal full-time, so the **mechanical design is as cri
 
 ## How It Works
 
-```
-Carabao → Smart Collar → GPS + LoRa → Base Station → Siren + Offline App
+```mermaid
+flowchart LR
+    CAR["Carabao"] --> COLLAR["Smart Collar"]
+    COLLAR -- "GPS + LoRa" --> BASE["Base Station"]
+    BASE --> OUT["Siren + Offline App"]
 ```
 
 1. The collar wakes on a duty cycle, gets a GPS fix, checks its tamper loop, and sends one compact LoRa packet (position, battery, tamper state, movement activity).
@@ -91,7 +94,7 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 
 | Component | Role |
 |---|---|
-| LilyGO T-Beam v2.x | Collar core — ESP32 + GPS (NEO-M8N) + LoRa (SX1276) + 18650 battery interface in one board |
+| LilyGO T-Beam v2.x | Collar core — ESP32 + GPS (NEO-M8N) + LoRa (SX1278) + 18650 battery interface in one board |
 | 18650 Li-ion cell + holder | Collar power (Phase 1) |
 | Conductive tamper loop (stainless wire rope / conductive thread) + reed switch | Tamper detection on the adjustable strap |
 | IP67 enclosure + PG7 glands + Suxun T7000 silicone sealant | Waterproof housing (carabaos wallow in water/mud) |

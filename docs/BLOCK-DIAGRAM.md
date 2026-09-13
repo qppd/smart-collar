@@ -8,16 +8,17 @@ Hardware blocks and the signals that connect them — the physical view of Smart
 
 ```mermaid
 flowchart TB
+    GPS["GPS satellites"]
+
     subgraph COW["CARABAO — wears it 24/7"]
         subgraph COLLAR["SMART COLLAR (IP67)"]
-            TBEAM["LilyGO T-Beam v2.x<br/>ESP32 · NEO-M8N GPS · SX1276 LoRa · AXP2101 PMU"]
+            TBEAM["LilyGO T-Beam v2.x<br/>ESP32 · NEO-M8N GPS · SX1278 LoRa · AXP2101 PMU"]
             LOOP["Supervised tamper loop<br/>wire rope + buckle reed + far-end 100 Ω<br/>+ 10 kΩ bias → GPIO36 ADC · GPIO25 drive"]
             ACCEL["MPU6050 accelerometer (GY-521)<br/>INT → GPIO39 wake-on-motion"]
             HALL["Service-mode hall sensor<br/>GPIO13 (maintenance magnet)"]
             CELL["18650 Li-ion cell<br/>3,500 mAh (Phase 2: solar lid)"]
             WHIP["Whip antenna<br/>bulkhead + strain relief"]
         end
-        GPS["GPS satellites"]
     end
 
     subgraph BASE["BASE STATION — farmhouse, powered"]
@@ -38,7 +39,7 @@ flowchart TB
     ACCEL -- "motion INT" --> TBEAM
     HALL -- "10 s magnet hold" --> TBEAM
     CELL -.-> TBEAM
-    TBEAM -- "SX1276 TX" --> WHIP
+    TBEAM -- "SX1278 TX" --> WHIP
     WHIP <-. "LoRa 433 MHz · SF7–SF9 · ≤23 B packet<br/>2–8 km open / 300 m–2 km trees" .-> MAST
     MAST -- "SX1278 RX" --> RA02
     RA02 -- "SPI" --> DEVKIT
@@ -82,7 +83,7 @@ flowchart LR
 | Motion INT | MPU6050 INT → GPIO39 | motion-detect interrupt (accel-only cycle mode) | activity counter for 24 h rule + wake |
 | Service mode | hall sensor → GPIO13 | magnet held 10 s | maintenance window (no alarms) |
 | Battery telemetry | AXP2101 → ESP32 | BAT_PERCENT in packet | low-battery app alert (< 20%) |
-| LoRa uplink | SX1276 → SX1278 | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |
+| LoRa uplink | collar SX1278 → base Ra-02 (SX1278) | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |
 | LoRa downlink | base → collar | at wake windows / daily sync | geofence polygon, interval, ACK, latch clear |
 | Siren drive | GPIO → relay → 12 V siren | patterned per alarm type | geofence 3-short/2-min · tamper continuous · no-move 10 s/5 min |
 

@@ -10,7 +10,7 @@ One duty cycle, every `REPORT_INTERVAL` (default 10 min) or motion interrupt:
 
 ```mermaid
 flowchart TB
-    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1276 sleep · AXP rails down<br/>MPU6050 motion detect armed · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
+    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1278 sleep · AXP rails down<br/>MPU6050 motion detect armed · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
     SLEEP -- "every 10 min<br/>or motion INT" --> WAKE["Wake"]
     WAKE --> TAMPER["Measure tamper loop<br/>GPIO25 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>window 40–260 Ω?"]
     TAMPER --> GFIX{"GPS fix<br/>≤ 90 s?<br/>(warm-start RTC RAM)"}
@@ -26,7 +26,9 @@ flowchart TB
     NOW --> BACK
     LATCHQ -- "no" --> BACK["Deep sleep"]
     RETRY -- "still failing" --> BACK
-    TAMPER -- "outside window →" --> LATCHEV["latch alarm flag<br/>(any brief open, even re-closed)"]
+    TAMPER -- "brief glitch, re-closed →" --> SUSPECT["latch LOOP_SUSPECT warning<br/>(telemetry only — no siren)"]
+    SUSPECT --> GFIX
+    TAMPER -- "outside window, debounced →" --> LATCHEV["latch alarm flag<br/>subtype CUT / BUCKLE / SHORT preserved"]
     LATCHEV --> GFIX
 ```
 
@@ -45,6 +47,7 @@ flowchart TB
     RULES --> NOMOVE{"NO_MOVE:<br/>ACTIVITY below threshold<br/>continuously 24 h?"}
     RULES --> BATT{"BAT_PERCENT<br/>&lt; 20%?"}
     BATT -- "yes" --> APPLERT["app alert only<br/>(no siren)"]
+    BATT -- "no" --> HIST
     GEOF -- "breach" --> ALARM
     TAMP -- "yes" --> ALARM
     NOMOVE -- "yes" --> ALARM
