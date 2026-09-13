@@ -79,9 +79,9 @@ flowchart TB
 
 The farm recommends solar collars (sample video in `references/`). Phase 1 must not paint us into a corner:
 
-1. **Lid is a separate, swappable part** — Phase-2 lid has a cutout + gasket channel for a **5V 0.5–1 W PET laminate panel** bonded with **Suxun T7000** (electronics-safe, non-corrosive cure — never use acidic-cure RTV near the board).
-2. **Wiring pre-provisioned:** a 2-pin sealed connector (JST with silicone gasket) from the lid area to the charge module is already routed/terminated in Phase 1, capped with a dummy plug.
-3. **Volume reserved** in the enclosure layout for a CN3065 solar charge module (~15×15 mm) — no relocation later.
+1. **Lid is a separate, swappable part** — the Phase-2 lid carries a **parallel array of 6–8× 2×2 cm (20×20 mm) PET/ETFE-laminate panels** bonded to the flat top with **Suxun T7000** (electronics-safe, non-corrosive cure — never use acidic-cure RTV near the board). A 2×3 grid (≈62×42 mm) fits the rear of the 100×60 mm lid flanking the SMA; a 2×4 grid needs the SMA moved to the rear vertical face. Prefer rounded-corner laminate panels — no snag points on branches — over plain epoxy (epoxy yellows/cracks in 1–2 yrs tropical sun; PET lasts 3–5, ETFE 5–7).
+2. **Wiring pre-provisioned:** a 2-pin sealed connector (JST with silicone gasket) from the lid area to the charge module is already routed/terminated in Phase 1, capped with a dummy plug. Phase 2: combine all panel pairs (each through its Schottky) at one T7000-potted junction, then a single 2-wire harness through the reserved PG7 gland with a drip loop below the gland.
+3. **Volume reserved** in the enclosure layout for a CN3065 solar charge module — real boards are **~40×20×8 mm** (not 15×15) — no relocation later.
 4. Panel faces up on the **top of the neck** — where the antennas are — so panel must sit **between** antennas (GPS window forward, solar panel rear) or on the enclosure's flat top with antennas at the rear edge. Panel shading by the animal's head is a real loss factor; accept partial shading and oversize the panel modestly (MPPT not needed at 0.5 W).
 5. See [POWER.md](POWER.md) for the electrical side.
 

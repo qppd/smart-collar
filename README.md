@@ -102,7 +102,7 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 | MPU6050 accelerometer (GY-521) | Movement activity for the 24-hour no-movement rule |
 | ESP32 DevKit + SX1278 LoRa module | Base station receiver |
 | 12V waterproof siren + relay/MOSFET | Audible alarm at the base station |
-| 5V solar panel + Li charge module (future) | Phase 2 solar upgrade — farm-recommended |
+| 6–8× 2×2 cm solar panels (5–5.5 V, parallel) + CN3065 charge module | Phase 2 solar upgrade — farm-recommended |
 
 ## Design Priorities
 
