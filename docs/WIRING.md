@@ -61,18 +61,33 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 | Net 11 (GND rail) | Buck (VIN−) | Buck return |
 | Buck (5V out) | ESP32 (VIN 5V) | Logic supply |
 | Buck (GND out) | ESP32 (GND) | Common ground |
-| ESP32 (GPIO23) | Relay (IN1) | Siren drive — patterned per alarm type (see [FIRMWARE.md](FIRMWARE.md)) |
+| ESP32 (GPIO27) | Relay (IN1) | Siren drive — patterned per alarm type (see [FIRMWARE.md](FIRMWARE.md)) |
 | ESP32 (GND) | Relay (GND) | Relay logic ground |
-| Relay (NO) | Siren (+) | Siren energizes when GPIO23 drives the relay |
+| Relay (NO) | Siren (+) | Siren energizes when GPIO27 drives the relay |
 | Siren (−) | Net 11 (GND rail) | Siren return |
 
-**Connection summary:** AC → PSU (12 V 5 A) → two branches: (a) 12 V → relay COM → siren (NO), (b) 12 V → buck → 5 V → ESP32. GPIO23 → relay IN1 switches the siren. NC contact unused (siren off by default).
+**Connection summary:** AC → PSU (12 V 5 A) → two branches: (a) 12 V → relay COM → siren (NO), (b) 12 V → buck → 5 V → ESP32. GPIO27 → relay IN1 switches the siren. NC contact unused (siren off by default).
+
+### Base LoRa receiver — Ra-02 (SX1278) → ESP32 DevKit
+
+| Ra-02 pin | ESP32 38-pin | Purpose |
+|---|---|---|
+| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1278 |
+| GND | GND | Common ground |
+| SCK | GPIO18 | VSPI SCK |
+| MISO | GPIO19 | VSPI MISO |
+| MOSI | GPIO23 | VSPI MOSI |
+| NSS (CS) | GPIO5 | VSPI chip select |
+| RST | GPIO14 | RadioLib reset |
+| DIO0 | GPIO26 | TX/RX-done interrupt (RadioLib IRQ) |
+
+> **Notes:** add 100 µF + 100 nF decoupling at the Ra-02 VCC (TX bursts ~120 mA brown out weak 3.3 V rails). Never transmit without the antenna attached. GPIO23 stays reserved for SPI MOSI — this is why the siren relay moved from GPIO23 to GPIO27.
 
 ## 3. Deltas vs. the reference design (HARDWARE.md / BASE-STATION.md)
 
 | Point | Diagram | Reference design | Why it differs / what to do |
 |---|---|---|---|
-| Base LoRa (Ra-02 SX1278) | Not yet drawn | SPI + RST/DIO pins per HARDWARE.md | Draw next revision; wire per [HARDWARE.md](HARDWARE.md) before bench test |
+| Base LoRa (Ra-02 SX1278) | Wiring defined in §2 (add to next diagram revision) | SPI (VSPI 18/19/23/5) + RST 14 + DIO0 26 | Wire before bench test `B2` |
 | DS3231 RTC | Not used (decided) | No RTC hardware — phone sets the base clock via BLE `TIME_SET` on connect | Nothing to wire; see [BASE-STATION.md](BASE-STATION.md) |
 | Tamper loop + service reed | Not on this sheet | GPIO25 drive / GPIO36 ADC / GPIO13 reed | Strap harness — see [TAMPER.md](TAMPER.md) |
 | Relay board | IN1 driven directly | Opto-isolated boards also have a JD-VCC jumper | Keep jumper closed for 5 V logic drive; see BOM relay note |

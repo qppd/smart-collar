@@ -158,7 +158,7 @@ flowchart TB
     OFF --> HIST
 ```
 
-- **Siren:** relay-driven 12 V siren (1-ch relay, IN1 on **GPIO23** of the base ESP32 — see [WIRING.md](WIRING.md)); distinct patterns: geofence = 3 short/2 min pause repeat; tamper = continuous; no-movement = long 10 s every 5 min. Auto re-arm. **Gated off while maintenance mode is set.**
+- **Siren:** relay-driven 12 V siren (1-ch relay, IN1 on **GPIO27** of the base ESP32 — GPIO23 stays reserved for the Ra-02 SPI MOSI; see [WIRING.md](WIRING.md)); distinct patterns: geofence = 3 short/2 min pause repeat; tamper = continuous; no-movement = long 10 s every 5 min. Auto re-arm. **Gated off while maintenance mode is set.**
 - **History:** LittleFS CSV/JSON per collar (position, flags, loop R, batt) — months of data at 10-min intervals is small (~100 KB/collar/month).
 - **Wall clock:** software — `TIME_SET {epoch}` from the app over BLE on connect (see [BASE-STATION.md](BASE-STATION.md)); `unsynced` flag after an offline reboot. Collars send no time and need none.
 - **Maintenance mode:** the rules engine honors a `maintenance` flag (BLE `MAINT_ON {minutes}` / `MAINT_OFF` from the app; default 30 min, max 2 h, auto-expires). While set, geofence/tamper/no-move events are **logged as `suppressed`** but never fire the siren; low-battery and collar-silence alerts still pass; every ON/OFF/expiry is timestamped (see [BASE-STATION.md](BASE-STATION.md)).

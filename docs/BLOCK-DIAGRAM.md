@@ -86,7 +86,8 @@ flowchart LR
 | LoRa uplink | collar SX1278 → base Ra-02 (SX1278) | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |
 | LoRa downlink | base → collar | at wake windows / daily sync | geofence polygon, interval, ACK, latch clear |
 | Maintenance mode | app → BLE → rules engine | MAINT_ON {min} / MAINT_OFF, auto-expires | gates siren/alarm path; events logged as `suppressed` |
-| Siren drive | GPIO23 → relay IN1 → 12 V siren | patterned per alarm type | geofence 3-short/2-min · tamper continuous · no-move 10 s/5 min |
+| Siren drive | GPIO27 → relay IN1 → 12 V siren | patterned per alarm type | geofence 3-short/2-min · tamper continuous · no-move 10 s/5 min |
+| Base LoRa SPI | Ra-02 ↔ ESP32 (VSPI 18/19/23/5 · RST 14 · DIO0 26) | 3.3 V only — decoupled supply | SX1278 RX/TX control ([WIRING.md](WIRING.md)) |
 
 ---
 
