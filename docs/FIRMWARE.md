@@ -136,7 +136,7 @@ last2  CRC16        CCITT-FALSE over bytes 0..end-2
 
 **Geofence sizing note:** 16 vertices × 8 B = 128 B payload → a single chunk at SF7; at SF9 (max ~120 B) it fragments into 2 chunks automatically — the chunk scheme is SF-proof.
 
-**Base clock:** the base station keeps wall-clock time on a **DS3231 RTC** (I²C, CR2032 backup — set once via serial CLI `rtc set` or from the app during provisioning; ±2 ppm ≈ ~1 min/year); collars stay clockless — history/alarm timestamps are base-side only.
+**Base clock:** no RTC hardware — the base keeps wall-clock time set from the farmer's phone: the app sends `TIME_SET {epoch}` over BLE on every connect (phone time is NTP-accurate). No alarm rule depends on wall-clock time — geofence, tamper, no-move, and silence all run on packet arrival / monotonic time; wall time is for history and CSV export only. After a reboot with the phone away, the clock is `unsynced` and history rows are flagged until the next connect. Collars stay clockless — timestamps are base-side only.
 
 ## Base Station Firmware
 
@@ -160,8 +160,8 @@ flowchart TB
 
 - **Siren:** relay-driven 12 V siren (1-ch relay, IN1 on **GPIO23** of the base ESP32 — see [WIRING.md](WIRING.md)); distinct patterns: geofence = 3 short/2 min pause repeat; tamper = continuous; no-movement = long 10 s every 5 min. Auto re-arm. **Gated off while maintenance mode is set.**
 - **History:** LittleFS CSV/JSON per collar (position, flags, loop R, batt) — months of data at 10-min intervals is small (~100 KB/collar/month).
-- **Wall clock:** DS3231 RTC on I²C — timestamps survive reboots and offline periods; set once at provisioning. Collars send no time and need none.
-- **Maintenance mode:** the rules engine honors a `maintenance` flag (BLE `MAINT_ON {minutes}` / `MAINT_OFF` from the app; default 30 min, max 2 h, auto-expires). While set, geofence/tamper/no-move events are **logged as `suppressed`** but never fire the siren; low-battery and collar-silence alerts still pass; every ON/OFF/expiry is DS3231-logged (see [BASE-STATION.md](BASE-STATION.md)).
+- **Wall clock:** software — `TIME_SET {epoch}` from the app over BLE on connect (see [BASE-STATION.md](BASE-STATION.md)); `unsynced` flag after an offline reboot. Collars send no time and need none.
+- **Maintenance mode:** the rules engine honors a `maintenance` flag (BLE `MAINT_ON {minutes}` / `MAINT_OFF` from the app; default 30 min, max 2 h, auto-expires). While set, geofence/tamper/no-move events are **logged as `suppressed`** but never fire the siren; low-battery and collar-silence alerts still pass; every ON/OFF/expiry is timestamped (see [BASE-STATION.md](BASE-STATION.md)).
 - **Watchdog:** ESP32 task watchdog on both LoRa RX and app server loops; base station is unattended hardware, it must self-heal.
 
 ## Flashing & Config

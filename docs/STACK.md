@@ -25,6 +25,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | LoRa driver | **RadioLib** | Same library both ends |
 | App server | **ESP32 BLE stack (NimBLE-Arduino) + USB serial** | GATT server `SmartCollar-Base`; JSON over notify/write characteristics, MTU-chunked |
 | History store | **LittleFS** (CSV/JSON per collar) | ~100 KB/collar/month at 10-min intervals |
+| Clock | **Phone-set via BLE** (`TIME_SET` on app connect) | No RTC hardware; `unsynced` flag after an offline reboot — no alarm rule depends on wall time |
 | Reliability | **ESP32 task watchdog** | Unattended hardware must self-heal |
 
 ## App (offline-first PWA)

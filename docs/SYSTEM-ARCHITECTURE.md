@@ -53,14 +53,14 @@ flowchart TB
 | I7 | Base ↔ phone | Bluetooth LE GATT (Web Bluetooth): notify + write | live positions/alarms (MTU-chunked JSON); commands: geofence, ACK, interval, MAINT_ON/OFF |
 | I8 | Base ↔ USB device | Web Serial (Chrome) | most-reliable zero-WiFi channel |
 | I9 | Base → siren | GPIO23 → relay IN1 → 12 V | patterned drive per alarm type |
-| I10 | DS3231 RTC → base I²C | I²C, CR2032 backup | wall-clock timestamps; survives reboots and offline periods (±2 ppm) |
+| I10 | Phone → base clock sync | BLE `TIME_SET {epoch}` on app connect | wall-clock timestamps; `unsynced` flag after an offline reboot — no alarm rule depends on wall time |
 | I12 | Maintenance toggle → rules engine | BLE `MAINT_ON {min}` / `MAINT_OFF` | gates siren/alarm path only; detected events logged as `suppressed`; auto-expires |
 
 ## 4. Network Topology
 
 ```mermaid
 flowchart LR
-    C1["Collar #1"] <-. "LoRa 433 MHz<br/>jittered intervals" .-> BASE["BASE STATION<br/>mast antenna 3–5 m, grounded<br/>DS3231 clock · BLE server"]
+    C1["Collar #1"] <-. "LoRa 433 MHz<br/>jittered intervals" .-> BASE["BASE STATION<br/>mast antenna 3–5 m, grounded<br/>phone-set clock · BLE server"]
     C2["Collar #2"] <-.-> BASE
     CN["Collar #N"] <-.-> BASE
     BASE -- "Bluetooth LE GATT<br/>notify + write" --> PHONE["Farmer phone<br/>PWA installed to home screen"]
@@ -80,13 +80,13 @@ flowchart LR
 | GPS no-fix (canopy, rain) | position STALE | reuse last fix, flag it; alarm rules keep running on stale data |
 | LoRa packet lost | missed position | SEQ dedupe on RX; emergency packets retry 3× @ 30 s; buffer at next wake |
 | Collar battery low | shorter radio life | BAT_PERCENT telemetry → app alert < 20%; swap-and-charge rotation |
-| Base brownout | rules pause | no UPS by design — history in LittleFS + DS3231 clock survive; watchdog self-heals; collars buffer-and-retry until power returns |
+| Base brownout | rules pause | no UPS by design — history in LittleFS survives; watchdog self-heals; clock re-syncs from the phone on next connect; collars buffer-and-retry until power returns |
 | Lightning storm | antenna risk | disconnect procedure; collars buffer-and-retry — an offline hour is fine |
 | Tamper false positives (corrosion) | spurious alarms | 8-sample ADC averaging, window margins, debounce; service magnet = maintenance window |
 | Farmer misses alarm | siren keeps sounding | re-arm logic: ACK silences siren but event persists until condition clears (e.g., 2 packets back inside fence) |
 | App phone offline | no dashboard | cached PWA opens offline; history catches up over BLE (delta-sync) on reconnect |
 | Phone out of BLE range | no live dashboard | the farm doesn't stop — LoRa RX, rules, siren, and history all run headless; the app catches up over BLE (delta-sync) on reconnect |
-| Maintenance toggle left ON | alarms muted | **auto-expiry** (default 30 min, max 2 h) re-enables the siren; every ON/OFF/expiry is DS3231-logged |
+| Maintenance toggle left ON | alarms muted | **auto-expiry** (default 30 min, max 2 h) re-enables the siren; every ON/OFF/expiry is timestamped |
 
 **Design principle:** every abnormal condition is *latched* — a transient (brief loop open, one lost packet) can never silently clear itself without the base seeing it.
 

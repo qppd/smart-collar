@@ -62,7 +62,7 @@ flowchart TB
     GEOF -- "inside" --> HIST
     TAMP -- "no" --> HIST
     NOMOVE -- "no" --> HIST
-    HIST["append history<br/>LittleFS CSV/JSON per collar<br/>~100 KB / collar / month<br/>clock: DS3231 RTC (survives reboots)"]
+    HIST["append history<br/>LittleFS CSV/JSON per collar<br/>~100 KB / collar / month<br/>clock: phone-set via BLE (TIME_SET)<br/>unsynced flag after offline reboot"]
     HIST --> PUSH["BLE notify → app<br/>(live positions + alarms,<br/>MTU-chunked JSON)"]
     PUSH --> WDOGB["task watchdog feeds<br/>(LoRa RX + BLE server loops)"]
     SIRENOFF --> WDOGB

@@ -152,7 +152,7 @@ Pick one and test it in airplane mode; a blank map after install almost always m
 1. Serve the built PWA from the laptop (`python -m http.server 8080` in the app folder).
 2. Make the origin a **secure context** for Web Bluetooth — either `adb reverse tcp:8080 tcp:8080` (the phone then opens `http://localhost:8080`, which Chrome treats as secure) or serve over HTTPS with a self-signed cert. Without this, Chrome blocks Web Bluetooth on a plain LAN address.
 3. Open the page in Chrome on the phone, then **Add to Home Screen**.
-4. **Airplane mode** and verify (next section), then pair to `SmartCollar-Base` and set the DS3231 clock (see [BASE-STATION.md](BASE-STATION.md), one-time provisioning).
+4. **Airplane mode** and verify (next section), then pair to `SmartCollar-Base` — the app sets the base clock automatically on connect (see [BASE-STATION.md](BASE-STATION.md), one-time provisioning).
 
 Repeat per phone. Re-provisioning is only needed when: the farm area or site-survey radius grows, the app is updated, or a new phone is added.
 

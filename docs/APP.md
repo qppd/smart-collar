@@ -34,7 +34,7 @@ Done once before deployment — at home/school with any WiFi:
 1. **Download MapLibre GL JS** (bundle + glyphs + base style JSON) into the app's cache — full step-by-step build (bbox + margin, PMTiles extract, PWA bundling): [MAP-PACK.md](MAP-PACK.md).
 2. **Download OpenStreetMap map data** for the farm bounding box + **LoRa coverage margin** (the site-survey radius from [TESTING.md](TESTING.md) R1/R2 — typically 2–5 km beyond the outermost fence). Vector tiles or a region extract (e.g., Protomaps/OSM PBF → offline tiles) stored in the app. **This margin is why a breached animal stays visible on the offline map even beyond the geofence** — as far as the collar can still report a position, the map has data there.
 3. **Service-worker precache** of the whole PWA (app code, MapLibre, map data, icons).
-4. **Set the base clock** (DS3231) from the laptop or the app during first pairing.
+4. **Pair over BLE** — the app sets the base clock automatically (`TIME_SET` from the phone's date/time on every connect; no RTC hardware on the base).
 5. Done — from this point the system never touches the internet again. Re-provisioning is only needed to expand coverage or update the app.
 
 ## Map Data & Layers
@@ -77,7 +77,7 @@ A prominent **toggle** in the app ("Maintenance mode") for deliberate work on co
 | Still active | Battery/low-battery app alerts, RX-watchdog collar-silence alerts, and all LoRa packet reception — only the alarm/siren path is gated |
 | Auto-expiry | Toggle carries a duration (default **30 min**, max 2 h, configurable). It **never latches silently** — the base re-enables alarms when it expires and logs that too, so a forgotten toggle can't mute the farm |
 | How it works | BLE write `MAINT_ON {minutes}` / `MAINT_OFF` → base sets/clears its maintenance flag in the rules engine ([FIRMWARE.md](FIRMWARE.md)) |
-| Audit | Every entry/exit/expiry logged with timestamp (DS3231) — "why was the siren quiet yesterday?" is answerable from history |
+| Audit | Every entry/exit/expiry logged with a timestamp — "why was the siren quiet yesterday?" is answerable from history |
 
 ## Alarm UX
 

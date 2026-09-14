@@ -16,7 +16,7 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 | B6 | Buckle detection | Unbuckle w/o service mode | BUCKLE alarm; with service mode: logged, no alarm |
 | B7 | Battery gauge | AXP2101 % vs discharge curve | ±10% of actual |
 | B8 | 48 h soak run | Full system, 10-min interval, bench range | 0 missed packets; battery drop matches POWER.md model |
-| B9 | RTC clock | Set DS3231, power-cycle base | Time survives reboot; history timestamps continuous |
+| B9 | Base clock sync | Pair phone (app sends TIME_SET), reboot base, reconnect | Clock re-syncs on connect; `unsynced` flag while phone away; history timestamps continuous after reconnect |
 | B10 | Downlink delivery | Push geofence (1-chunk and 2-chunk), interval change, ACK | Collar applies within one cycle; corrupt chunk rejected, old polygon kept |
 | B11 | BLE link | Phone pairs to base; live notify + every command type round-trip | Pairs < 5 s; notify < 2 s after packet arrival; geofence/ACK/MAINT_ON/MAINT_OFF all confirmed |
 

@@ -70,7 +70,7 @@
 | Enclosure | IP65 junction box, medium | 1 | Outdoor protection | 100–250 |
 | Mast + mounting hardware | Pole, U-bolts, CAT5/antenna cable as needed | 1 | Antenna at 3–5 m height | 200–500 |
 
-**Base station subtotal: ~₱1,300–2,650**
+**Base station subtotal: ~₱1,160–2,510**
 
 ### Base station — sourced order list (Lazada PH, verified 2026-09-13)
 
@@ -84,9 +84,8 @@
 | 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) — powers the 12 V siren directly and feeds the buck | 1 | ~300 | — | — | (see listing) | [buy](https://www.lazada.com.ph/products/switching-power-supply-s-60-12-12v-5a-60w-lrs-50-5-5v-10a-12v-42a-24v-21a-50w-i118492443-s16906981189.html) |
 | 7 | Circuitrocks buck / step-down DC-DC **36 V→5 V 5 A** (9–36 V in, screw terminals — replaces the LM2596: 5 A headroom, no trimpot drift, case doubles as heatsink) | 1 | 108 | 4.9/5 (28) | 287 | Circuitrocks (97%, 9-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i299280311-s514886405.html) |
 | 8 | ZJW IP65 CCTV junction box (**select 150×150×70**) | 1 | 120 | 5.0/5 (348) | 3.8K | ZJW_MALL (99%) | [buy](https://www.lazada.com.ph/products/pdp-i2199716972.html) |
-| 9 | DS3231 RTC module w/ AT24C32 EEPROM + CR2032 backup¹⁰ | 1 | 140 | 5.0/5 (297) | 2.8K | Bulacan seller — pick any ≥4-star listing from the search page | [search](https://www.lazada.com.ph/tag/ds3231-rtc-real-time-clock-module/) |
 
-**Sourced base-station total: ~₱1,860** + mast & mounting hardware (hardware-store items — pole, U-bolts, clamps: ~₱200–500).
+**Sourced base-station total: ~₱1,720** + mast & mounting hardware (hardware-store items — pole, U-bolts, clamps: ~₱200–500).
 
 > ⁵ Dipole style with 3 m cable — no explicit mast clamp; mount with U-bolt + zip ties. Higher-gain options (8 dBi, 12 dBi) exist at ₱49+ but are unrated.
 > ⁶ 110 dB per title; "waterproof" not stated (titled Outdoor Security) — mount under the eave; the alt listing is explicitly IP65.
@@ -100,11 +99,11 @@ Per-block roll-up (sourced prices, 2026-09-13):
 |---|---:|
 | Collar — classic T-Beam path (AliExpress board), each | ~4,150–4,650 |
 | Collar — local Supreme path, each | ~6,638 |
-| Base station (incl. DS3231 RTC, 12 V PSU + 5 A buck) | ~1,860 |
+| Base station (12 V PSU + 5 A buck — no RTC hardware) | ~1,720 |
 | Mast & mounting hardware | ~200–500 |
 | Tools & consumables (incl. LiitoKala Lii-500 smart charger) | ~1,050–1,250 |
-| **Initial build — 3 collars + 1 base station (classic path)** | **~14,300–15,800** |
-| Initial build — 3 collars (Supreme path) + 1 base | ~21,800 |
+| **Initial build — 3 collars + 1 base station (classic path)** | **~14,170–15,670** |
+| Initial build — 3 collars (Supreme path) + 1 base | ~21,630 |
 | Each additional collar beyond the initial 3 | +4,150–4,650 (classic) / +6,638 (Supreme) |
 | Phase-2 solar per collar (optional) | +407–500 + DIY lid |
 
@@ -129,7 +128,6 @@ Per-block roll-up (sourced prices, 2026-09-13):
 | 2 | SS14 Schottky diode, SMA DO-214AC (100-pc pack — ₱1.26/pc) | 1 pack | 126 | 5.0/5 (14) | 29 | China Electronic (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3679917267.html) · [alt](https://www.lazada.com.ph/products/pdp-i1836021223.html) |
 | 3 | FLAG — CN3065 mini USB solar Li charger board⁹ | 1 | 95 | 5.0/5 (1) | 22 | circuitrocks (97%, 9-yr store, 253K sold) | [buy](https://www.lazada.com.ph/products/pdp-i566666537.html) |
 
-> ¹⁰ Sourced from category search rather than a pinned PDP — a commodity part with thousands of reviews; pick any ≥4-star listing with PH stock at checkout. The DS3231 **must include the CR2032 holder** (some listings ship without).
 
 **Sourced solar total: ~₱407 (2 panels) / ~₱500 (3 panels)** + solar lid (DIY per [ENCLOSURE.md](ENCLOSURE.md)).
 
@@ -151,7 +149,7 @@ Per-block roll-up (sourced prices, 2026-09-13):
 2. Buy **one spare 18650 per collar** — the 2-pcs LiitoKala pack covers this exactly.
 3. Check T-Beam version pins before wiring: **v1.2 (AXP192 PMU)** vs **v2.x (AXP2101)** vs **Supreme (ESP32-S3)** differ in pinout and power control — see the design flag in the collar order list.
 4. **Store clustering saves shipping:** Makerlab PH covers ESP32 + Ra-02 (the two priciest base-station electronics); ZJW_MALL/Allan cover both enclosures; Circuitrocks can additionally cover the buck converter and CN3065 solar charger in one store. Budget ~₱40 shipping per store (~₱400 across all stores at current mix).
-8. **The app needs no extra hardware** — it runs on the farmer's own Android phone/laptop; MapLibre + OpenStreetMap data are downloaded once over any available WiFi during provisioning (₱0, see [APP.md](APP.md)).
-5. **Suxun T7000 notes:** allow **24–48 h full cure** before any immersion/wallow test (tack-dry ≠ sealed). It is the joint sealant, **not structural** — strap, buckle, and enclosure attachments stay mechanical (bolts/slots/crimp), never glue-loaded. Buy from phone-repair suppliers (T7000 is phone-screen glue) to avoid refilled tubes.
-6. **Variant-selection checklist at checkout:** LiitoKala 2-pcs · ESP32 38-pin · PSU **S-60-12 (12 V 5 A)** · Circuitrocks **36V→5V 5A** buck (replaces the LM2596) · ZJW 150×150×70 · Allan 150×150×70 · glands **PG7** (not PG21) · wire rope 1 mm × 10 m · buckle 38 mm · reed 2×14 mm (10 pcs) · siren single · solar panel 1-pc SKU × qty 2–3.
-7. All listings above were **in-stock and web-priced on 2026-09-13**; Lazada listings rot — each row keeps the seller + price so replacements are easy to find if a link 404s.
+5. **The app needs no extra hardware** — it runs on the farmer's own Android phone/laptop; MapLibre + OpenStreetMap data are downloaded once over any available WiFi during provisioning (₱0, see [APP.md](APP.md)).
+6. **Suxun T7000 notes:** allow **24–48 h full cure** before any immersion/wallow test (tack-dry ≠ sealed). It is the joint sealant, **not structural** — strap, buckle, and enclosure attachments stay mechanical (bolts/slots/crimp), never glue-loaded. Buy from phone-repair suppliers (T7000 is phone-screen glue) to avoid refilled tubes.
+7. **Variant-selection checklist at checkout:** LiitoKala 2-pcs · ESP32 38-pin · PSU **S-60-12 (12 V 5 A)** · Circuitrocks **36V→5V 5A** buck (replaces the LM2596) · ZJW 150×150×70 · Allan 150×150×70 · glands **PG7** (not PG21) · wire rope 1 mm × 10 m · buckle 38 mm · reed 2×14 mm (10 pcs) · siren single · solar panel 1-pc SKU × qty 2–3.
+8. All listings above were **in-stock and web-priced on 2026-09-13**; Lazada listings rot — each row keeps the seller + price so replacements are easy to find if a link 404s.

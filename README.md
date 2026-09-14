@@ -192,6 +192,7 @@ The build is organized into stages. Follow in order:
 
 ## Roadmap
 
+- [x] Circuit diagram + netlist drawn (Cirkit Designer — [WIRING.md](docs/WIRING.md))
 - [ ] Parts ordered & verified (BOM)
 - [ ] T-Beam bench test: GPS fix + LoRa link
 - [ ] Tamper loop working on an adjustable strap

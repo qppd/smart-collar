@@ -73,7 +73,7 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 | Point | Diagram | Reference design | Why it differs / what to do |
 |---|---|---|---|
 | Base LoRa (Ra-02 SX1278) | Not yet drawn | SPI + RST/DIO pins per HARDWARE.md | Draw next revision; wire per [HARDWARE.md](HARDWARE.md) before bench test |
-| DS3231 RTC | Not yet drawn | I²C (SDA 21 / SCL 22 shared bus) on base | Add to the I²C bus; set clock at provisioning ([BASE-STATION.md](BASE-STATION.md)) |
+| DS3231 RTC | Not used (decided) | No RTC hardware — phone sets the base clock via BLE `TIME_SET` on connect | Nothing to wire; see [BASE-STATION.md](BASE-STATION.md) |
 | Tamper loop + service reed | Not on this sheet | GPIO25 drive / GPIO36 ADC / GPIO13 reed | Strap harness — see [TAMPER.md](TAMPER.md) |
 | Relay board | IN1 driven directly | Opto-isolated boards also have a JD-VCC jumper | Keep jumper closed for 5 V logic drive; see BOM relay note |
 | MPU6050 | GY-521 module | Strip power LED + LDO for sleep budget | Do the LED/LDO strip per [POWER.md](POWER.md) when building |

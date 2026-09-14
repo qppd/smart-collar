@@ -27,7 +27,6 @@ flowchart TB
         MAST["3–5 dBi antenna<br/>3–5 m mast, grounded"]
         SIREN["12 V ≥ 110 dB siren<br/>via relay module"]
         STORE["LittleFS history<br/>CSV/JSON per collar"]
-        RTC["DS3231 RTC<br/>I²C · CR2032 backup"]
         APSRV["App server<br/>BLE GATT: notify + write<br/>+ USB serial console"]
     end
 
@@ -46,7 +45,6 @@ flowchart TB
     RA02 -- "SPI" --> DEVKIT
     DEVKIT -- "relay" --> SIREN
     DEVKIT --- STORE
-    DEVKIT --- RTC
     DEVKIT --- APSRV
     APSRV <-. "Bluetooth LE (or USB serial)" .-> PWA
 ```
