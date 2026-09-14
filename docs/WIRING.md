@@ -4,7 +4,7 @@ The complete electrical design lives in one diagram, built in Cirkit Designer:
 
 | Source | What it is |
 |---|---|
-| ![SmartCollar wiring diagram](../wiring/SmartCollar.png) | Full wiring diagram — collar circuit (solar chain) and base-station circuit (power + siren) |
+| ![SmartCollar wiring diagram](../wiring/SmartCollar.png) | Full wiring diagram — collar circuit (solar chain + tamper loop) and base-station circuit (power + siren) |
 | [`wiring/SmartCollar.ckt`](../wiring/SmartCollar.ckt) | Editable Cirkit Designer project |
 | [Cirkit Designer — SmartCollar project](https://app.cirkitdesigner.com/project/fdca6758-069a-49d6-b99e-c560568bd131) | Online source of truth (open, then edit/export) |
 
@@ -12,7 +12,7 @@ The netlist below is extracted programmatically from the `.ckt` project file —
 
 ## 1. Collar sub-circuit
 
-Components: LilyGo T-Beam v2.x, 3× 5 V solar panels, 3× SS14 Schottky diodes, CN3065 solar charge controller, 18650 cell in holder, MPU6050.
+Components: LilyGo T-Beam v2.x, 3× 5 V solar panels, 3× SS14 Schottky diodes, CN3065 solar charge controller, 18650 cell in holder, MPU6050, stainless wire rope + series resistor (tamper loop, simplified).
 
 ### Solar charge chain (Phase-2 solar, per [POWER.md](POWER.md))
 
@@ -43,7 +43,9 @@ Components: LilyGo T-Beam v2.x, 3× 5 V solar panels, 3× SS14 Schottky diodes, 
 | MPU6050 (GND) | T-Beam (GND) | Common ground |
 | MPU6050 (ADO, XDA, XCL, INT) | — (unconnected) | INT not used — the motion flag is polled over I²C each wake cycle (see [POWER.md](POWER.md)); tie ADO to GND for address 0x68 on the real build |
 
-> **Note:** the tamper loop is drawn in [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md) (GPIO25 loop drive, GPIO36 loop ADC) — add it on the strap harness during collar assembly, not on this sheet. Service mode is a BLE command (no magnet sensor on the collar).
+### Tamper loop (as drawn — simplified)
+
+The netlist shows the rope loop wired as: T-Beam header pin → series resistor → rope end A → rope through the full strap → rope end B → GND rail. **This is a simplified stand-in.** The as-built circuit per [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md) is: `GPIO25 → 10 kΩ → sense node` (sense node tapped by the **GPIO36 ADC**), then rope end A → strap (break-away link at the buckle) → rope end B → **100 Ω far end** → GND. The single-resistor drawing cannot distinguish a strap bypass from an intact loop the way the two-resistor reference does — build the reference circuit on the strap harness. Two diagram cleanups for the next edit: (1) replace the single resistor with the 10 kΩ / 100 Ω pair and add the GPIO25/GPIO36 junction, (2) the sheet carries a stray duplicate T-Beam copy wired only at the sense node — delete it. Service mode is a BLE command (no magnet sensor on the collar).
 
 ## 2. Base-station sub-circuit
 
@@ -88,7 +90,7 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 |---|---|---|---|
 | Base LoRa (Ra-02 SX1278) | Drawn in the diagram (§2) | SPI (VSPI 18/19/23/5) + RST 14 + DIO0 26 | Bench test `B2` before deployment |
 | DS3231 RTC | Not used (decided) | No RTC hardware — phone sets the base clock via BLE `TIME_SET` on connect | Nothing to wire; see [BASE-STATION.md](BASE-STATION.md) |
-| Tamper loop + buckle break-away link | Not on this sheet | GPIO25 drive / GPIO36 ADC | Strap harness — see [TAMPER.md](TAMPER.md) |
+| Tamper loop | Drawn simplified — one series resistor, no GPIO25/GPIO36 junction, stray duplicate T-Beam copy | GPIO25 → 10 kΩ → node (GPIO36 taps) → rope → 100 Ω far end → GND | Build the reference circuit from [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md); tidy the diagram on the next edit |
 | Relay board | IN1 driven directly | Opto-isolated boards also have a JD-VCC jumper | Keep jumper closed for 5 V logic drive; see BOM relay note |
 | MPU6050 | GY-521 module | Strip power LED + LDO for sleep budget | Do the LED/LDO strip per [POWER.md](POWER.md) when building |
 | Solar chain | Present | Phase-2 upgrade | Build it now on the Phase-1 collar or leave panels off — the wiring is identical |

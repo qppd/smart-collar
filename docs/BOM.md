@@ -14,6 +14,7 @@
 | GPS antenna | Passive patch, 25×25 mm, u.FL (usually bundled with T-Beam) | 1 | GPS reception | 0–150 |
 | Accelerometer | MPU6050 (GY-521 module, I²C) | 1 | Movement activity / no-movement rule (motion flag polled each wake) | 60–150 |
 | Stainless steel wire rope | ~1 mm, 7×7 strand, ~1.5 m | 1 | Tamper loop through the strap | 100–200 |
+| Resistors (tamper loop) | 10 kΩ (loop bias at the T-Beam) + 100 Ω (far-end signature) — ¼ W, ±5% carbon film (common pack) | 1 pair | Loop drive bias + anti-bypass signature — see [TAMPER.md](TAMPER.md) | 10–30 (pack) |
 | Collar strap | 38–50 mm nylon/polyester webbing, breaking strength ≥ 500 kgf | 1 | The collar itself (adjustable) | 150–300 |
 | Heavy-duty buckle | Metal side-release or roller buckle, strap-matched | 1 | Adjustment mechanism (tamper-instrumented) | 80–200 |
 | Enclosure | IP67 junction/case, **150×150×70 mm sourced** (or 3D-printed ASA + gasket) | 1 | Electronics housing | 100–250 |
