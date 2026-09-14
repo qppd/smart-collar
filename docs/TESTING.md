@@ -16,6 +16,9 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 | B6 | Buckle detection | Unbuckle w/o service mode | BUCKLE alarm; with service mode: logged, no alarm |
 | B7 | Battery gauge | AXP2101 % vs discharge curve | ±10% of actual |
 | B8 | 48 h soak run | Full system, 10-min interval, bench range | 0 missed packets; battery drop matches POWER.md model |
+| B9 | RTC clock | Set DS3231, power-cycle base | Time survives reboot; history timestamps continuous |
+| B10 | Downlink delivery | Push geofence (1-chunk and 2-chunk), interval change, ACK | Collar applies within one cycle; corrupt chunk rejected, old polygon kept |
+| B11 | BLE link | Phone pairs to base; live notify + every command type round-trip | Pairs < 5 s; notify < 2 s after packet arrival; geofence/ACK/MAINT_ON/MAINT_OFF all confirmed |
 
 ## 2. Range & Coverage (site survey)
 
@@ -52,12 +55,13 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 | S8 | Multi-alarm priority | Trigger tamper + geofence together | Tamper pattern wins |
 | S9 | Brownout recovery | Cut base power 10 s during alarm | Base reboots; alarm state re-evaluated; history intact |
 | S10 | Replay attack | Inject duplicate/old packets at base | Deduped; no duplicate alarms |
+| S11 | Maintenance toggle | Toggle ON → unbuckle bench collar; trigger again with toggle OFF; let one toggle auto-expire | ON: no siren, event logged `suppressed`; OFF: next event alarms normally; expiry re-enables alarms and is logged |
 
 ## 5. Field Trial (final)
 
-**Multi-day herd monitoring** — the capstone evaluation run:
+**Multi-day herd monitoring** — the capstone evaluation run (initial build: **3 collars + 1 base station**):
 
-- Duration: **7 days minimum**, all collars on animals, base installed at final mast position
+- Duration: **7 days minimum**, all 3 collars on animals, base installed at final mast position
 - Log: battery % per day, GPS fix success rate, packet success rate, alarm events (incl. any false alarms — count them explicitly), user actions
 - Farmer usability: have the actual farmer operate the app unassisted — task list: install app, view herd, draw geofence, ACK an alarm, export CSV; time each task, note where they hesitate
 

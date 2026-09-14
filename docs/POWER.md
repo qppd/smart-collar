@@ -18,22 +18,22 @@ Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1278-class LoRa, 433 
 | GPS fix acquisition | ESP32 active + GPS | ~90 mA | 30–60 s (TTFF from cold; warm fix ~5–15 s) |
 | LoRa TX (1 packet, SF7–SF9) | ESP32 active + radio | ~120 mA | 0.1–0.3 s |
 | Accelerometer watch (movement rule) | MPU6050 in accel-only cycle mode | ~10–70 µA | continuous while sleeping |
-| Deep sleep between cycles | AXP2101 + RTC (wake: RTC timer · MPU6050 motion INT) | ~0.5–2 mA* | rest of interval |
+| Deep sleep between cycles | AXP2101 + RTC (wake: RTC timer · MPU6050 motion INT — counts activity, straight back to sleep) | ~0.5–2 mA* | rest of interval |
 
 \* T-Beam deep sleep is famously **not** sub-100 µA unless PMU rails are turned off carefully — budget 1.5 mA average and measure the real figure early (see test below).
 
 ### Duty cycle scenarios (10-min reporting interval, 1-min GPS window)
 
-Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + sleep 539 s × 1.5 mA) / 600 s ≈ **~10.5 mA**
+Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + RX window 3 s × 90 mA + sleep 536.7 s × 1.5 mA) / 600 s ≈ **~10.95 mA**
 
 | Reporting interval | Est. average current | Runtime on 3,500 mAh |
 |---|---:|---:|
-| 5 min | ~19 mA | ~7.5 days |
-| **10 min (chosen)** | ~10.5 mA | **~2 weeks** |
-| 15 min | ~7.5 mA | ~3 weeks |
-| 30 min | ~4.5 mA | ~4.5 weeks |
+| 5 min | ~19.5 mA | ~7 days |
+| **10 min (chosen)** | ~11.0 mA | **~13 days** |
+| 15 min | ~7.9 mA | ~18 days |
+| 30 min | ~4.8 mA | ~30 days |
 
-> **Worst-case note:** the budget above assumes a **60 s GPS fix per cycle** (warm start). If cold fixes run to the firmware's `GPS_TIMEOUT` of 90 s (see [FIRMWARE.md](FIRMWARE.md)) every cycle, average current rises to **~14.8 mA → ~10 days** on 3,500 mAh. `moved=false` motion-gating and warm-start ephemeris exist precisely to keep real-world duty below this line; measure actual fix duration during bench bring-up.
+> **Worst-case note:** the budget above assumes a **60 s GPS fix per cycle** (warm start) plus a 3 s RX window after every TX (see [FIRMWARE.md](FIRMWARE.md) — RX windows). If cold fixes run to the firmware's `GPS_TIMEOUT` of 90 s (see [FIRMWARE.md](FIRMWARE.md)) every cycle, average current rises to **~15.2 mA → ~10 days** on 3,500 mAh. `moved=false` motion-gating and warm-start ephemeris exist precisely to keep real-world duty below this line; measure actual fix duration during bench bring-up.
 
 **Design target: ≥ 2 weeks per charge at a 10-minute interval**, with a swap rotation (one charged spare per collar) so animals are never un-collared. The interval is configurable from the app per collar — racehorses get 5 min, calm herds 30 min.
 
@@ -41,7 +41,9 @@ Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + sleep 539 s × 1.5
 
 ### The 24-hour no-movement rule and power
 
-The accelerometer must run *while the collar sleeps* — use the **MPU6050 motion-detect interrupt**: accel-only cycle mode (register PWR_MGMT_1 = accel on, gyro + temp off; LP_WAKE_CTRL rate 5 Hz) detects activity at ~10–70 µA and wakes the ESP32 only on movement (MOT_THR / MOT_DUR configured for head-shake / grazing-scale motion, not vibration noise). The collar keeps a rolling activity counter; if the counter hasn't incremented in 24 h, the next LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm.
+The accelerometer must run *while the collar sleeps* — use the **MPU6050 motion-detect interrupt**: accel-only cycle mode (register PWR_MGMT_1 = accel on, gyro + temp off; LP_WAKE_CTRL rate 5 Hz) detects activity at ~10–70 µA and wakes the ESP32 only on movement (MOT_THR / MOT_DUR configured for head-shake / grazing-scale motion, not vibration noise).
+
+**Critical power rule:** a motion interrupt increments the activity counter and goes straight back to sleep — it **never** triggers a full GPS/TX cycle (an actively grazing carabao would trigger dozens per hour and destroy the budget). Full cycles run on the RTC timer only. The collar keeps a rolling activity counter; if the counter hasn't incremented in 24 h, the next scheduled LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm.
 
 **GY-521 module caution (sleeper current):** the common purple GY-521 breakout has a power LED (~1–2 mA) and an LDO (~1 mA quiescent) that never sleep — 2–3 mA that would dominate the whole sleep budget. Fix at assembly: **strip the power LED** and **bypass the LDO** (feed 3V3 straight to VCC), or budget for it. Bare-die MPU6050 on a custom board avoids this entirely. Verify with the µA meter — same rule as the T-Beam rails.
 
@@ -57,31 +59,31 @@ Then finalize the reporting interval that gives ≥ 2 weeks.
 
 ## Battery Care & Safety
 
-- **Protected cells only** (over-discharge/short protection) — a collar is an unattended device on an animal.
+- **The protection story is the AXP2101 PMU, not the cell:** the sourced LiitoKala cells are an unprotected 10 A high-drain class (protected-cell listings didn't qualify — see [BOM.md](BOM.md)). The PMU provides over-voltage/over-current cut-off; never bypass it. All main charging happens off-animal in the smart charger (below), never on-animal, never unattended.
 - Low-battery alarm at 20% (app notification), critical at 10% (collar reduces interval to conserve, still must alarm).
-- Charge at 0.5 C max on a smart charger; rotate cells FIFO; retire cells at < 80% rated capacity (log capacity per cell ID in the app maintenance record).
+- Charge at ≤ 0.5 C on the LiitoKala Lii-500 smart charger (4-slot, capacity-test mode — its test figure drives the cell-retirement log); rotate cells FIFO; retire cells at < 80% rated capacity (log per cell ID in the app maintenance record).
 - Temperature: Li-ion must never charge below 0 °C or above 45 °C — carabao collar interior can exceed this in direct sun; the charger must be temperature-compensated or charging happens indoors during the swap (Phase 1: **charging happens off-animal, indoors** — simplest and safest).
 - Cell holder with tabs soldered (not spring contacts if vibration is severe — springs walk off; crimped tab + holder hybrid chosen).
 
 ## Phase 2 — Solar Sizing
 
-Sizing logic (10-min interval, ~10.5 mA avg @ 3.7 V ≈ **~39 mW** continuous):
+Sizing logic (10-min interval, ~10.95 mA avg @ 3.7 V ≈ **~41 mW** continuous — includes the 3 s RX window after every TX):
 
 | Requirement | Value |
 |---|---:|
-| Daily energy need | ~0.93 Wh |
+| Daily energy need | ~0.97 Wh |
 | PH sun (conservative effective) | 3 h/day full-sun equivalent |
-| Array needed (with 70% path efficiency incl. shading/dirt/charge loss) | ~0.45 W STC → **6–8× 2×2 cm panels** |
+| Array needed (with 70% path efficiency incl. shading/dirt/charge loss) | ~0.62 W STC → **2–3× 5 V 0.3 W panels** |
 
-**Panel choice: 2×2 cm (20×20 mm) mini panels, all the same voltage class, wired in parallel.** Physics check: 4 cm² of cell at 18–23% efficiency ≈ **0.04–0.06 W per panel** (Imp ~9–15 mA @ 5–5.5 V), so the array scales by count:
+**Panel choice: sourced 5 V 0.3 W epoxy panels (Lazada, ~₱93 each — see [BOM.md](BOM.md)), all the same voltage class, wired in parallel.** Physics check: 2 × 0.3 W STC × 3 h × 70% ≈ **1.26 Wh/day**, already above the need — see the array table below.
 
-| Array (parallel) | STC power | Harvest/day (3 h, 70%) | Coverage of 0.93 Wh |
+| Array (parallel) | STC power | Harvest/day (3 h, 70%) | Coverage of 0.97 Wh |
 |---|---:|---:|---|
-| 4 panels | ~0.2 W | ~0.44 Wh | ~50% — halves the swap rate |
-| 6 panels (2×3 grid) | ~0.3 W | ~0.68 Wh | ~75% — swap every ~4 weeks |
-| **8 panels (2×4 grid)** | ~0.44 W | ~0.93 Wh | **~100% — break-even at 10-min interval** |
+| 1× 0.3 W panel | 0.3 W | ~0.63 Wh | ~65% — roughly triples the swap interval |
+| 2× 0.3 W panels | 0.6 W | ~1.26 Wh | **~130% — break-even at 10-min interval** |
+| 3× 0.3 W panels | 0.9 W | ~1.89 Wh | ~195% — headroom for rainy days & motion-gated skips |
 
-At a 30-min reporting interval the need drops to ~0.42 Wh/day → **4–6 panels break even** there. Target stays: battery as buffer, solar as trickle — the collar rides through nights and rainy days on the 18650, and the array tops it up during grazing. Rainy-season expectations: solar extends the swap interval from 2 weeks toward 1–2 months rather than making it infinite.
+At a 30-min reporting interval the need drops to ~0.43 Wh/day → **one panel breaks even** there. **Sourced panels are 5 V 0.3 W epoxy units (~₱93 each, see [BOM.md](BOM.md))** — the exact 20×20 mm / 0.04–0.06 W class isn't listed on Lazada PH, so **2–3 sourced panels replace the originally sketched 6–8× 2×2 cm array**. Target stays: battery as buffer, solar as trickle — the collar rides through nights and rainy days on the 18650, and the array tops it up during grazing. Rainy-season expectations: solar extends the swap interval from 2 weeks toward 1–2 months rather than making it infinite.
 
 ### Wiring (validated against CN3065 + T-Beam v2.x)
 
@@ -99,8 +101,8 @@ Chain: **array → per-panel Schottky → potted junction → PG7 gland → seal
 ## Solar Roadmap Checklist
 
 - [ ] Verify Phase-1 enclosure accepts the solar lid with no case redesign
-- [ ] Measure each 2×2 cm panel's Voc before wiring (must be ≤ 6.5 V class — 5 V-class preferred; identical voltage class across all panels)
-- [ ] Bench-test CN3065 + 2×2 cm panel array → 18650 charge profile in sun/window light
+- [ ] Measure each 0.3 W panel's Voc before wiring (must be ≤ 6.5 V class — 5 V-class preferred; identical voltage class across all panels)
+- [ ] Bench-test CN3065 + 0.3 W panel array → 18650 charge profile in sun/window light
 - [ ] Partial shading test (animal's head blocks half the panel) — charge current still positive?
 - [ ] Lid gasket survives 50 lid-swaps (service simulation)
 - [ ] 2-week field trial on one animal → log battery % vs sun exposure

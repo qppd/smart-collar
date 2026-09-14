@@ -14,7 +14,7 @@ Covers the smart collar's electronics (T-Beam + tamper loop + accelerometer), wi
 | Tamper loop drive | GPIO25 (RTC-capable, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks). **Not GPIO4** — GPIO4 is the onboard status LED; driving it LOW to idle the loop keeps the LED lit (~2 mA) and wrecks the sleep budget |
 | Accelerometer SDA | GPIO21 (I²C SDA) | MPU6050 (GY-521) at addr 0x68 (AD0 low) |
 | Accelerometer SCL | GPIO22 (I²C SCL) | Shared bus: AXP2101 (0x34) + MPU6050 (0x68) + optional OLED (0x3C) — no address clash |
-| Accelerometer INT | GPIO39 (input-only, RTC) | Motion-detect interrupt (wake-on-motion) — free on T-Beam, deep-sleep wake-capable |
+| Accelerometer INT | GPIO39 (input-only, RTC) | Motion-detect interrupt (activity counting only — never a full GPS/TX cycle) — free on T-Beam, deep-sleep wake-capable |
 | Service-mode hall sensor | GPIO13 (RTC, wake-capable) | Hold service magnet here 10 s → maintenance window. **Not GPIO34** — GPIO34 is the GPS NMEA input on every T-Beam; a hall output there fights the GPS line and kills fixes |
 | LED status | Onboard LED, GPIO4 (active-low) | Fix quality + alarm indication — T-Beam v2.x has no NeoPixel; single red LED behind 1 kΩ on GPIO4 |
 
@@ -49,7 +49,7 @@ Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function
 | # | From | To | Wire | Notes |
 |---|---|---|---|---|
 | 1 | GPIO25 (drive) via 10 kΩ | Loop sense node | Kynar 30 AWG | Sense node junction — GPIO36 (ADC) taps the same node |
-| 2 | Loop far-end | GND via 100 Ω series (at far end) | via loop | Sets the "signature" resistance |
+| 2 | Loop far-end | GND via 100 Ω series (at far end) | via loop | Sets the "signature" resistance — the commissioning step records R₀ and firmware bands are relative to it (see [TAMPER.md](TAMPER.md)) |
 | 3 | Tamper wire rope end A | Sense node | crimp lug | at enclosure gland A |
 | 4 | Tamper wire rope end B | GND rail | crimp lug | at enclosure gland B |
 | 5 | Reed switch (buckle) | In series into loop, with 220 Ω shunt across it | enameled wire | Distinguishes "buckle open" from "strap cut" by resistance step |
@@ -62,13 +62,13 @@ Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function
 
 ```mermaid
 flowchart LR
-    G25["GPIO25 drive<br/>(excites only during measurement)"] -- "10 kΩ bias" --> NODE["● sense node"]
+    G25["GPIO25 drive<br/>(excites only during measurement)"] -- "10 kΩ bias" --> NODE["sense node"]
     NODE -- "wire rope + buckle reed<br/>+ far-end 100 Ω" --> GND["GND"]
-    NODE --> ADC["GPIO36 ADC<br/>expected window 40–260 Ω"]
+    NODE --> ADC["GPIO36 ADC<br/>band check vs R₀ ± 30%"]
 ```
 
 - Read ADC with loop excited (GPIO25 high), average 8 samples, debounce 100 ms.
-- Classification: **< 30 Ω → SHORT (bypass)** · **40–260 Ω → OK** · **≈ normal + 220 Ω → BUCKLE opened** (the reed shunt is now in series — a distinct upper band, so firmware labels the alarm `BUCKLE` vs `CUT`) · **> 2 kΩ → OPEN (cut / buckle removed)** · anything between bands → `LOOP_SUSPECT` (latch + re-check; telemetry warning, not a siren trigger).
+- Classification, **relative to the collar's recorded baseline R₀** (the measured intact resistance — set at commissioning, stored in NVS; see [TAMPER.md](TAMPER.md)): **< 40 Ω → SHORT (bypass)** · **R₀ ± 30% → OK** · **≈ R₀ + 220 Ω → BUCKLE opened** (the reed shunt is now in series — a distinct upper band, so firmware labels the alarm `BUCKLE` vs `CUT`) · **> 2 kΩ → OPEN (cut / buckle removed)** · anything between bands → `LOOP_SUSPECT` (latch + re-check; telemetry warning, not a siren trigger).
 
 ## 2. Assembly Order
 
@@ -76,14 +76,14 @@ flowchart LR
 
 1. Flash firmware skeleton (see [FIRMWARE.md](FIRMWARE.md)); verify console, GPS fix outdoors (first fix can take 2–5 min cold — stand in the open, not indoors).
 2. Verify LoRa TX to a second LoRa node (base-station bench rig): packets arrive, RSSI reasonable (−30 to −60 dBm across the room is normal).
-3. Wire the accelerometer; run the wake-on-motion config; confirm sleep current with a USB meter.
+3. Wire the accelerometer; run the motion-detect config (ISR counts activity only); confirm sleep current with a USB meter.
 4. Wire the tamper loop on the bench (alligator clips first); confirm cut/bypass/buckle detection logic before committing anything to the strap.
 
 ### Step 2 — Strap preparation
 
 1. Cut webbing to length (neck circumference + 15 cm adjustment margin; typical carabao neck 90–130 cm → **130–160 cm strap**).
 2. Sew/attach a **fabric channel** along the strap center-line for the wire rope, zig-zag route (allows strap stretch without loading the rope).
-3. Thread the wire rope; crimp lug terminals at both ends; **measure and record** the loop resistance (target 40–200 Ω total incl. far-end 100 Ω); seal each crimp with a small T7000 dab against corrosion.
+3. Thread the wire rope; crimp lug terminals at both ends; **measure and record** the loop resistance (target 40–200 Ω total incl. far-end 100 Ω — this becomes **R₀**, the baseline the tamper bands are relative to); seal each crimp with a small T7000 dab against corrosion.
 4. Attach buckle per its hardware type; embed the magnet in the tongue; fix the reed + shunt on the strap side; verify the reed toggles when buckling/unbuckling (multimeter).
 5. Burn/seal webbing cut ends (hot knife or lighter edge-melt) so they never fray.
 

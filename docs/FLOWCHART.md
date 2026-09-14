@@ -1,18 +1,20 @@
 # Flowchart
 
-Runtime behavior, decision by decision — the logic view of SmartCollar, matching the actual firmware state machines in FIRMWARE.md. Diagrams are **Mermaid** and render natively on GitHub.
+Runtime behavior, decision by decision — the logic view of SmartCollar, matching the actual firmware state machines in FIRMWARE.md. Diagrams are **Mermaid** and render in any Mermaid-compatible viewer.
 
 ---
 
 ## 1. Collar Main State Machine
 
-One duty cycle, every `REPORT_INTERVAL` (default 10 min) or motion interrupt:
+One duty cycle, every `REPORT_INTERVAL` (default 10 min) — motion interrupts **only count activity, never trigger a full cycle** (see POWER.md):
 
 ```mermaid
 flowchart TB
     SLEEP["DEEP SLEEP<br/>GPS rail off · SX1278 sleep · AXP rails down<br/>MPU6050 motion detect armed · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
-    SLEEP -- "every 10 min<br/>or motion INT" --> WAKE["Wake"]
-    WAKE --> TAMPER["Measure tamper loop<br/>GPIO25 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>window 40–260 Ω?"]
+    SLEEP -- "every 10 min (RTC timer)" --> WAKE["Wake"]
+    SLEEP -- "motion INT (ISR only)" --> COUNT["activity counter++<br/>back to sleep — no GPS, no TX"]
+    COUNT --> SLEEP
+    WAKE -->    TAMPER["Measure tamper loop<br/>GPIO25 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>band check vs R₀ ± 30%?"]
     TAMPER --> GFIX{"GPS fix<br/>≤ 90 s?<br/>(warm-start RTC RAM)"}
     GFIX -- "no fix" --> STALE["reuse last position<br/>flag STALE"]
     GFIX -- "fix" --> POS["fresh position"]
@@ -21,7 +23,8 @@ flowchart TB
     PKT --> TX{"TX OK?<br/>retries 3×"}
     TX -- "no ACK" --> RETRY["retry @ 30 s spacing<br/>(emergency packets)"]
     RETRY --> LATCHQ
-    TX -- "ACKed / sent" --> LATCHQ{"Latched<br/>tamper alarm?"}
+    TX -- "sent" --> RXW["RX window 3 s<br/>ACK · interval · geofence chunks"]
+    RXW --> LATCHQ{"Latched<br/>tamper alarm?"}
     LATCHQ -- "yes" --> NOW["send high-priority packet NOW<br/>then every 1 min until base ACKs<br/>(a collar under attack must not go quiet)"]
     NOW --> BACK
     LATCHQ -- "no" --> BACK["Deep sleep"]
@@ -48,18 +51,20 @@ flowchart TB
     RULES --> BATT{"BAT_PERCENT<br/>&lt; 20%?"}
     BATT -- "yes" --> APPLERT["app alert only<br/>(no siren)"]
     BATT -- "no" --> HIST
-    GEOF -- "breach" --> ALARM
-    TAMP -- "yes" --> ALARM
-    NOMOVE -- "yes" --> ALARM
-    ALARM["NEW alarm → siren ON<br/>pattern per type · app push queued"]
+    GEOF -- "breach" --> MAINT{"maintenance mode ON?<br/>(auto-expires)"}
+    TAMP -- "yes" --> MAINT
+    NOMOVE -- "yes" --> MAINT
+    MAINT -- "yes" --> SUPPRESS["log as `suppressed`<br/>no siren · no alarm feed<br/>(battery/silence alerts still pass)"]
+    SUPPRESS --> HIST
+    MAINT -- "no" --> ALARM["NEW alarm → siren ON<br/>pattern per type · app push queued"]
     ALARM --> ACKQ{"farmer ACK in app?"}
     ACKQ -- "yes" --> SIRENOFF["siren OFF · event archived<br/>re-arm when condition clears<br/>(e.g. 2 consecutive packets back inside fence)"]
     GEOF -- "inside" --> HIST
     TAMP -- "no" --> HIST
     NOMOVE -- "no" --> HIST
-    HIST["append history<br/>LittleFS CSV/JSON per collar<br/>~100 KB / collar / month"]
-    HIST --> PUSH["WebSocket push → app<br/>(live positions + alarms)"]
-    PUSH --> WDOGB["task watchdog feeds<br/>(LoRa RX + app server loops)"]
+    HIST["append history<br/>LittleFS CSV/JSON per collar<br/>~100 KB / collar / month<br/>clock: DS3231 RTC (survives reboots)"]
+    HIST --> PUSH["BLE notify → app<br/>(live positions + alarms,<br/>MTU-chunked JSON)"]
+    PUSH --> WDOGB["task watchdog feeds<br/>(LoRa RX + BLE server loops)"]
     SIRENOFF --> WDOGB
     APPLERT --> HIST
 ```
@@ -70,20 +75,22 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    CONN["connect<br/>WiFi AP SmartCollar-Base<br/>(or USB Web Serial)"] --> OPEN["open PWA<br/>smartcollar.local<br/>(served from base, cached offline)"]
-    OPEN --> MAP["map view — Leaflet<br/>cached OSM tiles z14–z17<br/>live positions + history trail"]
-    MAP --> ALARMS["alarm feed + banner<br/>service-worker push (persistent)"]
+    CONN["pair Bluetooth LE<br/>SmartCollar-Base<br/>(or USB serial)"] --> OPEN["open PWA<br/>fully offline<br/>(home-screen install)"]
+    OPEN --> MAP["map view — MapLibre<br/>offline OpenStreetMap data<br/>live positions + history trail<br/>markers stay visible past the geofence"]
+    MAP --> ALARMS["alarm feed + banner<br/>on-device notification (persistent)"]
     ALARMS --> ACK["ACK an alarm<br/>→ siren silences, event archived"]
     MAP --> EDIT["geofence editor<br/>draw/edit polygon, ≤ 16 vertices/paddock"]
-    EDIT --> PUSH["save → base pushes polygon<br/>to collars at next wake window"]
+    EDIT --> PUSH["save → BLE write → base pushes polygon<br/>to collars at next wake window"]
     PUSH --> MAP
+    OPEN --> MAINT["Maintenance mode toggle<br/>MAINT_ON {minutes} / MAINT_OFF<br/>auto-expires · every change logged"]
+    MAINT --> MAP
 ```
 
 ## 4. Geofence Push-Down Path
 
 ```mermaid
 flowchart LR
-    DRAW["farmer draws polygon<br/>in app"] --> SAVE["save over WebSocket<br/>to base station"]
+    DRAW["farmer draws polygon<br/>in app"] --> SAVE["save over BLE write<br/>to base station"]
     SAVE --> DAILY["base broadcasts<br/>daily timeslot sync"]
     DAILY --> WINDOW["collars align wake<br/>windows to the sync"]
     WINDOW --> DL["downlink at wake:<br/>geofence polygon · interval change ·<br/>ACK · clear-tamper-latch (service mode)"]

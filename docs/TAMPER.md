@@ -16,7 +16,7 @@ A simple "wire broken = alarm" loop is easy to bypass (short the two ends, then 
 
 ```mermaid
 flowchart LR
-    GPIO["ESP32 GPIO (drive)"] -- "Rbias · 10 kΩ" --> NODE["● sense junction"]
+    GPIO["ESP32 GPIO (drive)"] -- "Rbias · 10 kΩ" --> NODE["sense junction"]
     NODE -- "tamper loop wire<br/>+ far-end series resistor" --> GND["GND"]
     NODE -- "voltage at the junction" --> ADC["ADC — loop resistance signature"]
 ```
@@ -25,9 +25,19 @@ flowchart LR
 - The ADC reading gives a unique "signature" for the intact collar.
 - **Cut** → loop opens → ADC reads full pull-up → alarm.
 - **Bypass (jumper across the strap)** → resistance drops (jumper has ~0 Ω, skipping the series resistor) → alarm.
-- **Any tampering with the measuring node** → reading moves out of the expected window → alarm.
+- Any tampering with the measuring node → reading moves out of the expected window → alarm.
 
-Firmware keeps a valid window (e.g., 40–260 Ω); anything outside it — including *too low* — is a tamper alarm. This defeats the classic "short it first, then cut" bypass.
+Firmware keeps a valid window **defined relative to the collar's recorded baseline R₀** — the measured intact resistance at build time (target 40–200 Ω incl. the far-end 100 Ω, recorded per collar in the app maintenance record):
+
+| Band | Condition | Verdict |
+|---|---|---|
+| OK | R₀ ± 30% | normal |
+| BUCKLE | R₀ + 220 Ω ± 30% (reed shunt now in series) | alarm, subtype BUCKLE |
+| SHORT | < 40 Ω (fixed floor) | alarm, subtype SHORT — bypass/jumper |
+| OPEN | > 2 kΩ (fixed ceiling) | alarm, subtype OPEN — cut/buckle removed |
+| between bands | anything else | LOOP_SUSPECT (re-check, telemetry warning) |
+
+Fixed absolute windows (e.g., a blanket 40–260 Ω) only work if every strap measures identically — real loops don't (rope length, crimps, buckle contact vary). Baseline-relative bands absorb that variation. Anything outside the window — including *too low* — is tamper territory. This defeats the classic "short it first, then cut" bypass.
 
 ### Why a series resistor at the far end?
 
@@ -39,8 +49,8 @@ The far end of the loop carries a resistor that the attacker cannot skip without
 
 ```mermaid
 flowchart LR
-    OUT["ENCLOSURE (electronics)<br/>● loop out"] -- "tamper wire — wire rope,<br/>runs the FULL working strap length<br/>(adjustable tail included)" --> BUCKLE["BUCKLE — wire passes through/around<br/>the frame; reed switch in the path"]
-    BUCKLE -- "returns along the strap" --> IN["ENCLOSURE<br/>● loop in"]
+    OUT["ENCLOSURE (electronics)<br/>loop out"] -- "tamper wire — wire rope,<br/>runs the FULL working strap length<br/>(adjustable tail included)" --> BUCKLE["BUCKLE — wire passes through/around<br/>the frame; reed switch in the path"]
+    BUCKLE -- "returns along the strap" --> IN["ENCLOSURE<br/>loop in"]
 ```
 
 Requirements:
@@ -77,17 +87,19 @@ Adjusting the collar means opening the buckle — so the buckle itself must be p
 
 ```cpp
 // Loop supervision state machine (runs every wake cycle — RTC-timer / motion-INT wake)
+// R0 = recorded intact baseline (NVS, set at collar commissioning; e.g. 120 Ω)
 enum LoopState { LOOP_OK, LOOP_OPEN, LOOP_SHORT, LOOP_BUCKLE, LOOP_SUSPECT };
 
 LoopState readTamperLoop() {
   // ADC average over 8 samples, debounced 100 ms
   float r = loopResistanceOhms();
-  if (r > CUT_THRESHOLD)    return LOOP_OPEN;    // ~> 2 kΩ  → strap cut / buckle removed
-  if (r < SHORT_THRESHOLD)  return LOOP_SHORT;   // ~< 30 Ω  → bypass attempt / jumper
-  if (inBuckleBand(r))      return LOOP_BUCKLE;  // ≈ normal + 220 Ω shunt → buckle opened
-  // brief out-of-window glitch that re-closed within the debounce window:
+  if (r > OPEN_THRESHOLD)   return LOOP_OPEN;    // > 2 kΩ (fixed) → strap cut / buckle removed
+  if (r < SHORT_THRESHOLD)  return LOOP_SHORT;   // < 40 Ω (fixed) → bypass attempt / jumper
+  if (inBuckleBand(r, R0))  return LOOP_BUCKLE;  // ≈ R0 + 220 Ω (±30%) → buckle opened
+  if (inOkBand(r, R0))      return LOOP_OK;      // R0 ± 30% → normal
+  // brief out-of-band glitch that re-closed within the debounce window:
   if (glitchLatch)          return LOOP_SUSPECT; // telemetry warning — no siren (see below)
-  return LOOP_OK;
+  return LOOP_SUSPECT;                           // between bands → suspect, re-check next cycle
 }
 ```
 
@@ -102,7 +114,7 @@ LoopState readTamperLoop() {
 | Risk | Mitigation |
 |---|---|
 | Strap flex momentarily opens crimp joints | Crimp + solder dual termination; strain-relief boot at enclosure exit; flex-rated routing (service loop) |
-| Corrosion raises loop resistance over months | Stainless rope + gold/crimp contacts; window is generous (40–260 Ω); monthly self-test in telemetry |
+| Corrosion raises loop resistance over months | Stainless rope + gold/crimp contacts; baseline-relative bands absorb drift (re-commission R₀ via service mode if it drifts > 30%); monthly self-test in telemetry |
 | Animal scratches/bites the strap | Wire rope under a fabric flap; enclosure corners rounded |
 | Water bridge across cut ends (false continuity) | Loop voltage is low; sea/wallow water resistance ≫ window; series resistor dominates measurement |
 | Buckle reed switch stuck (magnet weak) | Reed in *normally-open-with-magnet* config so a failed reed reads as open → failsafe alarm |
@@ -113,6 +125,6 @@ LoopState readTamperLoop() {
 - [ ] Jumper the loop at the enclosure terminals → bypass alarm fires
 - [ ] Unbuckle without service mode → alarm
 - [ ] Unbuckle after service-mode entry → no alarm, event logged
-- [ ] 500 buckle open/close cycles → no false alarms, resistance stays in window
+- [ ] 500 buckle open/close cycles → no false alarms, resistance stays within R₀ ± 30%
 - [ ] 24 h in mud + water, then cut → still alarms
 - [ ] Resistance drift test after 2 weeks wear → stays within window

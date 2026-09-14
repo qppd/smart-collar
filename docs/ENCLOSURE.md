@@ -60,7 +60,7 @@ Design rules:
 ```mermaid
 flowchart TB
     TOP["TOP OF NECK — ANTENNAS UP<br/>GPS window: RF-transparent lid region, no metal above<br/>LoRa whip: bulkhead SMA top-rear + strain-relief boot"]
-    BOX["ENCLOSURE · ~100×60×30 mm<br/>T-Beam + 18650 · tamper terminal block · desiccant<br/>PG7 glands + vent patch at the lower edge"]
+    BOX["ENCLOSURE · 150×150×70 mm (sourced IP67 box)<br/>T-Beam + 18650 · tamper terminal block · desiccant<br/>Phase-2 CN3065 space reserved · PG7 glands + vent patch low edge"]
     PAD["BOTTOM — FACES NECK<br/>rounded corners · closed-cell foam padding (never open-cell)"]
     TOP --- BOX
     BOX --- PAD
@@ -72,17 +72,18 @@ flowchart TB
 - **Anti-rotation:** two rubber "keeper" blocks on the strap either side of the box keep it riding on the top of the neck.
 - **Padding:** closed-cell foam on the underside for comfort; open-cell foam would soak water — avoid.
 - **Edges:** everything chamfered/rounded; no zip-tie heads against skin.
-- **Weight target:** entire collar < 600 g (comfort + avoids behavior change).
+- **Weight target:** entire collar < 600 g (comfort + avoids behavior change) — re-weigh with the sourced 150×150×70 box, which is larger than the original 100×60×30 sketch.
+- **Tamper baseline (build-time):** the loop's *normal* resistance is whatever the built strap measures (target 40–200 Ω incl. far-end 100 Ω) — record it per collar. The firmware alarm bands are defined **relative to that baseline**, not fixed numbers (see [TAMPER.md](TAMPER.md)).
 - **Torque/pull test:** hang 100 kg from assembled collar for 10 min — no deformation, no seal breach, loop resistance unchanged.
 
 ## Solar-Ready Design (Phase 2 prep)
 
 The farm recommends solar collars (sample video in `references/`). Phase 1 must not paint us into a corner:
 
-1. **Lid is a separate, swappable part** — the Phase-2 lid carries a **parallel array of 6–8× 2×2 cm (20×20 mm) PET/ETFE-laminate panels** bonded to the flat top with **Suxun T7000** (electronics-safe, non-corrosive cure — never use acidic-cure RTV near the board). A 2×3 grid (≈62×42 mm) fits the rear of the 100×60 mm lid flanking the SMA; a 2×4 grid needs the SMA moved to the rear vertical face. Prefer rounded-corner laminate panels — no snag points on branches — over plain epoxy (epoxy yellows/cracks in 1–2 yrs tropical sun; PET lasts 3–5, ETFE 5–7).
+1. **Lid is a separate, swappable part** — the Phase-2 lid carries a **parallel array of 2–3× 5 V 0.3 W panels** (the sourced Lazada units, ~70×70 mm epoxy — see [BOM.md](BOM.md); the originally sketched 6–8× 2×2 cm class isn't locally listed) bonded to the flat top with **Suxun T7000** (electronics-safe, non-corrosive cure — never use acidic-cure RTV near the board). Two panels (~145×75 mm combined) fit the 150×150 mm lid flanking the SMA bulkhead; a third goes forward of it. Round/pro protect panel corners — no snag points on branches.
 2. **Wiring pre-provisioned:** a 2-pin sealed connector (JST with silicone gasket) from the lid area to the charge module is already routed/terminated in Phase 1, capped with a dummy plug. Phase 2: combine all panel pairs (each through its Schottky) at one T7000-potted junction, then a single 2-wire harness through the reserved PG7 gland with a drip loop below the gland.
-3. **Volume reserved** in the enclosure layout for a CN3065 solar charge module — real boards are **~40×20×8 mm** (not 15×15) — no relocation later.
-4. Panel faces up on the **top of the neck** — where the antennas are — so panel must sit **between** antennas (GPS window forward, solar panel rear) or on the enclosure's flat top with antennas at the rear edge. Panel shading by the animal's head is a real loss factor; accept partial shading and oversize the panel modestly (MPPT not needed at 0.5 W).
+3. **Volume reserved** in the enclosure layout for a CN3065 solar charge module — real boards are **~40×20×8 mm** (not 15×15) — no relocation later. The 150×150×70 sourced box has this volume to spare (the original 100×60×30 sketch did not — one more reason the bigger box was bought).
+4. Panels face up on the **top of the neck** — where the antennas are — so they sit **between** antennas (GPS window forward, solar panels rear) on the enclosure's flat top with antennas at the rear edge. Panel shading by the animal's head is a real loss factor; accept partial shading (per-panel Schottky diodes keep lit panels producing) — MPPT not needed at 0.6 W.
 5. See [POWER.md](POWER.md) for the electrical side.
 
 ## Environmental Test Checklist

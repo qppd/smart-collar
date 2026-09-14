@@ -2,9 +2,9 @@
 
 **Offline GPS and LoRa-Based Smart Collar System for Carabao Location Monitoring and Tamper Detection**
 
-A carabao wears a sealed, adjustable smart collar that acquires its GPS position and streams it over a LoRa radio link to a farm base station — **no internet, no cellular signal, no subscriptions**. The base station checks every position against a geofence, watches for collar tampering and 24-hour immobility, and sounds a siren alarm on any abnormal condition. Farmers monitor locations and configure geofences from an **offline mobile/desktop app** that talks directly to the base station.
+A carabao wears a sealed, adjustable smart collar that acquires its GPS position and streams it over a LoRa radio link to a farm base station — **the collar itself needs no internet, no cellular signal, no subscriptions**. The base station checks every position against a geofence, watches for collar tampering and 24-hour immobility, and sounds a siren alarm on any abnormal condition. Farmers monitor locations and configure geofences from an **offline app installed on their phone**, connected to the base station over Bluetooth LE.
 
-> Offline-first by design: the farm has no internet connection, so GPS (positioning) + LoRa (communication) are the only technologies used in the field.
+> Offline-first by design: positioning (GPS), collar communication (LoRa), and the farmer's app (Bluetooth LE + offline map data) never need the internet. The only time the project touches the internet is a **one-time provisioning step** — downloading the app bundle, MapLibre, and OpenStreetMap map data before deployment.
 
 ---
 
@@ -36,7 +36,7 @@ The collar is worn by the animal full-time, so the **mechanical design is as cri
 | Component | Location | Role |
 |---|---|---|
 | **Smart Collar** | Worn by the carabao | GPS positioning, LoRa uplink, tamper detection, battery telemetry |
-| **Base Station** | Fixed, powered point at the farm | Receives LoRa data, evaluates alarm rules, drives the siren, serves the app |
+| **Base Station** | Fixed, powered point at the farm | Receives LoRa data, evaluates alarm rules, drives the siren; pairs to the app over Bluetooth LE |
 | **Offline Mobile/Desktop App** | Farmer's device | Location & status dashboard, geofence configuration |
 | **Siren Alarm** | At the base station | Loud audible alert on any detected abnormal condition |
 
@@ -55,7 +55,8 @@ flowchart LR
    - **Tamper** — strap cut, buckle opened, or loop bypassed?
    - **No movement for 24 hours** — possible downed or sick animal.
 3. On any abnormal condition, the base station **fires the siren** and pushes an alert to the app.
-4. The farmer opens the offline app (connected directly to the base station over local WiFi/USB) to see live locations, history, status, and to **draw or edit the geofence**, which is pushed down to the collars.
+4. The farmer opens the app on their phone (paired directly to the base station over Bluetooth LE, or USB on a laptop) to see live locations, history, status, and to **draw or edit the geofence**, which is pushed down to the collars.
+5. The app renders the map from OpenStreetMap data pre-downloaded onto the phone (MapLibre, one-time provisioning) — no internet is needed at the farm, and an animal outside the geofence stays visible on the map as far as the collar can still report.
 
 ## Features & Alarm Conditions
 
@@ -69,11 +70,12 @@ The system raises an alarm when:
 
 Additional capabilities:
 
-- 100% offline operation — GPS + LoRa only, no internet connection needed at the farm
-- Live location and history trail per collar, on an offline map in the app
+- Offline-first operation — GPS + LoRa + Bluetooth LE; no internet needed at the collar, base, or app
+- Live location and history trail per collar, on an offline map in the app (OpenStreetMap + MapLibre, one-time provisioning)
 - Geofence drawing/editing from the app, pushed to collars via the base station
 - Battery level telemetry with low-battery warning
 - Adjustable collar (fits different animals) **without** sacrificing tamper detection
+- **Maintenance mode toggle** in the app — deliberate collar work (battery swap, strap adjustment) without triggering the siren; auto-expires so it can never silently mute the farm
 
 ## System Architecture
 
@@ -83,9 +85,8 @@ flowchart TB
     LOOP["Tamper loop + reed"] --> TBEAM
     TBEAM <-. "LoRa 433 MHz · offline radio link" .-> BASE["BASE STATION<br/>ESP32 DevKit + SX1278 · alarm rules engine<br/>geofence / tamper / 24 h no-move<br/>siren driver · local app server"]
     BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]
-    BASE <-. "local WiFi / USB — offline" .-> APP["OFFLINE APP (PWA)<br/>mobile / desktop<br/>map + geofence editor"]
+    BASE <-. "Bluetooth LE / USB — offline" .-> APP["OFFLINE APP (PWA)<br/>mobile / desktop<br/>MapLibre + offline OSM data<br/>map + geofence editor"]
 ```
-
 Details: [docs/BLOCK-DIAGRAM.md](docs/BLOCK-DIAGRAM.md) · [docs/SYSTEM-ARCHITECTURE.md](docs/SYSTEM-ARCHITECTURE.md) · [docs/FLOWCHART.md](docs/FLOWCHART.md) · [docs/STACK.md](docs/STACK.md)
 
 ## Hardware
@@ -95,14 +96,14 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 | Component | Role |
 |---|---|
 | LilyGO T-Beam v2.x | Collar core — ESP32 + GPS (NEO-M8N) + LoRa (SX1278) + 18650 battery interface in one board |
-| 18650 Li-ion cell + holder | Collar power (Phase 1) |
+| 18650 Li-ion cell + holder | Collar power (Phase 1) — PMU-protected, charged off-animal in a smart charger |
 | Conductive tamper loop (stainless wire rope / conductive thread) + reed switch | Tamper detection on the adjustable strap |
 | IP67 enclosure + PG7 glands + Suxun T7000 silicone sealant | Waterproof housing (carabaos wallow in water/mud) |
 | Flexible whip antenna (433/915 MHz) | LoRa uplink, bulkhead-mounted, strain-relieved |
 | MPU6050 accelerometer (GY-521) | Movement activity for the 24-hour no-movement rule |
 | ESP32 DevKit + SX1278 LoRa module | Base station receiver |
 | 12V waterproof siren + relay/MOSFET | Audible alarm at the base station |
-| 6–8× 2×2 cm solar panels (5–5.5 V, parallel) + CN3065 charge module | Phase 2 solar upgrade — farm-recommended |
+| 2–3× 5 V 0.3 W solar panels (parallel) + CN3065 charge module | Phase 2 solar upgrade — farm-recommended |
 
 ## Design Priorities
 
@@ -114,7 +115,7 @@ The current design focus, in order of difficulty — each has a dedicated docume
 | Waterproof enclosure | [ENCLOSURE.md](docs/ENCLOSURE.md) | Sealed against wallowing/submersion, impact-resistant, protects electronics |
 | Antenna strategy | [ENCLOSURE.md](docs/ENCLOSURE.md) | External antenna vs. sealed performance — must not degrade LoRa/GPS |
 | Battery management | [POWER.md](docs/POWER.md) | Duty-cycled operation for weeks per charge |
-| Solar-ready mechanical design | [ENCLOSURE.md](docs/ENCLOSURE.md) + [POWER.md](docs/POWER.md) | Farm recommends solar collars (video in `references/`); enclosure is solar-ready from day one |
+| Solar-ready mechanical design | [ENCLOSURE.md](docs/ENCLOSURE.md) + [POWER.md](docs/POWER.md) | Farm recommends solar collars (video in `references/`); enclosure is solar-ready from day one — 2–3× 0.3 W panels on the lid |
 | Physical form factor | [ENCLOSURE.md](docs/ENCLOSURE.md) | Based on the farm's recommendation and sample collar |
 
 > **Key point:** this is not just a software/electronics project. The **mechanical design of the collar itself is critical** — it is exposed to water, mud, impact, pulling, and constant movement for its entire service life.
@@ -126,18 +127,23 @@ smartcollar/
 ├── README.md               ← you are here
 ├── docs/
 │   ├── BOM.md              ← parts list with indicative prices
+│   ├── WIRING.md           ← circuit diagram + full netlist (collar & base)
 │   ├── HARDWARE.md         ← collar electronics, wiring, assembly
 │   ├── TAMPER.md           ← tamper loop design on the adjustable collar
 │   ├── ENCLOSURE.md        ← waterproofing, mechanical, antenna, solar-ready design
 │   ├── POWER.md            ← battery management + solar roadmap
 │   ├── FIRMWARE.md         ← collar & base station firmware, LoRa protocol
 │   ├── BASE-STATION.md     ← receiver, siren, coverage planning
+│   ├── MAP-PACK.md         ← one-time offline map provisioning guide
 │   ├── APP.md              ← offline dashboard, geofence editor
 │   ├── TESTING.md          ← test & evaluation protocol
 │   ├── STACK.md            ← full technology stack reference
 │   ├── BLOCK-DIAGRAM.md    ← hardware blocks & signal chains
 │   ├── FLOWCHART.md        ← runtime decision logic
 │   └── SYSTEM-ARCHITECTURE.md ← layers, interfaces, failure modes
+├── wiring/
+│   ├── SmartCollar.png     ← full wiring diagram (Cirkit Designer)
+│   └── SmartCollar.ckt     ← editable Cirkit Designer project
 └── references/             ← datasheets, farm video, related material
 ```
 
@@ -148,26 +154,30 @@ The build is organized into stages. Follow in order:
 | Step | Guide | What you'll do |
 |---:|---|---|
 | 1 | [docs/BOM.md](docs/BOM.md) | Order all parts |
-| 2 | [docs/HARDWARE.md](docs/HARDWARE.md) | Assemble collar electronics, verify T-Beam GPS + LoRa |
-| 3 | [docs/TAMPER.md](docs/TAMPER.md) | Build and validate the adjustable tamper loop |
-| 4 | [docs/ENCLOSURE.md](docs/ENCLOSURE.md) | Seal the enclosure, mount antenna, solar-ready lid |
-| 5 | [docs/POWER.md](docs/POWER.md) | Configure duty cycling, measure battery endurance |
-| 6 | [docs/FIRMWARE.md](docs/FIRMWARE.md) | Flash collar + base station, tune the LoRa protocol |
-| 7 | [docs/BASE-STATION.md](docs/BASE-STATION.md) | Install receiver, siren, coverage survey |
-| 8 | [docs/APP.md](docs/APP.md) | Set up the offline dashboard + geofence editor |
-| 9 | [docs/TESTING.md](docs/TESTING.md) | Run the full verification protocol |
+| 2 | [docs/WIRING.md](docs/WIRING.md) | Study the circuit diagram + netlist (collar & base) |
+| 3 | [docs/HARDWARE.md](docs/HARDWARE.md) | Assemble collar electronics, verify T-Beam GPS + LoRa |
+| 4 | [docs/TAMPER.md](docs/TAMPER.md) | Build and validate the adjustable tamper loop |
+| 5 | [docs/ENCLOSURE.md](docs/ENCLOSURE.md) | Seal the enclosure, mount antenna, solar-ready lid |
+| 6 | [docs/POWER.md](docs/POWER.md) | Configure duty cycling, measure battery endurance |
+| 7 | [docs/FIRMWARE.md](docs/FIRMWARE.md) | Flash collar + base station, tune the LoRa protocol |
+| 8 | [docs/BASE-STATION.md](docs/BASE-STATION.md) | Install receiver, siren, coverage survey |
+| 9 | [docs/MAP-PACK.md](docs/MAP-PACK.md) | Build the offline Map Pack (MapLibre + OpenStreetMap) |
+| 10 | [docs/APP.md](docs/APP.md) | Set up the offline dashboard + geofence editor |
+| 11 | [docs/TESTING.md](docs/TESTING.md) | Run the full verification protocol |
 
 ## Documentation Index
 
 | Document | Contents |
 |---|---|
 | [BOM.md](docs/BOM.md) | Collar + base station parts, specs, indicative PH prices |
+| [WIRING.md](docs/WIRING.md) | Circuit diagram, full netlist, power rails, build-order notes |
 | [HARDWARE.md](docs/HARDWARE.md) | T-Beam pin map, wiring tables, accelerometer, assembly |
 | [TAMPER.md](docs/TAMPER.md) | Tamper loop options, supervised-loop circuit, bypass resistance, alarm codes |
 | [ENCLOSURE.md](docs/ENCLOSURE.md) | IP-rating targets, sealing strategy, antenna mounting, solar-ready design, mechanical tests |
 | [POWER.md](docs/POWER.md) | Power budget, duty cycle, charging rotation, solar sizing |
 | [FIRMWARE.md](docs/FIRMWARE.md) | State machines, LoRa packet format, geofence & alarm logic |
 | [BASE-STATION.md](docs/BASE-STATION.md) | Hardware, antenna placement, siren wiring, range planning |
+| [MAP-PACK.md](docs/MAP-PACK.md) | One-time provisioning: MapLibre + OSM extract for the offline map |
 | [APP.md](docs/APP.md) | Offline maps, dashboard, geofence editor, tech options |
 | [TESTING.md](docs/TESTING.md) | Range, GPS, tamper, immersion, endurance, mechanical tests |
 | [STACK.md](docs/STACK.md) | Full technology stack — collar, base station, app, radio link |
