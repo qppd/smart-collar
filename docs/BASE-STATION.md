@@ -11,7 +11,7 @@ The base station is the farm's single fixed infrastructure point: it receives Lo
 | ESP32 DevKit (38-pin) | Controller: LoRa RX, alarm rules, siren, app server |
 | Ai-Thinker Ra-02 (SX1278, 433 MHz) | LoRa receiver — **must match collar band** |
 | 3–5 dBi antenna + 3–5 m mast | Coverage (height = range) |
-| 12 V ≥ 110 dB siren + relay module | Audible alarm — relay IN1 on ESP32 GPIO27 (wiring: [WIRING.md](WIRING.md)) |
+| 12 V ≥ 110 dB siren + relay module | Audible alarm — relay IN1 on ESP32 GPIO17 (wiring: [WIRING.md](WIRING.md)) |
 | Switching PSU **S-60-12 (12 V 5 A 60 W)** + Circuitrocks 36V→5V 5A buck | Power — 12 V rail drives the siren directly; buck makes the 5 V rail |
 | IP65+ junction box | Outdoor protection at the mast |
 

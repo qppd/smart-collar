@@ -52,7 +52,7 @@ flowchart TB
 | I6 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
 | I7 | Base ↔ phone | Bluetooth LE GATT (Web Bluetooth): notify + write | live positions/alarms (MTU-chunked JSON); commands: geofence, ACK, interval, MAINT_ON/OFF |
 | I8 | Base ↔ USB device | Web Serial (Chrome) | most-reliable zero-WiFi channel |
-| I9 | Base → siren | GPIO27 → relay IN1 → 12 V | patterned drive per alarm type (GPIO23 reserved for Ra-02 SPI MOSI) |
+| I9 | Base → siren | GPIO17 → relay IN1 → 12 V | patterned drive per alarm type (GPIO23 reserved for Ra-02 SPI MOSI) |
 | I10 | Phone → base clock sync | BLE `TIME_SET {epoch}` on app connect | wall-clock timestamps; `unsynced` flag after an offline reboot — no alarm rule depends on wall time |
 | I12 | Maintenance toggle → rules engine | BLE `MAINT_ON {min}` / `MAINT_OFF` | gates siren/alarm path only; detected events logged as `suppressed`; auto-expires |
 
