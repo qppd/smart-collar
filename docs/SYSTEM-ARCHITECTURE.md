@@ -46,8 +46,7 @@ flowchart TB
 |---|---|---|---|
 | I1 | GPS → collar UART | NMEA (TinyGPSPlus) | fix within 90 s or STALE reuse |
 | I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO25 excite | bands relative to baseline R₀; outside = latched alarm |
-| I3 | MPU6050 INT → GPIO39 | digital interrupt | motion-detect (accel-only cycle mode); ISR counts activity only — never a GPS/TX cycle |
-| I4 | Hall sensor → GPIO13 | digital, 10 s magnet hold (RTC pin, wake-capable) | service/maintenance window |
+| I3 | MPU6050 → collar I²C | I²C poll each wake (21/22) | latched motion flag → activity counter; never a GPS/TX cycle |
 | I5 | Collar → base (SX1278 → Ra-02 SX1278) | raw LoRa 433 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
 | I6 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
 | I7 | Base ↔ phone | Bluetooth LE GATT (Web Bluetooth): notify + write | live positions/alarms (MTU-chunked JSON); commands: geofence, ACK, interval, MAINT_ON/OFF |
@@ -82,7 +81,7 @@ flowchart LR
 | Collar battery low | shorter radio life | BAT_PERCENT telemetry → app alert < 20%; swap-and-charge rotation |
 | Base brownout | rules pause | no UPS by design — history in LittleFS survives; watchdog self-heals; clock re-syncs from the phone on next connect; collars buffer-and-retry until power returns |
 | Lightning storm | antenna risk | disconnect procedure; collars buffer-and-retry — an offline hour is fine |
-| Tamper false positives (corrosion) | spurious alarms | 8-sample ADC averaging, window margins, debounce; service magnet = maintenance window |
+| Tamper false positives (corrosion) | spurious alarms | 8-sample ADC averaging, window margins, debounce; app maintenance mode = service window |
 | Farmer misses alarm | siren keeps sounding | re-arm logic: ACK silences siren but event persists until condition clears (e.g., 2 packets back inside fence) |
 | App phone offline | no dashboard | cached PWA opens offline; history catches up over BLE (delta-sync) on reconnect |
 | Phone out of BLE range | no live dashboard | the farm doesn't stop — LoRa RX, rules, siren, and history all run headless; the app catches up over BLE (delta-sync) on reconnect |

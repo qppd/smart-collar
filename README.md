@@ -82,7 +82,7 @@ Additional capabilities:
 ```mermaid
 flowchart TB
     GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1278 (433 MHz)<br/>tamper loop · MPU6050 · 18650"]
-    LOOP["Tamper loop + reed"] --> TBEAM
+    LOOP["Tamper loop (wire rope)"] --> TBEAM
     TBEAM <-. "LoRa 433 MHz · offline radio link" .-> BASE["BASE STATION<br/>ESP32 DevKit + SX1278 · alarm rules engine<br/>geofence / tamper / 24 h no-move<br/>siren driver · local app server"]
     BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]
     BASE <-. "Bluetooth LE / USB — offline" .-> APP["OFFLINE APP (PWA)<br/>mobile / desktop<br/>MapLibre + offline OSM data<br/>map + geofence editor"]
@@ -97,7 +97,7 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 |---|---|
 | LilyGO T-Beam v2.x | Collar core — ESP32 + GPS (NEO-M8N) + LoRa (SX1278) + 18650 battery interface in one board |
 | 18650 Li-ion cell + holder | Collar power (Phase 1) — PMU-protected, charged off-animal in a smart charger |
-| Conductive tamper loop (stainless wire rope / conductive thread) + reed switch | Tamper detection on the adjustable strap |
+| Conductive tamper loop (stainless wire rope) with buckle break-away link | Tamper detection on the adjustable strap |
 | IP67 enclosure + PG7 glands + Suxun T7000 silicone sealant | Waterproof housing (carabaos wallow in water/mud) |
 | Flexible whip antenna (433/915 MHz) | LoRa uplink, bulkhead-mounted, strain-relieved |
 | MPU6050 accelerometer (GY-521) | Movement activity for the 24-hour no-movement rule |

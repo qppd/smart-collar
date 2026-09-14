@@ -6,14 +6,14 @@ Runtime behavior, decision by decision — the logic view of SmartCollar, matchi
 
 ## 1. Collar Main State Machine
 
-One duty cycle, every `REPORT_INTERVAL` (default 10 min) — motion interrupts **only count activity, never trigger a full cycle** (see POWER.md):
+One duty cycle, every `REPORT_INTERVAL` (default 10 min) — motion is **polled each wake and only counts activity, never triggers a full cycle** (see POWER.md):
 
 ```mermaid
 flowchart TB
-    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1278 sleep · AXP rails down<br/>MPU6050 motion detect armed · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
-    SLEEP -- "every 10 min (RTC timer)" --> WAKE["Wake"]
-    SLEEP -- "motion INT (ISR only)" --> COUNT["activity counter++<br/>back to sleep — no GPS, no TX"]
-    COUNT --> SLEEP
+    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1278 sleep · AXP rails down<br/>wake on RTC timer only · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
+    SLEEP -- "every 10 min (RTC timer)" --> WAKE["Wake · poll MPU6050 motion flag<br/>(latched INT_STATUS since last wake)"]
+    WAKE -- "flag set" --> COUNT["activity counter++"]
+    COUNT --> TAMPER
     WAKE -->    TAMPER["Measure tamper loop<br/>GPIO25 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>band check vs R₀ ± 30%?"]
     TAMPER --> GFIX{"GPS fix<br/>≤ 90 s?<br/>(warm-start RTC RAM)"}
     GFIX -- "no fix" --> STALE["reuse last position<br/>flag STALE"]
@@ -31,7 +31,7 @@ flowchart TB
     RETRY -- "still failing" --> BACK
     TAMPER -- "brief glitch, re-closed →" --> SUSPECT["latch LOOP_SUSPECT warning<br/>(telemetry only — no siren)"]
     SUSPECT --> GFIX
-    TAMPER -- "outside window, debounced →" --> LATCHEV["latch alarm flag<br/>subtype CUT / BUCKLE / SHORT preserved"]
+    TAMPER -- "outside window, debounced →" --> LATCHEV["latch alarm flag<br/>subtype CUT / SHORT preserved"]
     LATCHEV --> GFIX
 ```
 

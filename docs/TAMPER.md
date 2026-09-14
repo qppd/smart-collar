@@ -32,7 +32,6 @@ Firmware keeps a valid window **defined relative to the collar's recorded baseli
 | Band | Condition | Verdict |
 |---|---|---|
 | OK | R₀ ± 30% | normal |
-| BUCKLE | R₀ + 220 Ω ± 30% (reed shunt now in series) | alarm, subtype BUCKLE |
 | SHORT | < 40 Ω (fixed floor) | alarm, subtype SHORT — bypass/jumper |
 | OPEN | > 2 kΩ (fixed ceiling) | alarm, subtype OPEN — cut/buckle removed |
 | between bands | anything else | LOOP_SUSPECT (re-check, telemetry warning) |
@@ -49,7 +48,7 @@ The far end of the loop carries a resistor that the attacker cannot skip without
 
 ```mermaid
 flowchart LR
-    OUT["ENCLOSURE (electronics)<br/>loop out"] -- "tamper wire — wire rope,<br/>runs the FULL working strap length<br/>(adjustable tail included)" --> BUCKLE["BUCKLE — wire passes through/around<br/>the frame; reed switch in the path"]
+    OUT["ENCLOSURE (electronics)<br/>loop out"] -- "tamper wire — wire rope,<br/>runs the FULL working strap length<br/>(adjustable tail included)" --> BUCKLE["BUCKLE — loop crosses via a<br/>break-away link in the frame"]
     BUCKLE -- "returns along the strap" --> IN["ENCLOSURE<br/>loop in"]
 ```
 
@@ -73,11 +72,11 @@ Requirements:
 
 ## Buckle Instrumentation (detect "opened/removed buckle")
 
-Adjusting the collar means opening the buckle — so the buckle itself must be part of the loop:
+Adjusting the collar means opening the buckle — so the loop must cross the buckle:
 
-- **Reed switch inside the buckle path**: a magnet embedded in the buckle tongue, reed switch on the strap-side. Unbuckling moves the magnet away → reed opens → detected as a distinct event (different ADC step than a cut, if wired in series with its own shunt).
+- **Break-away link at the buckle**: the wire rope crosses the buckle through a deliberate detachable link (small screw-terminal or crimp barrel) anchored to both strap halves. Opening the buckle separates the halves, the link pulls apart, and the **loop opens → OPEN alarm**. No reed switch, no magnet — the physics does the sensing.
 - **The tamper wire passes through the buckle frame** — removing the buckle entirely forces a loop break anyway.
-- Opening the buckle while powered = alarm; the only "legit" removal path is a **service mode**: collar must be put into a maintenance window (app command or magnet hold over a hidden hall sensor for 10 s) before unbuckling, otherwise siren fires.
+- Opening the buckle while powered = alarm; the only "legit" removal path is **service mode**: put the collar into a maintenance window from the app (BLE command, Maintenance screen) before unbuckling, otherwise the siren fires.
 
 > Balancing act: the collar must be removable for charging/service (Phase 1 is battery-powered), but removal must always be a **deliberate, logged action** — never silent.
 
@@ -86,16 +85,15 @@ Adjusting the collar means opening the buckle — so the buckle itself must be p
 ## Firmware Detection Logic
 
 ```cpp
-// Loop supervision state machine (runs every wake cycle — RTC-timer / motion-INT wake)
+// Loop supervision state machine (runs every wake cycle — RTC-timer wake)
 // R0 = recorded intact baseline (NVS, set at collar commissioning; e.g. 120 Ω)
-enum LoopState { LOOP_OK, LOOP_OPEN, LOOP_SHORT, LOOP_BUCKLE, LOOP_SUSPECT };
+enum LoopState { LOOP_OK, LOOP_OPEN, LOOP_SHORT, LOOP_SUSPECT };
 
 LoopState readTamperLoop() {
   // ADC average over 8 samples, debounced 100 ms
   float r = loopResistanceOhms();
   if (r > OPEN_THRESHOLD)   return LOOP_OPEN;    // > 2 kΩ (fixed) → strap cut / buckle removed
   if (r < SHORT_THRESHOLD)  return LOOP_SHORT;   // < 40 Ω (fixed) → bypass attempt / jumper
-  if (inBuckleBand(r, R0))  return LOOP_BUCKLE;  // ≈ R0 + 220 Ω (±30%) → buckle opened
   if (inOkBand(r, R0))      return LOOP_OK;      // R0 ± 30% → normal
   // brief out-of-band glitch that re-closed within the debounce window:
   if (glitchLatch)          return LOOP_SUSPECT; // telemetry warning — no siren (see below)
@@ -103,7 +101,7 @@ LoopState readTamperLoop() {
 }
 ```
 
-- Any `LOOP_OPEN`, `LOOP_BUCKLE`, or `LOOP_SHORT` → **immediate LoRa tamper alarm packet** (sent with highest priority + retries) and locally latched until cleared via service mode.
+- Any `LOOP_OPEN` or `LOOP_SHORT` → **immediate LoRa tamper alarm packet** (sent with highest priority + retries) and locally latched until cleared via service mode.
 - A momentary open that re-closes within the window (adjustment friction) still latches a `LOOP_SUSPECT` event — reported in telemetry as a warning, not a siren trigger (prevents false alarms from strap flex).
 - Alarm packets include collar ID + battery + last GPS fix so the farmer can go straight to where the collar *was*.
 
@@ -117,7 +115,7 @@ LoopState readTamperLoop() {
 | Corrosion raises loop resistance over months | Stainless rope + gold/crimp contacts; baseline-relative bands absorb drift (re-commission R₀ via service mode if it drifts > 30%); monthly self-test in telemetry |
 | Animal scratches/bites the strap | Wire rope under a fabric flap; enclosure corners rounded |
 | Water bridge across cut ends (false continuity) | Loop voltage is low; sea/wallow water resistance ≫ window; series resistor dominates measurement |
-| Buckle reed switch stuck (magnet weak) | Reed in *normally-open-with-magnet* config so a failed reed reads as open → failsafe alarm |
+| Break-away link corrodes loose | Link is crimp + solder, seated inside the buckle channel; monthly telemetry self-test records loop R — re-crimp on drift |
 
 ## Test Checklist
 

@@ -42,10 +42,10 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 ### Power-critical implementation notes
 
 1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1278 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
-2. **Motion-gated GPS, motion never wakes the radio:** motion interrupts only increment the activity counter (the collar does *not* run a GPS/TX cycle on motion — that would blow the power budget; see [POWER.md](POWER.md)). At the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS — resend last position with `moved=false`. Saves up to 80% of energy.
+2. **Motion-gated GPS, motion never wakes the radio:** the motion flag is polled each wake and only increments the activity counter (the collar does *not* run a GPS/TX cycle on motion — that would blow the power budget; see [POWER.md](POWER.md)). At the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS — resend last position with `moved=false`. Saves up to 80% of energy.
 3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (also prevents electrolytic corrosion of the rope).
 4. **Ephemeris warm start:** with RTC RAM retained across deep sleep, warm fixes take 5–15 s instead of 30–60 s — the single biggest energy lever after duty cycling.
-5. **Latched alarms:** a *confirmed* tamper event (`LOOP_OPEN` / `LOOP_BUCKLE` / `LOOP_SHORT` — steady out-of-window reading, debounced) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.) A *brief* out-of-band glitch that re-closes within the debounce window latches `LOOP_SUSPECT` instead — a telemetry warning, never a siren trigger (strap-flex false-alarm guard; see [TAMPER.md](TAMPER.md)). Alarm bands are **relative to the collar's recorded baseline R₀** (R₀ ± 30% OK · R₀ + 220 Ω buckle · < 40 Ω short · > 2 kΩ open) — set at commissioning, stored in NVS.
+5. **Latched alarms:** a *confirmed* tamper event (`LOOP_OPEN` / `LOOP_SHORT` — steady out-of-window reading, debounced) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.) A *brief* out-of-band glitch that re-closes within the debounce window latches `LOOP_SUSPECT` instead — a telemetry warning, never a siren trigger (strap-flex false-alarm guard; see [TAMPER.md](TAMPER.md)). Alarm bands are **relative to the collar's recorded baseline R₀** (R₀ ± 30% OK · < 40 Ω short · > 2 kΩ open — unbuckling separates the buckle's break-away link and reads as OPEN) — set at commissioning, stored in NVS.
 
 ### Libraries
 
@@ -53,7 +53,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 |---|---|
 | `RadioLib` | SX127x LoRa — `SX1278` class for the 433 MHz variant (better power control than LoRa.h) |
 | `TinyGPSPlus` | NEO-M8N NMEA parsing |
-| `Adafruit_MPU6050` | Accelerometer + motion-detect interrupt (MOT_THR / MOT_DUR, accel-only cycle mode — ISR counts activity only, never a radio wake) |
+| `Adafruit_MPU6050` | Accelerometer, accel-only cycle mode — motion flag **polled each wake cycle** from INT_STATUS (latched since last read); no INT wire |
 | `AXP2101` (LilyGO / x-lqi) | PMU rail management on T-Beam v2.x |
 | `ArduinoJson` | Packet serialization + app/base config messages |
 
@@ -78,7 +78,7 @@ Byte  Field        Meaning
 1     COLLAR_ID    uint8 (stable per collar)
 2     FLAGS        bit0 GEOFENCE_OUT (on-collar pre-check)
                     bit1 TAMPER (latched)
-                    bit2 TAMPER_BUCKLE (buckle-open subtype)
+                    bit2 TAMPER_BUCKLE (unbuckled — break-away link separated, reads as OPEN)
                     bit3 TAMPER_SHORT (bypass subtype)
                     bit4 NO_MOVE_24H
                     bit5 LOW_BATT
@@ -124,7 +124,7 @@ last2  CRC16        CCITT-FALSE over bytes 0..end-2
 | `GEOFENCE` | chunked polygon: `chunk_idx (1 B) · chunk_cnt (1 B) · poly_crc16 (2 B) · ≤ 196 B of (lat i32, lon i32) vertex pairs` | Buffer chunks; verify `poly_crc16` + vertex count ≤ 16 **before** swapping the active polygon. Staged commit: a corrupt or partial push never leaves the collar without a fence — the old polygon is kept on any failure |
 | `INTERVAL` | `report_interval_s` (uint16) | Applies immediately; saved to NVS |
 | `ACK` | `uplink_seq` (uint8) | Stops the emergency 1-min repeat ladder for that SEQ |
-| `CLEAR_LATCH` | empty | Clears a latched tamper flag **only if service mode was entered within the last 10 min** (hall sensor); otherwise ignored and logged |
+| `CLEAR_LATCH` | empty | Clears a latched tamper flag **only if maintenance mode was entered within the last 10 min** (app BLE command); otherwise ignored and logged |
 | `SYNC` | `unix_time (4 B) · next_sync_s (2 B)` | Daily broadcast; collars align wake windows |
 
 **RX windows (when the collar listens):**

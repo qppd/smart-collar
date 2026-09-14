@@ -18,7 +18,7 @@ Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1278-class LoRa, 433 
 | GPS fix acquisition | ESP32 active + GPS | ~90 mA | 30–60 s (TTFF from cold; warm fix ~5–15 s) |
 | LoRa TX (1 packet, SF7–SF9) | ESP32 active + radio | ~120 mA | 0.1–0.3 s |
 | Accelerometer watch (movement rule) | MPU6050 in accel-only cycle mode | ~10–70 µA | continuous while sleeping |
-| Deep sleep between cycles | AXP2101 + RTC (wake: RTC timer · MPU6050 motion INT — counts activity, straight back to sleep) | ~0.5–2 mA* | rest of interval |
+| Deep sleep between cycles | AXP2101 + RTC (wake: RTC timer only — motion is polled each wake, no INT) | ~0.5–2 mA* | rest of interval |
 
 \* T-Beam deep sleep is famously **not** sub-100 µA unless PMU rails are turned off carefully — budget 1.5 mA average and measure the real figure early (see test below).
 
@@ -43,7 +43,7 @@ Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + RX window 3 s × 9
 
 The accelerometer must run *while the collar sleeps* — use the **MPU6050 motion-detect interrupt**: accel-only cycle mode (register PWR_MGMT_1 = accel on, gyro + temp off; LP_WAKE_CTRL rate 5 Hz) detects activity at ~10–70 µA and wakes the ESP32 only on movement (MOT_THR / MOT_DUR configured for head-shake / grazing-scale motion, not vibration noise).
 
-**Critical power rule:** a motion interrupt increments the activity counter and goes straight back to sleep — it **never** triggers a full GPS/TX cycle (an actively grazing carabao would trigger dozens per hour and destroy the budget). Full cycles run on the RTC timer only. The collar keeps a rolling activity counter; if the counter hasn't incremented in 24 h, the next scheduled LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm.
+**Critical power rule:** motion is **polled, never an interrupt** — each 10-min wake reads the MPU6050's latched motion flag (INT_STATUS), increments the activity counter if set, and goes straight back to sleep. Motion **never** triggers a full GPS/TX cycle (an actively grazing carabao would destroy the budget). Full cycles run on the RTC timer only. If the counter hasn't incremented in 24 h, the next scheduled LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm.
 
 **GY-521 module caution (sleeper current):** the common purple GY-521 breakout has a power LED (~1–2 mA) and an LDO (~1 mA quiescent) that never sleep — 2–3 mA that would dominate the whole sleep budget. Fix at assembly: **strip the power LED** and **bypass the LDO** (feed 3V3 straight to VCC), or budget for it. Bare-die MPU6050 on a custom board avoids this entirely. Verify with the µA meter — same rule as the T-Beam rails.
 

@@ -12,9 +12,7 @@
 | 18650 Li-ion cell | 3,500 mAh — unprotected high-drain acceptable: the AXP2101 PMU provides OV/OC cut-off and cells are charged only in the smart charger, off-animal (see [POWER.md](POWER.md)) | 1 (+1 spare) | Collar power | 250–400 |
 | Flexible whip antenna | 433 or 915 MHz, SMA/u.FL, flexible | 1 | LoRa uplink | 100–250 |
 | GPS antenna | Passive patch, 25×25 mm, u.FL (usually bundled with T-Beam) | 1 | GPS reception | 0–150 |
-| Accelerometer | MPU6050 (GY-521 module, I²C) | 1 | Movement activity / no-movement rule | 60–150 |
-| Reed switch | Normally-open, glass | 1 | Buckle-open detection | 20–50 |
-| Service-mode sensor | Glass NO reed, same part as the buckle reed (passive, 0 µA in sleep — ideal) · or TI **DRV5032DU** if you want an active hall (1.65–5.5 V, 1.8 µA, open-drain) | 1 | 10 s magnet hold → maintenance window (GPIO13). **Avoid A3144/KY-003/A1104:** 3.8 V min supply and 4–25 mA draw — wrecks the sleep budget | 20–60 |
+| Accelerometer | MPU6050 (GY-521 module, I²C) | 1 | Movement activity / no-movement rule (motion flag polled each wake) | 60–150 |
 | Stainless steel wire rope | ~1 mm, 7×7 strand, ~1.5 m | 1 | Tamper loop through the strap | 100–200 |
 | Collar strap | 38–50 mm nylon/polyester webbing, breaking strength ≥ 500 kgf | 1 | The collar itself (adjustable) | 150–300 |
 | Heavy-duty buckle | Metal side-release or roller buckle, strap-matched | 1 | Adjustment mechanism (tamper-instrumented) | 80–200 |
@@ -24,7 +22,7 @@
 | Conformal coating (optional) | Acrylic PCB lacquer spray | 1 | PCB protection vs internal condensation | 150–300 |
 | Rubber grommets / dampeners | M3–M4 | 4 | Vibration isolation, strap slots | 50 |
 
-**Collar subtotal: ~₱2,800–5,250** (typical build lands near **~₱3,500–4,000**)
+**Collar subtotal: ~₱2,780–5,200** (typical build lands near **~₱3,450–3,950**)
 
 ### Collar — sourced order list (Lazada PH, verified 2026-09-13)
 
@@ -34,7 +32,6 @@
 | 2 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 399 | 4.8/5 (180) | 556 | Power World (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) |
 | 3 | FLAG — 433 MHz 5 dBi rubber whip + IPX→SMA pigtail | 1 | 83 | unrated¹ | — | KISSCATI (100%) | [buy](https://www.lazada.com.ph/products/pdp-i15608193046.html) |
 | 4 | MPU6050 GY-521 module (I²C) | 1 | 185 | 5.0/5 (17) | 86 | diymore (97%, 6-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) |
-| 5 | Reed switch NO glass 2×14 mm (10-pc pack — covers buckle + service sensors) | 1 pack | 89 | 4.8/5 (20) | 99 | FU-LABS (98%) | [buy](https://www.lazada.com.ph/products/pdp-i5076514004.html) · [alt](https://www.lazada.com.ph/products/pdp-i4028587467.html) |
 | 6 | 304 SS wire rope 1 mm × 10 m | 1 | 125 | 4.9/5 (14) | 67 | Mago-Toyu (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2903511446.html) |
 | 7 | Nylon webbing 38 mm × 5 m (black) | 1 | 95 | 5.0/5 (27) | 149 | P S I Online Store (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2676755461.html) · [alt](https://www.lazada.com.ph/products/pdp-i1139904263.html) |
 | 8 | Metal side-release buckle 38 mm | 1 | 133 | 5.0/5 (22) | 69 | MEETEE (96%) | [buy](https://www.lazada.com.ph/products/pdp-i4636183104.html) · [alt YKK-plastic](https://www.lazada.com.ph/products/pdp-i3042222312.html) |
@@ -44,7 +41,7 @@
 | 12 | Rubber grommet assortment (70-pc kit) | 1 kit | 232 | 4.9/5 (33) | 138 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i5316174145.html) |
 | 13 | Conformal coating, brush-on insulating varnish (optional)⁴ | 1 | 296 | 4.7/5 (15) | 57 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i15444551779.html) |
 
-**Sourced collar total: ~₱6,638** (Supreme path, incl. grommet kit, excl. optional conformal coating) · **~₱4,150** if the classic T-Beam comes from AliExpress instead (see flag) · GPS patch antenna: bundled with the board — confirm in cart.
+**Sourced collar total: ~₱6,549** (Supreme path, incl. grommet kit, excl. optional conformal coating) · **~₱4,060** if the classic T-Beam comes from AliExpress instead (see flag) · GPS patch antenna: bundled with the board — confirm in cart.
 
 > **Design flag — T-Beam generation.** The classic **T-Beam v2.x (ESP32-WROOM + SX1278) is not currently listed on Lazada PH** — the only 433 MHz-capable T-Beam available locally is the **T-Beam Supreme (ESP32-S3 + SX1262)**, and an unrated V1.2. Two paths:
 > **(a) Design-fidelity (recommended):** order the classic **T-Beam v2.x SX1278 (433 MHz)** from the LilyGO official store on AliExpress (~₱1,800–2,800 landed) — keeps every pin map in [HARDWARE.md](HARDWARE.md) (GPIO36/25/13/39, AXP2101) valid as written.
@@ -53,7 +50,7 @@
 > ¹ Criteria exception: listing has no product rating yet — accepted on seller-level quality (established stores, high seller ratings, thousands sold by store).
 > ² Exact-fit 100×100×70 mm (₱80) is out of stock — bump to 150×150×70; a 150×150 box is chunky on the strap, so also consider re-checking stock or 3D-printing ASA per [ENCLOSURE.md](ENCLOSURE.md).
 > ³ **Select the PG7 variant on the PDP** — page defaults to PG21 (₱440). Card price ₱120 is the PG7 10-pack.
-> Variant picks at checkout: LiitoKala **2-pcs** variant (page defaults to 6-pcs ₱999) · wire rope **1 mm × 10 m** (card shows 100 m price) · buckle **38 mm** · reed pack **2×14 mm (10 pcs)** · whip is **RP-SMA plug** — verify it mates the board's SMA port before checkout (pigtail included is IPX→SMA).
+> Variant picks at checkout: LiitoKala **2-pcs** variant (page defaults to 6-pcs ₱999) · wire rope **1 mm × 10 m** (card shows 100 m price) · buckle **38 mm** · whip is **RP-SMA plug** — verify it mates the board's SMA port before checkout (pigtail included is IPX→SMA).
 > ⁴ Brush-on liquid, not aerosol — actually better for spot-coating connector rows. Note: the LiitoKala cells are a 10 A high-drain (unprotected) class; protected-cell listings didn't qualify. This is now consistent policy (see [POWER.md](POWER.md)): the AXP2101 PMU provides the over-voltage/over-current cut-off an unprotected pack needs, and all main charging happens off-animal in the smart charger (Tools section) — never unattended, rotate cells indoors.
 
 ## Base Station (one per farm)
@@ -97,14 +94,14 @@ Per-block roll-up (sourced prices, 2026-09-13):
 
 | Block | Cost (₱) |
 |---|---:|
-| Collar — classic T-Beam path (AliExpress board), each | ~4,150–4,650 |
-| Collar — local Supreme path, each | ~6,638 |
+| Collar — classic T-Beam path (AliExpress board), each | ~4,060–4,560 |
+| Collar — local Supreme path, each | ~6,549 |
 | Base station (12 V PSU + 5 A buck — no RTC hardware) | ~1,720 |
 | Mast & mounting hardware | ~200–500 |
 | Tools & consumables (incl. LiitoKala Lii-500 smart charger) | ~1,050–1,250 |
-| **Initial build — 3 collars + 1 base station (classic path)** | **~14,170–15,670** |
-| Initial build — 3 collars (Supreme path) + 1 base | ~21,630 |
-| Each additional collar beyond the initial 3 | +4,150–4,650 (classic) / +6,638 (Supreme) |
+| **Initial build — 3 collars + 1 base station (classic path)** | **~13,900–15,400** |
+| Initial build — 3 collars (Supreme path) + 1 base | ~21,370 |
+| Each additional collar beyond the initial 3 | +4,060–4,560 (classic) / +6,549 (Supreme) |
 | Phase-2 solar per collar (optional) | +407–500 + DIY lid |
 
 - **Initial build is 3 collars + 1 base station** — the smallest setup that demonstrates herd monitoring (multi-collar dedupe/jitter, app multi-marker map) while one collar can rotate through charging. Field trial in [TESTING.md](TESTING.md) runs on these three.
@@ -151,5 +148,5 @@ Per-block roll-up (sourced prices, 2026-09-13):
 4. **Store clustering saves shipping:** Makerlab PH covers ESP32 + Ra-02 (the two priciest base-station electronics); ZJW_MALL/Allan cover both enclosures; Circuitrocks can additionally cover the buck converter and CN3065 solar charger in one store. Budget ~₱40 shipping per store (~₱400 across all stores at current mix).
 5. **The app needs no extra hardware** — it runs on the farmer's own Android phone/laptop; MapLibre + OpenStreetMap data are downloaded once over any available WiFi during provisioning (₱0, see [APP.md](APP.md)).
 6. **Suxun T7000 notes:** allow **24–48 h full cure** before any immersion/wallow test (tack-dry ≠ sealed). It is the joint sealant, **not structural** — strap, buckle, and enclosure attachments stay mechanical (bolts/slots/crimp), never glue-loaded. Buy from phone-repair suppliers (T7000 is phone-screen glue) to avoid refilled tubes.
-7. **Variant-selection checklist at checkout:** LiitoKala 2-pcs · ESP32 38-pin · PSU **S-60-12 (12 V 5 A)** · Circuitrocks **36V→5V 5A** buck (replaces the LM2596) · ZJW 150×150×70 · Allan 150×150×70 · glands **PG7** (not PG21) · wire rope 1 mm × 10 m · buckle 38 mm · reed 2×14 mm (10 pcs) · siren single · solar panel 1-pc SKU × qty 2–3.
+7. **Variant-selection checklist at checkout:** LiitoKala 2-pcs · ESP32 38-pin · PSU **S-60-12 (12 V 5 A)** · Circuitrocks **36V→5V 5A** buck (replaces the LM2596) · ZJW 150×150×70 · Allan 150×150×70 · glands **PG7** (not PG21) · wire rope 1 mm × 10 m · buckle 38 mm · siren single · solar panel 1-pc SKU × qty 2–3.
 8. All listings above were **in-stock and web-priced on 2026-09-13**; Lazada listings rot — each row keeps the seller + price so replacements are easy to find if a link 404s.

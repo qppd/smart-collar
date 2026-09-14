@@ -13,7 +13,7 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 | B3 | Sleep current | µA meter in-line, full sleep build | < 2 mA (target < 500 µA) — see [POWER.md](POWER.md) |
 | B4 | Tamper cut | Bench loop, cut at 5 positions | Every cut → LOOP_OPEN alarm |
 | B5 | Tamper bypass | Jumper across loop terminals | LOOP_SHORT alarm |
-| B6 | Buckle detection | Unbuckle w/o service mode | BUCKLE alarm; with service mode: logged, no alarm |
+| B6 | Buckle detection | Unbuckle w/o maintenance mode | OPEN alarm (break-away link separates); with maintenance mode: logged, no alarm |
 | B7 | Battery gauge | AXP2101 % vs discharge curve | ±10% of actual |
 | B8 | 48 h soak run | Full system, 10-min interval, bench range | 0 missed packets; battery drop matches POWER.md model |
 | B9 | Base clock sync | Pair phone (app sends TIME_SET), reboot base, reconnect | Clock re-syncs on connect; `unsynced` flag while phone away; history timestamps continuous after reconnect |
@@ -48,7 +48,7 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 | S1 | Geofence breach | Walk collar across fence line | Siren ≤ 2 packets after crossing; correct pattern; ACK stops it |
 | S2 | GPS jitter false alarm | Stationary collar near fence edge, 24 h | **No** geofence alarm (hysteresis works) |
 | S3 | Collar cut on animal | Cut loop on worn collar (staged) | Tamper siren + subtype CUT; app shows last position |
-| S4 | Buckle opened | Unbuckle w/o service mode | BUCKLE alarm |
+| S4 | Buckle opened | Unbuckle w/o maintenance mode | OPEN alarm (link separates) |
 | S5 | No-movement | Collar stationary on bench 24 h+ (accelerometer sees zero) | NO_MOVE alarm at 24 h mark |
 | S6 | Low battery | Drain to < 20% | App alert, no siren |
 | S7 | Collar silence | Power off collar mid-test | RX-watchdog alert after 3× interval |
@@ -56,6 +56,7 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 | S9 | Brownout recovery | Cut base power 10 s during alarm | Base reboots; alarm state re-evaluated; history intact |
 | S10 | Replay attack | Inject duplicate/old packets at base | Deduped; no duplicate alarms |
 | S11 | Maintenance toggle | Toggle ON → unbuckle bench collar; trigger again with toggle OFF; let one toggle auto-expire | ON: no siren, event logged `suppressed`; OFF: next event alarms normally; expiry re-enables alarms and is logged |
+| S12 | CLEAR_LATCH guard | Send CLEAR_LATCH outside a maintenance window | Ignored and logged — no latch cleared |
 
 ## 5. Field Trial (final)
 

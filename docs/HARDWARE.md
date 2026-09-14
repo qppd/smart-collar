@@ -14,8 +14,6 @@ Covers the smart collar's electronics (T-Beam + tamper loop + accelerometer), wi
 | Tamper loop drive | GPIO25 (RTC-capable, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks). **Not GPIO4** — GPIO4 is the onboard status LED; driving it LOW to idle the loop keeps the LED lit (~2 mA) and wrecks the sleep budget |
 | Accelerometer SDA | GPIO21 (I²C SDA) | MPU6050 (GY-521) at addr 0x68 (AD0 low) |
 | Accelerometer SCL | GPIO22 (I²C SCL) | Shared bus: AXP2101 (0x34) + MPU6050 (0x68) + optional OLED (0x3C) — no address clash |
-| Accelerometer INT | GPIO39 (input-only, RTC) | Motion-detect interrupt (activity counting only — never a full GPS/TX cycle) — free on T-Beam, deep-sleep wake-capable |
-| Service-mode hall sensor | GPIO13 (RTC, wake-capable) | Hold service magnet here 10 s → maintenance window. **Not GPIO34** — GPIO34 is the GPS NMEA input on every T-Beam; a hall output there fights the GPS line and kills fixes |
 | LED status | Onboard LED, GPIO4 (active-low) | Fix quality + alarm indication — T-Beam v2.x has no NeoPixel; single red LED behind 1 kΩ on GPIO4 |
 
 > **Version warning:** T-Beam **v1.x uses AXP192**, **v2.x uses AXP2101** — power-control code differs. Confirm your board version (silk print or serial boot log) before flashing, and set the matching PMU profile in firmware config.
@@ -27,7 +25,7 @@ Why these pins — every GPIO below is already committed on-board:
 
 | GPIO | Onboard role (T-Beam v2.x) | Verdict |
 |---|---|---|
-| 34 | GPS NMEA input (input-only) | taken — hall sensor moved off it |
+| 34 | GPS NMEA input (input-only) | taken (GPS) |
 | 12 | GPS command output (u-blox config) | taken |
 | 4 | Status LED (red, active-low, via 1 kΩ) | keep as LED status; loop drive moved off it |
 | 35 | AXP2101 PMU IRQ (input-only) | taken |
@@ -36,10 +34,10 @@ Why these pins — every GPIO below is already committed on-board:
 | 21/22 | I²C bus — AXP2101 (0x34) + MPU6050 (0x68) | shared bus, addresses coexist |
 | 16/17 | PSRAM (8 MB) | taken — do not touch |
 | 0/2/12/15 | boot straps (boot mode / must be low at boot / MTDI / debug-UART at boot) | avoid |
-| 13/14/25 | free, strap-free, exposed on the header | **13 → hall · 25 → loop drive** (14 spare) |
-| 36/39 | free, input-only, RTC-domain | **36 → loop ADC · 39 → MPU6050 INT** |
+| 13/14/25 | free, strap-free, exposed on the header | **25 → loop drive** (13/14 spare) |
+| 36/39 | free, input-only, RTC-domain | **36 → loop ADC** (39 spare — no accel INT; motion is polled) |
 
-Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function, so the hall sensor and loop drive cannot disturb flashing or boot. GPIO12 doubles as the MTDI flash-voltage strap — never repurpose it. GPIO37 is the GPS I²C (DDC) line — leave unused.
+Boot-safety of the chosen pins: GPIO25 carries no strap function, so the loop drive cannot disturb flashing or boot. GPIO12 doubles as the MTDI flash-voltage strap — never repurpose it. GPIO37 is the GPS I²C (DDC) line — leave unused.
 
 > **Radio variant check:** T-Beam v2.x ships as **SX1278 (433 MHz)**, **SX1276 (868/915 MHz)** or **SX1262 (dual-band)**. For the 433 MHz plan buy the **SX1278** variant. On an SX1262 board the SPI pins are identical but init differs (BUSY = GPIO32, IRQ = GPIO33, RadioLib `SX1262` class).
 
@@ -52,9 +50,7 @@ Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function
 | 2 | Loop far-end | GND via 100 Ω series (at far end) | via loop | Sets the "signature" resistance — the commissioning step records R₀ and firmware bands are relative to it (see [TAMPER.md](TAMPER.md)) |
 | 3 | Tamper wire rope end A | Sense node | crimp lug | at enclosure gland A |
 | 4 | Tamper wire rope end B | GND rail | crimp lug | at enclosure gland B |
-| 5 | Reed switch (buckle) | In series into loop, with 220 Ω shunt across it | enameled wire | Distinguishes "buckle open" from "strap cut" by resistance step |
-| 6 | MPU6050 (GY-521) VCC/GND/SDA/SCL/INT | 3V3/GND/21/22/39 | 6-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md) |
-| 7 | Service sensor (reed, or DRV5032DU hall) | GPIO13 with 10 kΩ pull-up to 3V3, other end to GND (passive reed is 2-wire — no power pin, unlike the DRV5032) | — | Inside enclosure wall. Idle HIGH, magnet → LOW (reed closes). 0 µA sleep draw for a reed; 1.8 µA for DRV5032. RTC pin — deep-sleep wake on magnet hold |
+| 5 | MPU6050 (GY-521) VCC/GND/SDA/SCL | 3V3/GND/21/22 | 4-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md). Motion flag **polled each wake** — no INT wire |
 
 ### Tamper loop electrical summary
 
@@ -63,12 +59,12 @@ Boot-safety of the chosen pins: GPIO13 (MTCK) and GPIO25 carry no strap function
 ```mermaid
 flowchart LR
     G25["GPIO25 drive<br/>(excites only during measurement)"] -- "10 kΩ bias" --> NODE["sense node"]
-    NODE -- "wire rope + buckle reed<br/>+ far-end 100 Ω" --> GND["GND"]
+    NODE -- "wire rope + break-away link<br/>+ far-end 100 Ω" --> GND["GND"]
     NODE --> ADC["GPIO36 ADC<br/>band check vs R₀ ± 30%"]
 ```
 
 - Read ADC with loop excited (GPIO25 high), average 8 samples, debounce 100 ms.
-- Classification, **relative to the collar's recorded baseline R₀** (the measured intact resistance — set at commissioning, stored in NVS; see [TAMPER.md](TAMPER.md)): **< 40 Ω → SHORT (bypass)** · **R₀ ± 30% → OK** · **≈ R₀ + 220 Ω → BUCKLE opened** (the reed shunt is now in series — a distinct upper band, so firmware labels the alarm `BUCKLE` vs `CUT`) · **> 2 kΩ → OPEN (cut / buckle removed)** · anything between bands → `LOOP_SUSPECT` (latch + re-check; telemetry warning, not a siren trigger).
+- Classification, **relative to the collar's recorded baseline R₀** (the measured intact resistance — set at commissioning, stored in NVS; see [TAMPER.md](TAMPER.md)): **< 40 Ω → SHORT (bypass)** · **R₀ ± 30% → OK** · **> 2 kΩ → OPEN (cut / unbuckled — the break-away link separates)** · anything between bands → `LOOP_SUSPECT` (latch + re-check; telemetry warning, not a siren trigger).
 
 ## 2. Assembly Order
 
@@ -76,7 +72,7 @@ flowchart LR
 
 1. Flash firmware skeleton (see [FIRMWARE.md](FIRMWARE.md)); verify console, GPS fix outdoors (first fix can take 2–5 min cold — stand in the open, not indoors).
 2. Verify LoRa TX to a second LoRa node (base-station bench rig): packets arrive, RSSI reasonable (−30 to −60 dBm across the room is normal).
-3. Wire the accelerometer; run the motion-detect config (ISR counts activity only); confirm sleep current with a USB meter.
+3. Wire the accelerometer (4 wires — VCC/GND/SDA/SCL); run the accel cycle-mode config (motion flag polled each wake); confirm sleep current with a USB meter.
 4. Wire the tamper loop on the bench (alligator clips first); confirm cut/bypass/buckle detection logic before committing anything to the strap.
 
 ### Step 2 — Strap preparation
@@ -84,7 +80,7 @@ flowchart LR
 1. Cut webbing to length (neck circumference + 15 cm adjustment margin; typical carabao neck 90–130 cm → **130–160 cm strap**).
 2. Sew/attach a **fabric channel** along the strap center-line for the wire rope, zig-zag route (allows strap stretch without loading the rope).
 3. Thread the wire rope; crimp lug terminals at both ends; **measure and record** the loop resistance (target 40–200 Ω total incl. far-end 100 Ω — this becomes **R₀**, the baseline the tamper bands are relative to); seal each crimp with a small T7000 dab against corrosion.
-4. Attach buckle per its hardware type; embed the magnet in the tongue; fix the reed + shunt on the strap side; verify the reed toggles when buckling/unbuckling (multimeter).
+4. Attach the buckle and install the **break-away link** (screw-terminal or crimp barrel) so the loop crosses the buckle through it; verify with a multimeter that unbuckling separates the link (loop → open) and buckling restores continuity.
 5. Burn/seal webbing cut ends (hot knife or lighter edge-melt) so they never fray.
 
 ### Step 3 — Enclosure build
@@ -110,7 +106,7 @@ Fit two fingers of slack (no more — a tight strap causes sores; loose = hoof c
 
 - [ ] GPS fix outdoors < 90 s cold (GPS_TIMEOUT; typical 30–60 s) / < 15 s warm
 - [ ] LoRa packet round-trip to base rig at 100 m line-of-sight
-- [ ] Tamper: cut / bypass / buckle all alarm distinctly
+- [ ] Tamper: cut / bypass / unbuckle all alarm (unbuckle reads as OPEN)
 - [ ] Sleep current measured and logged (µA-level reading taken)
 - [ ] Immersion passed twice (dummy + assembled)
 - [ ] Pull test 100 kg on assembled collar — loop resistance unchanged after

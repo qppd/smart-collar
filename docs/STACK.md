@@ -55,7 +55,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | Part | Role |
 |---|---|
 | T-Beam v2.x + 18650 | Collar core — compute, GPS, LoRa, power |
-| Conductive tamper loop + reed switch | Supervised resistance loop on the adjustable strap — bands relative to each collar's recorded baseline R₀ |
+| Conductive tamper loop with buckle break-away link | Supervised resistance loop on the adjustable strap — bands relative to each collar's recorded baseline R₀ |
 | MPU6050 accelerometer | 24-hour no-movement rule + activity counting |
 | IP67 enclosure + glands + sealant | Wallow/submersion-proof housing |
 | Flexible whip antenna | LoRa uplink, bulkhead-mounted |
@@ -71,5 +71,5 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 - **One radio library both ends** — RadioLib on collar and base keeps packet handling identical and debuggable.
 - **PWA instead of native** — one codebase covers "offline mobile/desktop app" with no store, no build chain per platform.
 - **ESP32 everywhere** — collar, base, and app server share one toolchain, one firmware skill set.
-- **Power-first choices** — RadioLib power control, AXP2101 rail shutoff, motion interrupts gated to activity-counting only, 3 s post-TX RX windows, MPU6050 accel-only cycle mode (GY-521 LED/LDO stripped — see POWER.md): every pick was made for the ~2-week battery target.
+- **Power-first choices** — RadioLib power control, AXP2101 rail shutoff, motion flag polled (never an interrupt wake), 3 s post-TX RX windows, MPU6050 accel-only cycle mode (GY-521 LED/LDO stripped — see POWER.md): every pick was made for the ~2-week battery target.
 - **All free & open-source** — software cost ₱0; budget lives in hardware.
