@@ -25,7 +25,7 @@ Phase 1: the built PWA bundle is copied onto the phone **once** during provision
 
 - Range: BLE indoor class ≈ **10–30 m** — walk to the farmhouse/near the base to sync. Designed that way: the siren and the dashboard live at the farmstead.
 - Live data: the base pushes position/alarm updates as BLE notify packets (JSON, compacted to fit MTU chunks).
-- Commands (geofence save, ACK, interval change, maintenance toggle) are BLE writes, applied and confirmed by the base.
+- Commands (geofence save, ACK, interval change, clock sync `TIME_SET`, maintenance toggle) are BLE writes, applied and confirmed by the base.
 
 ## One-Time Provisioning (the only internet the project ever needs)
 
