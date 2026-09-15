@@ -76,6 +76,29 @@ flowchart TB
 - **Tamper baseline (build-time):** the loop's *normal* resistance is whatever the built strap measures (target 40–200 Ω incl. far-end 100 Ω) — record it per collar. The firmware alarm bands are defined **relative to that baseline**, not fixed numbers (see [TAMPER.md](TAMPER.md)).
 - **Torque/pull test:** hang 100 kg from assembled collar for 10 min — no deformation, no seal breach, loop resistance unchanged.
 
+## Component Dimensions & Fit Check (measured)
+
+All board sizes measured from LilyGO's official CAD exports (`dimensions/` folder of the LilyGo-LoRa-Series repo) — not vendor marketing copy. The "T-Beam with builtin battery" means the board + 18650 cell in the on-board holder.
+
+| Part | Footprint (mm) | Stack height (mm) | Source |
+|---|---|---|---|
+| **T-Beam v2.x (classic, SX1278)** — PCB | **104.1 × 38.4** | 1.6 (board) + ~2.5 top-side components | official STEP `T-Beam-V1X-PCB.stp` (same footprint as v2.x) |
+| — with 18650 in on-board holder | 104.1 × 38.4 | **~20 total** — holder + cell extend 17.7 below the PCB (cell Ø18.2 × 65) | STEP, z < −1.6 extents |
+| — board SMAs (one short edge) | at edge only | 13.6 above PCB — unused (antennas re-route via u.FL to enclosure bulkheads); keep that edge clear or remove the SMAs | STEP |
+| T-Beam Supreme (alt path) | PCB 95.3 × 32.9 (100.1 incl. SMA tab) | LilyGO's own shell: 43.2 × 109.2 × 34.3 external (battery incl.) | DXF `T-BEAM-SUPREME-V3.0` + shell STL |
+| 18650 cell (LiitoKala 3500) | Ø18.2–18.5 × 65.1 | — (sits in on-board holder) | cell spec |
+| MPU6050 (GY-521 module) | **20.5 × 15.5** | ~4 incl. header pins | standard GY-521 |
+| CN3065 solar charger (sourced) | **~40 × 20** | ~8 incl. PH2.0 + micro-USB (listing publishes no dims — verify on arrival) | Circuitrocks listing |
+| GPS patch antenna | 25 × 25 | ~4 ceramic + u.FL pigtail | bundled with board |
+| **Sourced enclosure (ALLAN/ZJW)** | **150 × 150 × 70 external** | **internal ≈ 140 × 140 × 58–60** (walls ~3–5 + lid lip — verify on arrival) | listing variants |
+
+**Fit check vs the sourced 150×150×70 box (internal ≈ 140×140×60):**
+
+- **Floor:** the T-Beam (38.4 wide × 104.1 long) along one wall leaves a **~102 × 140 mm free strip** beside it — GY-521 (20.5×15.5), CN3065 (40×20), tamper terminal block and desiccant all fit on that strip with room to spare; >40% of the floor stays free for Phase-2 solar wiring.
+- **Height:** standoffs ~5 + battery stack 17.7 + PCB 1.6 + top components ~2.5 ≈ **27 mm**; lid hardware (GPS patch ~4 + u.FL + SMA bulkhead nut) consumes ~8 mm → **~35 mm of ~60 mm used, ~25 mm spare.**
+- **The 150×150 size is required, not just a stock workaround:** the T-Beam PCB is **104.1 mm long** — a "100×100×70" box has only ~90–92 mm internal, so the board does **not** fit lying flat (diagonal mount would be hacky with the 17.7 mm battery stack). See the corrected note in [BOM.md](BOM.md).
+- Weight note: re-weigh the assembled collar against the < 600 g target — the 150×150×70 ABS box alone is ~200–300 g.
+
 ## Solar-Ready Design (Phase 2 prep)
 
 The farm recommends solar collars (sample video in `references/`). Phase 1 must not paint us into a corner:
