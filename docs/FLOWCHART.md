@@ -14,7 +14,7 @@ flowchart TB
     SLEEP -- "every 10 min (RTC timer)" --> WAKE["Wake · poll MPU6050 motion flag<br/>(latched INT_STATUS since last wake)"]
     WAKE -- "flag set" --> COUNT["activity counter++"]
     COUNT --> TAMPER
-    WAKE -->    TAMPER["Measure tamper loop<br/>GPIO25 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>band check vs R₀ ± 30%?"]
+    WAKE --> TAMPER["Measure tamper loop<br/>GPIO25 excite → GPIO36 ADC<br/>8-sample avg · 100 ms debounce<br/>band check vs R₀ ± 30%?"]
     TAMPER --> GFIX{"GPS fix<br/>≤ 90 s?<br/>(warm-start RTC RAM)"}
     GFIX -- "no fix" --> STALE["reuse last position<br/>flag STALE"]
     GFIX -- "fix" --> POS["fresh position"]

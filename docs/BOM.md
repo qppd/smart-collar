@@ -33,14 +33,14 @@
 | 2 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 399 | 4.8/5 (180) | 556 | Power World (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) |
 | 3 | FLAG — 915 MHz 5 dBi rubber whip + IPX→SMA pigtail | 1 | 83 | unrated¹ | — | KISSCATI (100%) | [buy](https://www.lazada.com.ph/products/pdp-i15608193046.html) |
 | 4 | MPU6050 GY-521 module (I²C) | 1 | 185 | 5.0/5 (17) | 86 | diymore (97%, 6-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) |
-| 6 | 304 SS wire rope 1 mm × 10 m | 1 | 125 | 4.9/5 (14) | 67 | Mago-Toyu (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2903511446.html) |
-| 7 | Nylon webbing 38 mm × 5 m (black) | 1 | 95 | 5.0/5 (27) | 149 | P S I Online Store (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2676755461.html) · [alt](https://www.lazada.com.ph/products/pdp-i1139904263.html) |
-| 8 | Metal side-release buckle 38 mm | 1 | 133 | 5.0/5 (22) | 69 | MEETEE (96%) | [buy](https://www.lazada.com.ph/products/pdp-i4636183104.html) · [alt YKK-plastic](https://www.lazada.com.ph/products/pdp-i3042222312.html) |
-| 9 | IP67 ABS enclosure 150×150×70 mm² | 1 | 110 | 4.9/5 (305) | 3.8K | Allan Headset (97%) | [buy](https://www.lazada.com.ph/products/pdp-i2890742842.html) |
-| 10 | IP68 nylon cable glands PG7 (10-pc pack)³ | 1 pack | ~120 | 4.9/5 (407) | 1.9K | Solar Bright (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2686431923.html) · [alt kit](https://www.lazada.com.ph/products/pdp-i15409284123.html) |
-| 11 | T7000 black adhesive 50 ml | 1 | 85 | 5.0/5 (68) | 203 | MYDirect (97%) | [buy](https://www.lazada.com.ph/products/pdp-i3516299335.html) |
-| 12 | Rubber grommet assortment (70-pc kit) | 1 kit | 232 | 4.9/5 (33) | 138 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i5316174145.html) |
-| 13 | Conformal coating, brush-on insulating varnish (optional)⁴ | 1 | 296 | 4.7/5 (15) | 57 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i15444551779.html) |
+| 5 | 304 SS wire rope 1 mm × 10 m | 1 | 125 | 4.9/5 (14) | 67 | Mago-Toyu (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2903511446.html) |
+| 6 | Nylon webbing 38 mm × 5 m (black) | 1 | 95 | 5.0/5 (27) | 149 | P S I Online Store (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2676755461.html) · [alt](https://www.lazada.com.ph/products/pdp-i1139904263.html) |
+| 7 | Metal side-release buckle 38 mm | 1 | 133 | 5.0/5 (22) | 69 | MEETEE (96%) | [buy](https://www.lazada.com.ph/products/pdp-i4636183104.html) · [alt YKK-plastic](https://www.lazada.com.ph/products/pdp-i3042222312.html) |
+| 8 | IP67 ABS enclosure 150×150×70 mm² | 1 | 110 | 4.9/5 (305) | 3.8K | Allan Headset (97%) | [buy](https://www.lazada.com.ph/products/pdp-i2890742842.html) |
+| 9 | IP68 nylon cable glands PG7 (10-pc pack)³ | 1 pack | ~120 | 4.9/5 (407) | 1.9K | Solar Bright (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2686431923.html) · [alt kit](https://www.lazada.com.ph/products/pdp-i15409284123.html) |
+| 10 | T7000 black adhesive 50 ml | 1 | 85 | 5.0/5 (68) | 203 | MYDirect (97%) | [buy](https://www.lazada.com.ph/products/pdp-i3516299335.html) |
+| 11 | Rubber grommet assortment (70-pc kit) | 1 kit | 232 | 4.9/5 (33) | 138 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i5316174145.html) |
+| 12 | Conformal coating, brush-on insulating varnish (optional)⁴ | 1 | 296 | 4.7/5 (15) | 57 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i15444551779.html) |
 
 **Sourced collar total: ~₱6,549** (Supreme path, incl. grommet kit, excl. optional conformal coating) · **~₱4,060** if the classic T-Beam comes from AliExpress instead (see flag) · GPS patch antenna: bundled with the board — confirm in cart.
 
@@ -139,6 +139,7 @@ Per-block roll-up (sourced prices, 2026-09-13):
 - crimper / wire set, zip ties, Suxun T7000 (sealant — see collar BOM)
 - USB-serial adapter (if flashing T-Beam without native USB)
 - **Smart 18650 charger — LiitoKala Lii-500** (4-slot, LCD, 0.3–1.0 A, capacity-test mode, ~₱726 — [search](https://www.lazada.com.ph/tag/liitokala-li-500/)): the swap-and-charge rotation in [POWER.md](POWER.md) is built on this
+- Resistor assortment (covers the tamper-loop 10 kΩ bias + 100 Ω far-end pair — see [TAMPER.md](TAMPER.md))
 - Immersion test tub + dummy load for battery endurance logging
 
 ## Ordering Notes

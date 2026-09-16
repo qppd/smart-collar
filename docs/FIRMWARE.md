@@ -19,7 +19,7 @@ flowchart TB
     SLEEP["Deep sleep<br/>accelerometer armed (activity-count only) · tamper ADC on RTC-timer wake"] -- "every REPORT_INTERVAL (default 10 min, RTC timer)" --> WAKE["Wake"]
     WAKE --> LOOPM["Measure tamper loop<br/>GPIO25 excite → ADC → window check"]
     LOOPM --> GPSF["GPS fix attempt<br/>max GPS_TIMEOUT 90 s · warm-start ephemeris in RTC RAM<br/>(no fix → reuse last fix, flag STALE)"]
-    GPSF --> SND["Build + send LoRa packet<br/>retries 3× on no-ACK"]
+    GPSF --> SND["Build + send LoRa packet<br/>(emergency packets retry 3× @ 30 s)"]
     SND --> RXW["RX window 3 s<br/>ACK · interval · geofence chunks"]
     RXW --> LATCH{"Latched alarm?"}
     LATCH -- "yes" --> NOW["send high-priority packet NOW<br/>(not waiting for the next cycle)"]

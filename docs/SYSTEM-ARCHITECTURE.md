@@ -47,13 +47,13 @@ flowchart TB
 | I1 | GPS → collar UART | NMEA (TinyGPSPlus) | fix within 90 s or STALE reuse |
 | I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO25 excite | bands relative to baseline R₀; outside = latched alarm |
 | I3 | MPU6050 → collar I²C | I²C poll each wake (21/22) | latched motion flag → activity counter; never a GPS/TX cycle |
-| I5 | Collar → base (SX1276 → Ra-02 SX1276) | raw LoRa 915 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
-| I6 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
-| I7 | Base ↔ phone | Bluetooth LE GATT (Web Bluetooth): notify + write | live positions/alarms (MTU-chunked JSON); commands: geofence, ACK, interval, MAINT_ON/OFF |
-| I8 | Base ↔ USB device | Web Serial (Chrome) | most-reliable zero-WiFi channel |
-| I9 | Base → siren | GPIO17 → relay IN1 → 12 V | patterned drive per alarm type (GPIO23 reserved for Ra-02 SPI MOSI) |
-| I10 | Phone → base clock sync | BLE `TIME_SET {epoch}` on app connect | wall-clock timestamps; `unsynced` flag after an offline reboot — no alarm rule depends on wall time |
-| I12 | Maintenance toggle → rules engine | BLE `MAINT_ON {min}` / `MAINT_OFF` | gates siren/alarm path only; detected events logged as `suppressed`; auto-expires |
+| I4 | Collar → base (SX1276 → Ra-02 SX1276) | raw LoRa 915 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
+| I5 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
+| I6 | Base ↔ phone | Bluetooth LE GATT (Web Bluetooth): notify + write | live positions/alarms (MTU-chunked JSON); commands: geofence, ACK, interval, MAINT_ON/OFF |
+| I7 | Base ↔ USB device | Web Serial (Chrome) | most-reliable zero-WiFi channel |
+| I8 | Base → siren | GPIO17 → relay IN1 → 12 V | patterned drive per alarm type (GPIO23 reserved for Ra-02 SPI MOSI) |
+| I9 | Phone → base clock sync | BLE `TIME_SET {epoch}` on app connect | wall-clock timestamps; `unsynced` flag after an offline reboot — no alarm rule depends on wall time |
+| I10 | Maintenance toggle → rules engine | BLE `MAINT_ON {min}` / `MAINT_OFF` | gates siren/alarm path only; detected events logged as `suppressed`; auto-expires |
 
 ## 4. Network Topology
 

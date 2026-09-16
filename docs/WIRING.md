@@ -45,11 +45,11 @@ Components: LilyGo T-Beam v2.x, 3× 5 V solar panels, 3× SS14 Schottky diodes, 
 
 ### Tamper loop (as drawn — simplified)
 
-The netlist shows the rope loop wired as: T-Beam header pin → series resistor → rope end A → rope through the full strap → rope end B → GND rail. **This is a simplified stand-in.** The as-built circuit per [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md) is: `GPIO25 → 10 kΩ → sense node`, then rope end A → strap (break-away link at the buckle) → rope end B → **100 Ω far end** → GND. The sense node is tapped by the **GPIO36 ADC**, which reads the voltage divider to detect strap cuts and bypass attempts. In the CirKit diagram, GPIO36 is routed through a **second T-Beam component (T-Beam(1))** placed solely for its GPIO36 pin — this is not a stray duplicate but the intended connection point for the ADC sense line. The single-resistor drawing cannot distinguish a strap bypass from an intact loop the way the two-resistor reference does — build the reference circuit on the strap harness. A diagram cleanup for the next edit: replace the single resistor with the 10 kΩ / 100 Ω pair and add the GPIO25/GPIO36 junction at the sense node. Service mode is a BLE command (no magnet sensor on the collar).
+The netlist shows the rope loop wired as: T-Beam header pin → series resistor → rope end A → rope through the full strap → rope end B → GND rail. **This is a simplified stand-in.** Build the circuit documented in [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md): `GPIO25 → 10 kΩ → sense node`, rope end A → strap (break-away link at the buckle) → rope end B → **100 Ω far end** → GND, with the **GPIO36 ADC** tapping the sense node to read the divider — the single-resistor drawing cannot distinguish a bypass from an intact loop. (In the diagram, GPIO36 is routed through a second T-Beam component placed solely for its GPIO36 pin — intentional, not a stray duplicate. The drawing still needs updating to the two-resistor circuit, so follow this section and TAMPER.md over the diagram for the loop.)
 
 ## 2. Base-station sub-circuit
 
-Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Circuitrocks 36V→5V 5A), ESP32 DevKit 38-pin, 1-ch relay, 12 V siren ("pia horn" in the diagram).
+Components: AC plug, 12 V 5 A switching PSU (S-60-12), 12 V → 5 V buck (Circuitrocks 36V→5V 5A), ESP32 DevKit 38-pin, 1-ch relay, 12 V siren ("pia horn" in the diagram).
 
 | From | To | Purpose |
 |---|---|---|
@@ -73,7 +73,7 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 
 | Ra-02 pin | ESP32 38-pin | Purpose |
 |---|---|---|
-|| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1276 |
+| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1276 |
 | GND | GND | Common ground |
 | SCK | GPIO18 | VSPI SCK |
 | MISO | GPIO19 | VSPI MISO |
@@ -88,7 +88,6 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 
 | Point | Diagram | Reference design | Why it differs / what to do |
 |---|---|---|---|
-|| Base LoRa (Ra-02 SX1276) | Drawn in the diagram (§2) | SPI (VSPI 18/19/23/5) + RST 14 + DIO0 26 | Bench test `B2` before deployment |
 | DS3231 RTC | Not used (decided) | No RTC hardware — phone sets the base clock via BLE `TIME_SET` on connect | Nothing to wire; see [BASE-STATION.md](BASE-STATION.md) |
 | Tamper loop | Drawn simplified — one series resistor, no GPIO25/GPIO36 junction; GPIO36 connected via second T-Beam(1) component | GPIO25 → 10 kΩ → node (GPIO36 taps) → rope → 100 Ω far end → GND | Build the reference circuit from [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md); tidy the diagram on the next edit |
 | Relay board | IN1 driven directly | Opto-isolated boards also have a JD-VCC jumper | Keep jumper closed for 5 V logic drive; see BOM relay note |

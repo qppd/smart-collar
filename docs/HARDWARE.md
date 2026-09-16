@@ -19,9 +19,9 @@ Covers the smart collar's electronics (T-Beam + tamper loop + accelerometer), wi
 > **Version warning:** T-Beam **v1.x uses AXP192**, **v2.x uses AXP2101** — power-control code differs. Confirm your board version (silk print or serial boot log) before flashing, and set the matching PMU profile in firmware config.
 
 
-### T-Beam v2.x onboard pin budget (verified: LilyGO `utilities.h` + Meshtastic `tbeam` variant)
+### T-Beam v2.x onboard pin budget (from LilyGO's `utilities.h` and the Meshtastic `tbeam` variant)
 
-Why these pins — every GPIO below is already committed on-board:
+Every GPIO below is already committed on-board, which is why the free pins matter:
 
 | GPIO | Onboard role (T-Beam v2.x) | Verdict |
 |---|---|---|
@@ -37,7 +37,7 @@ Why these pins — every GPIO below is already committed on-board:
 | 13/14/25 | free, strap-free, exposed on the header | **25 → loop drive** (13/14 spare) |
 | 36/39 | free, input-only, RTC-domain | **36 → loop ADC** (39 spare — no accel INT; motion is polled) |
 
-Boot-safety of the chosen pins: GPIO25 carries no strap function, so the loop drive cannot disturb flashing or boot. GPIO12 doubles as the MTDI flash-voltage strap — never repurpose it. GPIO37 is the GPS I²C (DDC) line — leave unused.
+Both chosen pins are boot-safe: GPIO25 carries no strap function, so the loop drive cannot disturb flashing or boot. Two pins to leave alone: GPIO12 doubles as the MTDI flash-voltage strap (never repurpose it), and GPIO37 is the GPS I²C (DDC) line, unused in this design.
 
 > **Radio variant check:** T-Beam v2.x ships as **SX1276 (915 MHz)**, **SX1262 (dual-band)** or older SX1278 (433 MHz). For the 915 MHz plan buy the **SX1276** variant. On an SX1262 board the SPI pins are identical but init differs (BUSY = GPIO32, IRQ = GPIO33, RadioLib `SX1262` class).
 
