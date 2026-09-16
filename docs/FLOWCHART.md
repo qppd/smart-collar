@@ -10,7 +10,7 @@ One duty cycle, every `REPORT_INTERVAL` (default 10 min) — motion is **polled 
 
 ```mermaid
 flowchart TB
-    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1278 sleep · AXP rails down<br/>wake on RTC timer only · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
+    SLEEP["DEEP SLEEP<br/>GPS rail off · SX1276 sleep · AXP rails down<br/>wake on RTC timer only · tamper ADC on RTC timer<br/>target &lt; 2 mA whole-system (measure!)"]
     SLEEP -- "every 10 min (RTC timer)" --> WAKE["Wake · poll MPU6050 motion flag<br/>(latched INT_STATUS since last wake)"]
     WAKE -- "flag set" --> COUNT["activity counter++"]
     COUNT --> TAMPER

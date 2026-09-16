@@ -5,7 +5,7 @@ Arduino-IDE C++ (Arduino-ESP32 core) for both collar and base station. One repo,
 ```
 firmware/
 ├── collar/        ← LilyGO T-Beam v2.x
-└── basestation/   ← ESP32 DevKit + Ra-02 (SX1278)
+└── basestation/   ← ESP32 DevKit + Ra-02 (SX1276)
 ```
 
 ---
@@ -41,7 +41,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 ### Power-critical implementation notes
 
-1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1278 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
+1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1276 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
 2. **Motion-gated GPS, motion never wakes the radio:** the motion flag is polled each wake and only increments the activity counter (the collar does *not* run a GPS/TX cycle on motion — that would blow the power budget; see [POWER.md](POWER.md)). At the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS — resend last position with `moved=false`. Saves up to 80% of energy.
 3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (also prevents electrolytic corrosion of the rope).
 4. **Ephemeris warm start:** with RTC RAM retained across deep sleep, warm fixes take 5–15 s instead of 30–60 s — the single biggest energy lever after duty cycling.
@@ -51,7 +51,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 | Library | Use |
 |---|---|
-| `RadioLib` | SX127x LoRa — `SX1278` class for the 433 MHz variant (better power control than LoRa.h) |
+| `RadioLib` | SX127x LoRa — `SX1276` class for the 915 MHz variant (better power control than LoRa.h) |
 | `TinyGPSPlus` | NEO-M8N NMEA parsing |
 | `Adafruit_MPU6050` | Accelerometer, accel-only cycle mode — motion flag **polled each wake cycle** from INT_STATUS (latched since last read); no INT wire |
 | `AXP2101` (LilyGO / x-lqi) | PMU rail management on T-Beam v2.x |
@@ -61,7 +61,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 | Parameter | Value |
 |---|---|
-| Frequency | 433 MHz (or 915 — **must match base station**; PH allocations: prefer 433 MHz ISM band for this use) |
+| Frequency | 915 MHz (or 433 — **must match base station**; PH allocations: 915 MHz ISM band allowed for this use) |
 | Spreading factor | SF7–SF9 (SF7 fast/short range; SF9 for far paddocks — configurable per site) |
 | Bandwidth | 125 kHz |
 | Coding rate | 4/5 |

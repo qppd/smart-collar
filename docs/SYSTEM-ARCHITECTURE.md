@@ -12,9 +12,9 @@ flowchart TB
     L4["L4 · APPLICATION (base)<br/>BLE GATT server + USB serial · config endpoints<br/>siren driver · ACK/re-arm handling<br/>maintenance-mode gate"]
     L3["L3 · RULES &amp; DATA (base)<br/>alarm engine: geofence / tamper / 24 h no-move<br/>ring buffer + LittleFS history (CSV/JSON)"]
     L2["L2 · EDGE DEVICES<br/>collar firmware: duty-cycle state machine, GPS,<br/>tamper sense, activity counter, LoRa MAC<br/>base firmware: RX, dedupe, rules feed"]
-    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1278 LoRa radios (433 MHz) · 18650 + AXP2101"]
+    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1276 LoRa radios (915 MHz) · 18650 + AXP2101"]
     L1 -- "GPIO electrical" --> L2
-    L2 -- "LoRa 433 MHz radio" --> L3
+    L2 -- "LoRa 915 MHz radio" --> L3
     L3 --- L4
     L4 -- "Bluetooth LE / USB (offline)" --> L5
 ```
@@ -47,7 +47,7 @@ flowchart TB
 | I1 | GPS → collar UART | NMEA (TinyGPSPlus) | fix within 90 s or STALE reuse |
 | I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO25 excite | bands relative to baseline R₀; outside = latched alarm |
 | I3 | MPU6050 → collar I²C | I²C poll each wake (21/22) | latched motion flag → activity counter; never a GPS/TX cycle |
-| I5 | Collar → base (SX1278 → Ra-02 SX1278) | raw LoRa 433 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
+| I5 | Collar → base (SX1276 → Ra-02 SX1276) | raw LoRa 915 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
 | I6 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
 | I7 | Base ↔ phone | Bluetooth LE GATT (Web Bluetooth): notify + write | live positions/alarms (MTU-chunked JSON); commands: geofence, ACK, interval, MAINT_ON/OFF |
 | I8 | Base ↔ USB device | Web Serial (Chrome) | most-reliable zero-WiFi channel |
@@ -59,7 +59,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    C1["Collar #1"] <-. "LoRa 433 MHz<br/>jittered intervals" .-> BASE["BASE STATION<br/>mast antenna 3–5 m, grounded<br/>phone-set clock · BLE server"]
+    C1["Collar #1"] <-. "LoRa 915 MHz<br/>jittered intervals" .-> BASE["BASE STATION<br/>mast antenna 3–5 m, grounded<br/>phone-set clock · BLE server"]
     C2["Collar #2"] <-.-> BASE
     CN["Collar #N"] <-.-> BASE
     BASE -- "Bluetooth LE GATT<br/>notify + write" --> PHONE["Farmer phone<br/>PWA installed to home screen"]
@@ -68,7 +68,7 @@ flowchart LR
 ```
 
 - **One star topology:** all collars → one base; nothing meshed, nothing routed. A dead collar can't take others down.
-- **Frequency plan:** 433 MHz ISM preferred in PH; collar and base bands **must match**.
+- **Frequency plan:** 915 MHz ISM preferred in PH; collar and base bands **must match**.
 - **Range reality:** 2–8 km open/rolling terrain, 300 m–2 km dense trees (SF7–SF9 choice per site) — the site survey decides placement, not hope.
 - **No SIM, no WiFi anywhere:** the collar's only external dependency is GPS satellites; the only farm infrastructure link is Bluetooth LE to the farmer's phone. The internet appears exactly once — downloading MapLibre + OpenStreetMap data during provisioning.
 

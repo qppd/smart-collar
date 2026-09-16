@@ -45,7 +45,7 @@ Components: LilyGo T-Beam v2.x, 3× 5 V solar panels, 3× SS14 Schottky diodes, 
 
 ### Tamper loop (as drawn — simplified)
 
-The netlist shows the rope loop wired as: T-Beam header pin → series resistor → rope end A → rope through the full strap → rope end B → GND rail. **This is a simplified stand-in.** The as-built circuit per [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md) is: `GPIO25 → 10 kΩ → sense node` (sense node tapped by the **GPIO36 ADC**), then rope end A → strap (break-away link at the buckle) → rope end B → **100 Ω far end** → GND. The single-resistor drawing cannot distinguish a strap bypass from an intact loop the way the two-resistor reference does — build the reference circuit on the strap harness. Two diagram cleanups for the next edit: (1) replace the single resistor with the 10 kΩ / 100 Ω pair and add the GPIO25/GPIO36 junction, (2) the sheet carries a stray duplicate T-Beam copy wired only at the sense node — delete it. Service mode is a BLE command (no magnet sensor on the collar).
+The netlist shows the rope loop wired as: T-Beam header pin → series resistor → rope end A → rope through the full strap → rope end B → GND rail. **This is a simplified stand-in.** The as-built circuit per [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md) is: `GPIO25 → 10 kΩ → sense node`, then rope end A → strap (break-away link at the buckle) → rope end B → **100 Ω far end** → GND. The sense node is tapped by the **GPIO36 ADC**, which reads the voltage divider to detect strap cuts and bypass attempts. In the CirKit diagram, GPIO36 is routed through a **second T-Beam component (T-Beam(1))** placed solely for its GPIO36 pin — this is not a stray duplicate but the intended connection point for the ADC sense line. The single-resistor drawing cannot distinguish a strap bypass from an intact loop the way the two-resistor reference does — build the reference circuit on the strap harness. A diagram cleanup for the next edit: replace the single resistor with the 10 kΩ / 100 Ω pair and add the GPIO25/GPIO36 junction at the sense node. Service mode is a BLE command (no magnet sensor on the collar).
 
 ## 2. Base-station sub-circuit
 
@@ -69,11 +69,11 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 
 **Connection summary:** AC → PSU (12 V 5 A) → two branches: (a) 12 V → relay COM → siren (NO), (b) 12 V → buck → 5 V → ESP32. GPIO17 → relay IN1 switches the siren. NC contact unused (siren off by default).
 
-### Base LoRa receiver — SX1278 (Ra-02) → ESP32 DevKit (as drawn in the diagram)
+### Base LoRa receiver — SX1276 (Ra-02) → ESP32 DevKit (as drawn in the diagram)
 
 | Ra-02 pin | ESP32 38-pin | Purpose |
 |---|---|---|
-| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1278 |
+|| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1276 |
 | GND | GND | Common ground |
 | SCK | GPIO18 | VSPI SCK |
 | MISO | GPIO19 | VSPI MISO |
@@ -88,9 +88,9 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 24/12 V → 5 V buck (Cir
 
 | Point | Diagram | Reference design | Why it differs / what to do |
 |---|---|---|---|
-| Base LoRa (Ra-02 SX1278) | Drawn in the diagram (§2) | SPI (VSPI 18/19/23/5) + RST 14 + DIO0 26 | Bench test `B2` before deployment |
+|| Base LoRa (Ra-02 SX1276) | Drawn in the diagram (§2) | SPI (VSPI 18/19/23/5) + RST 14 + DIO0 26 | Bench test `B2` before deployment |
 | DS3231 RTC | Not used (decided) | No RTC hardware — phone sets the base clock via BLE `TIME_SET` on connect | Nothing to wire; see [BASE-STATION.md](BASE-STATION.md) |
-| Tamper loop | Drawn simplified — one series resistor, no GPIO25/GPIO36 junction, stray duplicate T-Beam copy | GPIO25 → 10 kΩ → node (GPIO36 taps) → rope → 100 Ω far end → GND | Build the reference circuit from [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md); tidy the diagram on the next edit |
+| Tamper loop | Drawn simplified — one series resistor, no GPIO25/GPIO36 junction; GPIO36 connected via second T-Beam(1) component | GPIO25 → 10 kΩ → node (GPIO36 taps) → rope → 100 Ω far end → GND | Build the reference circuit from [TAMPER.md](TAMPER.md) / [HARDWARE.md](HARDWARE.md); tidy the diagram on the next edit |
 | Relay board | IN1 driven directly | Opto-isolated boards also have a JD-VCC jumper | Keep jumper closed for 5 V logic drive; see BOM relay note |
 | MPU6050 | GY-521 module | Strip power LED + LDO for sleep budget | Do the LED/LDO strip per [POWER.md](POWER.md) when building |
 | Solar chain | Present | Phase-2 upgrade | Build it now on the Phase-1 collar or leave panels off — the wiring is identical |

@@ -39,7 +39,7 @@ Why these pins — every GPIO below is already committed on-board:
 
 Boot-safety of the chosen pins: GPIO25 carries no strap function, so the loop drive cannot disturb flashing or boot. GPIO12 doubles as the MTDI flash-voltage strap — never repurpose it. GPIO37 is the GPS I²C (DDC) line — leave unused.
 
-> **Radio variant check:** T-Beam v2.x ships as **SX1278 (433 MHz)**, **SX1276 (868/915 MHz)** or **SX1262 (dual-band)**. For the 433 MHz plan buy the **SX1278** variant. On an SX1262 board the SPI pins are identical but init differs (BUSY = GPIO32, IRQ = GPIO33, RadioLib `SX1262` class).
+> **Radio variant check:** T-Beam v2.x ships as **SX1276 (915 MHz)**, **SX1262 (dual-band)** or older SX1278 (433 MHz). For the 915 MHz plan buy the **SX1276** variant. On an SX1262 board the SPI pins are identical but init differs (BUSY = GPIO32, IRQ = GPIO33, RadioLib `SX1262` class).
 
 
 ### Wiring table

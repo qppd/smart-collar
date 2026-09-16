@@ -8,9 +8,9 @@
 
 | Component | Spec | Qty | Role | Est. price (₱) |
 |---|---|---:|---|---:|
-| LilyGO T-Beam | v2.x — ESP32, NEO-M8N GPS, **SX1278** LoRa 433 MHz variant (T-Beam also ships an SX1276 868/915 variant — must match the base station), 18650 interface | 1 | Collar core: MCU + positioning + radio | 1,800–2,800 |
+| LilyGO T-Beam | v2.x — ESP32, NEO-M8N GPS, **SX1276** LoRa 915 MHz variant (T-Beam also ships an SX1278 433 variant — must match the base station), 18650 interface | 1 | Collar core: MCU + positioning + radio | 1,800–2,800 |
 | 18650 Li-ion cell | 3,500 mAh — unprotected high-drain acceptable: the AXP2101 PMU provides OV/OC cut-off and cells are charged only in the smart charger, off-animal (see [POWER.md](POWER.md)) | 1 (+1 spare) | Collar power | 250–400 |
-| Flexible whip antenna | 433 or 915 MHz, SMA/u.FL, flexible | 1 | LoRa uplink | 100–250 |
+| Flexible whip antenna | 915 MHz, SMA/u.FL, flexible | 1 | LoRa uplink | 100–250 |
 | GPS antenna | Passive patch, 25×25 mm, u.FL (usually bundled with T-Beam) | 1 | GPS reception | 0–150 |
 | Accelerometer | MPU6050 (GY-521 module, I²C) | 1 | Movement activity / no-movement rule (motion flag polled each wake) | 60–150 |
 | Stainless steel wire rope | ~1 mm, 7×7 strand, ~1.5 m | 1 | Tamper loop through the strap | 100–200 |
@@ -29,9 +29,9 @@
 
 | # | Item | Qty to buy | ₱ | Rating | Sold | Seller | Listing |
 |---|---|---:|---:|---|---|---|---|
-| 1 | FLAG — T-Beam **Supreme** (L76K/u-blox, ESP32-**S3**, SX1262, 433 MHz) — see design flag below | 1 | 4,982 | unrated¹ | — | PC cold store (93%, 2.8K sold) | [buy](https://www.lazada.com.ph/products/pdp-i15586728623.html) · [alt V1.2](https://www.lazada.com.ph/products/pdp-i15595961308.html) |
+| 1 | FLAG — T-Beam **Supreme** (L76K/u-blox, ESP32-**S3**, SX1262, 915 MHz) — see design flag below | 1 | 4,982 | unrated¹ | — | PC cold store (93%, 2.8K sold) | [buy](https://www.lazada.com.ph/products/pdp-i15586728623.html) · [alt V1.2](https://www.lazada.com.ph/products/pdp-i15595961308.html) |
 | 2 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 399 | 4.8/5 (180) | 556 | Power World (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) |
-| 3 | FLAG — 433 MHz 5 dBi rubber whip + IPX→SMA pigtail | 1 | 83 | unrated¹ | — | KISSCATI (100%) | [buy](https://www.lazada.com.ph/products/pdp-i15608193046.html) |
+| 3 | FLAG — 915 MHz 5 dBi rubber whip + IPX→SMA pigtail | 1 | 83 | unrated¹ | — | KISSCATI (100%) | [buy](https://www.lazada.com.ph/products/pdp-i15608193046.html) |
 | 4 | MPU6050 GY-521 module (I²C) | 1 | 185 | 5.0/5 (17) | 86 | diymore (97%, 6-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) |
 | 6 | 304 SS wire rope 1 mm × 10 m | 1 | 125 | 4.9/5 (14) | 67 | Mago-Toyu (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2903511446.html) |
 | 7 | Nylon webbing 38 mm × 5 m (black) | 1 | 95 | 5.0/5 (27) | 149 | P S I Online Store (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2676755461.html) · [alt](https://www.lazada.com.ph/products/pdp-i1139904263.html) |
@@ -44,9 +44,9 @@
 
 **Sourced collar total: ~₱6,549** (Supreme path, incl. grommet kit, excl. optional conformal coating) · **~₱4,060** if the classic T-Beam comes from AliExpress instead (see flag) · GPS patch antenna: bundled with the board — confirm in cart.
 
-> **Design flag — T-Beam generation.** The classic **T-Beam v2.x (ESP32-WROOM + SX1278) is not currently listed on Lazada PH** — the only 433 MHz-capable T-Beam available locally is the **T-Beam Supreme (ESP32-S3 + SX1262)**, and an unrated V1.2. Two paths:
-> **(a) Design-fidelity (recommended):** order the classic **T-Beam v2.x SX1278 (433 MHz)** from the LilyGO official store on AliExpress (~₱1,800–2,800 landed) — keeps every pin map in [HARDWARE.md](HARDWARE.md) (GPIO36/25/13/39, AXP2101) valid as written.
-> **(b) Local/Supreme:** the Supreme is 433 MHz-capable, but it is an **ESP32-S3** — no GPIO36/39 (input-only pins used by our tamper ADC + accel INT), different ADC/touch/RTC domains, SX1262 radio init (BUSY/IRQ handling). Choosing it means a **pin-map + firmware rework** of [HARDWARE.md](HARDWARE.md)/[FIRMWARE.md](FIRMWARE.md). Flagged so nobody orders blind.
+> **Design flag — T-Beam generation.** The classic **T-Beam v2.x (ESP32-WROOM + SX1276) is not currently listed on Lazada PH** — the only locally-available T-Beam is the **T-Beam Supreme (ESP32-S3 + SX1262)**, and an unrated V1.2. Two paths:
+> **(a) Design-fidelity (recommended):** order the classic **T-Beam v2.x SX1276 (915 MHz)** from the LilyGO official store on AliExpress (~₱1,800–2,800 landed) — keeps every pin map in [HARDWARE.md](HARDWARE.md) (GPIO36/25/13/39, AXP2101) valid as written.
+> **(b) Local/Supreme:** the Supreme is 915 MHz-capable (SX1262 dual-band), but it is an **ESP32-S3** — no GPIO36/39 (input-only pins used by our tamper ADC + accel INT), different ADC/touch/RTC domains, SX1262 radio init (BUSY/IRQ handling). Choosing it means a **pin-map + firmware rework** of [HARDWARE.md](HARDWARE.md)/[FIRMWARE.md](FIRMWARE.md). Flagged so nobody orders blind.
 >
 > ¹ Criteria exception: listing has no product rating yet — accepted on seller-level quality (established stores, high seller ratings, thousands sold by store).
 > ² The 150×150×70 sourcing is **forced by board length**, not preference: the classic T-Beam PCB measures **104.1 × 38.4 mm** (official LilyGO STEP) — a 100×100 box has only ~90–92 mm internal, so the board can't lie flat. A 150×150 box is chunky on the strap, so also consider re-checking stock or 3D-printing ASA per [ENCLOSURE.md](ENCLOSURE.md).
@@ -59,8 +59,8 @@
 | Component | Spec | Qty | Role | Est. price (₱) |
 |---|---|---:|---|---:|
 | ESP32 DevKit | ESP32-WROOM-32, 38-pin | 1 | Base station controller | 200–350 |
-| LoRa module | Ai-Thinker Ra-02 (SX1278, 433 MHz) or equivalent 915 MHz module — must match collar frequency | 1 | LoRa receiver | 150–300 |
-| Base antenna | 433/915 MHz, high-gain (3–5 dBi), with mast clamp | 1 | Maximize coverage | 200–500 |
+| LoRa module | Ai-Thinker Ra-02 (SX1276, 915 MHz) or equivalent — must match collar frequency | 1 | LoRa receiver | 150–300 |
+| Base antenna | 915 MHz, high-gain (3–5 dBi), with mast clamp | 1 | Maximize coverage | 200–500 |
 | Siren | 12V DC, ≥ 110 dB, waterproof | 1 | Audible alarm | 150–350 |
 | Relay module | 1-channel, 5V logic, 10A | 1 | Drive the 12V siren from ESP32 | 30–60 |
 | Power supply | Enclosed switching PSU, **S-60-12 type: 12 V 5 A 60 W**, universal mains input, screw terminals | 1 | 12 V rail — siren direct + buck input | 250–350 |
@@ -75,8 +75,8 @@
 | # | Item | Qty to buy | ₱ | Rating | Sold | Seller | Listing |
 |---|---|---:|---:|---|---|---|---|
 | 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 385 | 4.9/5 (385) | 2.6K | Makerlab PH (98%, 845.6K store) | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) |
-| 2 | Ai-Thinker Ra-02 **SX1278 433 MHz** (model field verified on PDP) | 1 | 429 | 4.9/5 (31) | 223 | Makerlab PH (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) |
-| 3 | 433 MHz 5 dB dipole antenna, SMA, 3 m cable⁵ | 1 | 99 | 4.6/5 (23) | 72 | Jimmy Ya (97%) | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) |
+| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** (model field verified on PDP) | 1 | 429 | 4.9/5 (31) | 223 | Makerlab PH (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) |
+| 3 | 915 MHz 5 dB dipole antenna, SMA, 3 m cable⁵ | 1 | 99 | 4.6/5 (23) | 72 | Jimmy Ya (97%) | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) |
 | 4 | ES-626 siren 110 dB 12V⁶ | 1 | 146 | 4.7/5 (100) | 614 | Beautec (96%) | [buy](https://www.lazada.com.ph/products/pdp-i2913980824.html) · [alt IP65](https://www.lazada.com.ph/products/pdp-i5181387263.html) |
 | 5 | 1-ch 5V relay module⁷ | 1 | 140 | 4.5/5 (9) | 139 | DavWorkx (89%) | [buy](https://www.lazada.com.ph/products/pdp-i8192223.html) · [alt KY-019](https://www.lazada.com.ph/products/pdp-i3675717534.html) |
 | 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) — powers the 12 V siren directly and feeds the buck | 1 | ~300 | — | — | (see listing) | [buy](https://www.lazada.com.ph/products/switching-power-supply-s-60-12-12v-5a-60w-lrs-50-5-5v-10a-12v-42a-24v-21a-50w-i118492443-s16906981189.html) |
@@ -143,7 +143,7 @@ Per-block roll-up (sourced prices, 2026-09-13):
 
 ## Ordering Notes
 
-1. **LoRa frequency must match** between collar and base station — both sourced listings above are **433 MHz** (T-Beam Supreme 433 variant + Ra-02 SX1278 433 MHz, model verified on PDP). Radio variants: **SX1278 = 433 MHz**, SX1276 = 868/915 MHz, SX1262 = dual-band (needs different RadioLib init — see [HARDWARE.md](HARDWARE.md)).
+1. **LoRa frequency must match** between collar and base station — both sourced listings above are **915 MHz** (T-Beam Supreme 915 variant + Ra-02 SX1276 915 MHz, model verified on PDP). Radio variants: **SX1276 = 868/915 MHz**, SX1278 = 433 MHz, SX1262 = dual-band (needs different RadioLib init — see [HARDWARE.md](HARDWARE.md)).
 2. Buy **one spare 18650 per collar** — the 2-pcs LiitoKala pack covers this exactly.
 3. Check T-Beam version pins before wiring: **v1.2 (AXP192 PMU)** vs **v2.x (AXP2101)** vs **Supreme (ESP32-S3)** differ in pinout and power control — see the design flag in the collar order list.
 4. **Store clustering saves shipping:** Makerlab PH covers ESP32 + Ra-02 (the two priciest base-station electronics); ZJW_MALL/Allan cover both enclosures; Circuitrocks can additionally cover the buck converter and CN3065 solar charger in one store. Budget ~₱40 shipping per store (~₱400 across all stores at current mix).

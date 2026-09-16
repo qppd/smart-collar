@@ -8,7 +8,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Board | **LilyGO T-Beam v2.x** — ESP32 + NEO-M8N GPS + SX1278 LoRa + AXP2101 PMU + 18650 holder | One board = the whole collar |
+| Board | **LilyGO T-Beam v2.x** — ESP32 + NEO-M8N GPS + SX1276 LoRa + AXP2101 PMU + 18650 holder | One board = the whole collar |
 | IDE / toolchain | **Arduino IDE 2.x** + esp32 by Espressif (core v2.x+) | |
 | LoRa driver | **RadioLib** | Better SX127x power control than the stock LoRa.h |
 | GPS parsing | **TinyGPSPlus** | NEO-M8N NMEA sentences |
@@ -16,12 +16,12 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | Power management | **AXP2101** library (LilyGO / x-lqi) | Rail shutoff for sub-2 mA deep sleep |
 | Serialization | **ArduinoJson** | Packet + config messages |
 
-## Base Station Firmware (ESP32 DevKit + SX1278)
+## Base Station Firmware (ESP32 DevKit + SX1276)
 
 | Layer | Choice | Notes |
 |---|---|---|
 | Board | **ESP32 DevKit 38-pin** | LoRa RX, alarm rules, siren, app server |
-| LoRa RX module | **Ai-Thinker Ra-02 (SX1278, 433 MHz)** | Must match collar band |
+| LoRa RX module | **Ai-Thinker Ra-02 (SX1276, 915 MHz)** | Must match collar band |
 | LoRa driver | **RadioLib** | Same library both ends |
 | App server | **ESP32 BLE stack (NimBLE-Arduino) + USB serial** | GATT server `SmartCollar-Base`; JSON over notify/write characteristics, MTU-chunked |
 | History store | **LittleFS** (CSV/JSON per collar) | ~100 KB/collar/month at 10-min intervals |
@@ -44,7 +44,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | Setting | Value | Why |
 |---|---|---|
 | Type | **Raw point-to-multipoint LoRa** (not LoRaWAN) | No gateway/network-server exists offline; we control both ends. CRC16 on every frame, 3 s RX window after every TX (downlink spec: [FIRMWARE.md](FIRMWARE.md)) |
-| Frequency | 433 MHz ISM (PH allocation; 915 variant must match base) | |
+| Frequency | 915 MHz ISM (PH allocation; 433 variant must match base) | |
 | Spreading factor | SF7–SF9 | SF7 fast/short; SF9 for far paddocks — per-site config |
 | Sync word | private `0x2B` | Keeps foreign LoRa traffic out |
 | MAC | interval TX + ±5% jitter · 3× emergency retry @ 30 s · daily timeslot-sync broadcast | Herd-sync collisions and battery drain avoided |

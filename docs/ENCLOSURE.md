@@ -82,7 +82,7 @@ All board sizes measured from LilyGO's official CAD exports (`dimensions/` folde
 
 | Part | Footprint (mm) | Stack height (mm) | Source |
 |---|---|---|---|
-| **T-Beam v2.x (classic, SX1278)** — PCB | **104.1 × 38.4** | 1.6 (board) + ~2.5 top-side components | official STEP `T-Beam-V1X-PCB.stp` (same footprint as v2.x) |
+|| **T-Beam v2.x (classic, SX1276)** — PCB | **104.1 × 38.4** | 1.6 (board) + ~2.5 top-side components | official STEP `T-Beam-V1X-PCB.stp` (same footprint as v2.x) |
 | — with 18650 in on-board holder | 104.1 × 38.4 | **~20 total** — holder + cell extend 17.7 below the PCB (cell Ø18.2 × 65) | STEP, z < −1.6 extents |
 | — board SMAs (one short edge) | at edge only | 13.6 above PCB — unused (antennas re-route via u.FL to enclosure bulkheads); keep that edge clear or remove the SMAs | STEP |
 | T-Beam Supreme (alt path) | PCB 95.3 × 32.9 (100.1 incl. SMA tab) | LilyGO's own shell: 43.2 × 109.2 × 34.3 external (battery incl.) | DXF `T-BEAM-SUPREME-V3.0` + shell STL |
