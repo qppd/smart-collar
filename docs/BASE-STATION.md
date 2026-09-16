@@ -71,14 +71,9 @@ The base station runs a **Bluetooth LE GATT server** (always on) plus a USB seri
 - Desktop/laptop can also connect by **USB cable** (bench work, flashing, clock setting)
 - App works fully offline: MapLibre + OpenStreetMap data live in each phone's app cache (see [APP.md](APP.md)); the base is a local data source over BLE.
 
-### One-time provisioning (the only internet the system ever needs)
+### One-time provisioning
 
-Before deployment — at home, school, or anywhere with WiFi — provision each phone once:
-
-1. **Map stack:** download **MapLibre GL JS** (bundle, glyphs, style) and **OpenStreetMap data** for the farm bounding box **plus the site-survey LoRa coverage radius** (R1/R2 result — typically 2–5 km beyond the outermost fence segment). Full step-by-step build: [MAP-PACK.md](MAP-PACK.md). This margin is why a breached animal **stays visible on the offline map even beyond the geofence** — as far as the collar can still report, the map has data there.
-2. **App install:** copy the built PWA bundle to the phone (service-worker precache of app code + map data + icons); install to home screen.
-3. **Pair over BLE** to `SmartCollar-Base` — the app sets the base clock automatically (`TIME_SET` from the phone's date/time on every connect; USB serial can set it too for bench work). No RTC hardware: after a reboot with the phone away the clock is flagged `unsynced` until the next connect — no alarm rule depends on wall time.
-4. Done — from this point the system never touches the internet again. Repeat per phone; re-provision only to expand coverage or update the app.
+Before deployment, provision each phone once with WiFi — see **[APP.md](APP.md) §One-Time Provisioning** for the full step-by-step (MapLibre + OpenStreetMap download, PWA install, BLE pairing). The base station sets its clock from the phone on every BLE connect (`TIME_SET`) — no RTC hardware; after a reboot with the phone away, the clock is flagged `unsynced` until the next connect. No alarm rule depends on wall time.
 
 ## Installation Checklist
 

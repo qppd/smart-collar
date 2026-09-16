@@ -189,8 +189,8 @@ The build is organized into stages. Follow in order:
 
 ## Power Strategy
 
-- **Phase 1 (prototype):** battery-powered collars — 18650 Li-ion with aggressive duty cycling (GPS fix + LoRa packet every few minutes, deep sleep between), targeting weeks of runtime per charge with a swap-and-charge rotation.
-- **Phase 2 (recommended by the farm):** solar-powered collars. The farm sent a video showing a sample collar with a solar panel, so the **enclosure is designed solar-ready from day one** — the upgrade should be a lid swap, not a redesign. See [POWER.md](docs/POWER.md).
+- **Phase 1:** battery-powered collars — 18650 Li-ion, aggressive duty cycling, ~2 weeks per charge with swap rotation.
+- **Phase 2:** solar lid-swap upgrade — enclosure solar-ready from day one. Full details: [POWER.md](docs/POWER.md).
 
 ## Roadmap
 

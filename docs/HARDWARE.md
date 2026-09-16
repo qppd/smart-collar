@@ -54,17 +54,7 @@ Boot-safety of the chosen pins: GPIO25 carries no strap function, so the loop dr
 
 ### Tamper loop electrical summary
 
-(design rationale in [TAMPER.md](TAMPER.md))
-
-```mermaid
-flowchart LR
-    G25["GPIO25 drive<br/>(excites only during measurement)"] -- "10 kΩ bias" --> NODE["sense node"]
-    NODE -- "wire rope + break-away link<br/>+ far-end 100 Ω" --> GND["GND"]
-    NODE --> ADC["GPIO36 ADC<br/>band check vs R₀ ± 30%"]
-```
-
-- Read ADC with loop excited (GPIO25 high), average 8 samples, debounce 100 ms.
-- Classification, **relative to the collar's recorded baseline R₀** (the measured intact resistance — set at commissioning, stored in NVS; see [TAMPER.md](TAMPER.md)): **< 40 Ω → SHORT (bypass)** · **R₀ ± 30% → OK** · **> 2 kΩ → OPEN (cut / unbuckled — the break-away link separates)** · anything between bands → `LOOP_SUSPECT` (latch + re-check; telemetry warning, not a siren trigger).
+The tamper loop circuit, classification bands (R₀ ± 30% OK / < 40 Ω SHORT / > 2 kΩ OPEN), and detection rationale are fully documented in [TAMPER.md](TAMPER.md). During assembly, wire the loop per the table above and record the baseline resistance R₀ (target 40–200 Ω incl. far-end 100 Ω) — this becomes the reference for all tamper bands.
 
 ## 2. Assembly Order
 

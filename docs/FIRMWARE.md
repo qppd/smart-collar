@@ -42,10 +42,10 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 ### Power-critical implementation notes
 
 1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1276 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
-2. **Motion-gated GPS, motion never wakes the radio:** the motion flag is polled each wake and only increments the activity counter (the collar does *not* run a GPS/TX cycle on motion — that would blow the power budget; see [POWER.md](POWER.md)). At the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS — resend last position with `moved=false`. Saves up to 80% of energy.
-3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (also prevents electrolytic corrosion of the rope).
-4. **Ephemeris warm start:** with RTC RAM retained across deep sleep, warm fixes take 5–15 s instead of 30–60 s — the single biggest energy lever after duty cycling.
-5. **Latched alarms:** a *confirmed* tamper event (`LOOP_OPEN` / `LOOP_SHORT` — steady out-of-window reading, debounced) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.) A *brief* out-of-band glitch that re-closes within the debounce window latches `LOOP_SUSPECT` instead — a telemetry warning, never a siren trigger (strap-flex false-alarm guard; see [TAMPER.md](TAMPER.md)). Alarm bands are **relative to the collar's recorded baseline R₀** (R₀ ± 30% OK · < 40 Ω short · > 2 kΩ open — unbuckling separates the buckle's break-away link and reads as OPEN) — set at commissioning, stored in NVS.
+2. **Motion-gated GPS, motion never wakes the radio:** the motion flag is polled each wake and only increments the activity counter — at the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS and resend last position with `moved=false`. Motion never triggers a full cycle. Power rationale: [POWER.md](POWER.md).
+3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (prevents corrosion and saves power).
+4. **Ephemeris warm start:** RTC RAM retained across deep sleep keeps ephemeris alive — warm fixes in 5–15 s vs 30–60 s cold. Power impact: [POWER.md](POWER.md).
+5. **Latched alarms:** a *confirmed* tamper event (`LOOP_OPEN` / `LOOP_SHORT` — steady out-of-window reading, debounced) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.) A *brief* out-of-band glitch that re-closes within the debounce window latches `LOOP_SUSPECT` instead — a telemetry warning, never a siren trigger (strap-flex false-alarm guard). Tamper detection logic and band definitions: [TAMPER.md](TAMPER.md).
 
 ### Libraries
 
@@ -161,7 +161,7 @@ flowchart TB
 - **Siren:** relay-driven 12 V siren (1-ch relay, IN1 on **GPIO17** of the base ESP32 — GPIO23 stays reserved for the Ra-02 SPI MOSI; see [WIRING.md](WIRING.md)); distinct patterns: geofence = 3 short/2 min pause repeat; tamper = continuous; no-movement = long 10 s every 5 min. Auto re-arm. **Gated off while maintenance mode is set.**
 - **History:** LittleFS CSV/JSON per collar (position, flags, loop R, batt) — months of data at 10-min intervals is small (~100 KB/collar/month).
 - **Wall clock:** software — `TIME_SET {epoch}` from the app over BLE on connect (see [BASE-STATION.md](BASE-STATION.md)); `unsynced` flag after an offline reboot. Collars send no time and need none.
-- **Maintenance mode:** the rules engine honors a `maintenance` flag (BLE `MAINT_ON {minutes}` / `MAINT_OFF` from the app; default 30 min, max 2 h, auto-expires). While set, geofence/tamper/no-move events are **logged as `suppressed`** but never fire the siren; low-battery and collar-silence alerts still pass; every ON/OFF/expiry is timestamped (see [BASE-STATION.md](BASE-STATION.md)).
+- **Maintenance mode:** the rules engine honors a `maintenance` flag (`MAINT_ON`/`MAINT_OFF` BLE commands, auto-expires). While set, geofence/tamper/no-move events are **logged as `suppressed`** but never fire the siren; low-battery and collar-silence still pass. Behavior spec: [BASE-STATION.md](BASE-STATION.md).
 - **Watchdog:** ESP32 task watchdog on both LoRa RX and app server loops; base station is unattended hardware, it must self-heal.
 
 ## Flashing & Config

@@ -50,18 +50,17 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | MAC | interval TX + ±5% jitter · 3× emergency retry @ 30 s · daily timeslot-sync broadcast | Herd-sync collisions and battery drain avoided |
 | Packet | binary, ≤ 23 bytes body | Position, battery, tamper flags, activity, SEQ |
 
-## Hardware (context — see [BOM.md](BOM.md) & [HARDWARE.md](HARDWARE.md))
+## Hardware (overview — details in [BOM.md](BOM.md) · [HARDWARE.md](HARDWARE.md) · [ENCLOSURE.md](ENCLOSURE.md))
 
-| Part | Role |
+| Component | Role |
 |---|---|
-| T-Beam v2.x + 18650 | Collar core — compute, GPS, LoRa, power |
-| Conductive tamper loop with buckle break-away link | Supervised resistance loop on the adjustable strap — bands relative to each collar's recorded baseline R₀ |
-| MPU6050 accelerometer | 24-hour no-movement rule + activity counting |
-| IP67 enclosure + glands + sealant | Wallow/submersion-proof housing |
-| Flexible whip antenna | LoRa uplink, bulkhead-mounted |
-| ESP32 DevKit + Ra-02 + mast antenna | Base receiver |
-| 12 V ≥110 dB siren + relay | Audible alarm at the farmstead |
-| 5 V solar panel + Li charge module (Phase 2) | Lid-swap upgrade, no redesign |
+| LilyGO T-Beam v2.x + 18650 | Collar core (MCU + GPS + LoRa + PMU + battery) |
+| Supervised tamper loop | Adjustable-strap cut/bypass detection — see [TAMPER.md](TAMPER.md) |
+| MPU6050 (GY-521) | 24-hour no-movement rule |
+| IP67 enclosure + glands + sealant | Wallow/submersion-proof housing — see [ENCLOSURE.md](ENCLOSURE.md) |
+| ESP32 DevKit + Ra-02 + mast antenna | Base station receiver — see [BASE-STATION.md](BASE-STATION.md) |
+| 12 V siren + relay | Audible alarm |
+| Solar lid (Phase 2) | 5 V panels + CN3065, lid-swap upgrade — see [POWER.md](POWER.md) |
 
 ---
 
