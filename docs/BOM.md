@@ -29,29 +29,27 @@
 
 **Collar subtotal: ~₱1,865–3,370** (typical build lands near **~₱2,400–2,800**)
 
-### Collar — recommended sellers and search terms (Lazada PH)
+### Collar — sourced order list (Lazada PH)
 
-Search terms are provided because product pages rotate frequently on Lazada. Filter by seller name when you find listings:
-
-| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Search term for Lazada |
+| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Listing |
 |---|---|---:|---:|---|---|
-| 1 | ESP32 DevKit 38-pin WROOM-32 (**select 38-pin variant**) | 1 | 200–350 | Makerlab PH | `esp32 devkit 38 pin ch340g` |
-| 2 | Neo-8M GPS module breakout (u.FL) | 1 | 600–900 | Makerlab PH | `neo m8n gps u.fl` |
-| 3 | SX1276 LoRa module Ra-02 **915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | `sx1276 lora 915mhz ra-02` |
-| 4 | 915 MHz rubber whip antenna + IPX→SMA pigtail | 1 | 100–250 | KISSCATI | `lora whip antenna 915mhz sma` |
-| 5 | MPU6050 GY-521 module (I²C) | 1 | 60–150 | diymore | `mpu6050 gy-521` |
-| 6 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 250–400 | Power World | `liitokala 18650 3500mah 2pcs` |
-| 7 | SS14 Schottky diode (for future solar — Phase 2) | 3 | 30–60 | China Electronic, any electronics supplier | `ss14 sma schottky diode` |
-| 8 | IP67 ABS enclosure 150×150×70 mm | 1 | 100–250 | Allan Headset, ZJW_MALL | `ip67 enclosure abs 150x150x70` |
-| 9 | IP68 nylon cable glands PG7 (10-pc pack) | 1 pack | 100–200 | Solar Bright | `pg7 cable gland ip68 nylon` |
-| 10 | T7000 black sealant adhesive 50 ml | 1 | 60–150 | MYDirect | `t7000 black sealant` |
-| 11 | Rubber grommet assortment (70-pc kit) | 1 kit | 150–250 | GlobalTechMart | `rubber grommet assortment kit` |
-| 12 | 304 SS wire rope 1 mm × 10 m | 1 | 100–200 | Mago-Toyu | `304 stainless wire rope 1mm` |
-| 13 | Nylon webbing 38 mm × 5 m (black) | 1 | 95–200 | P S I Online Store | `nylon webbing 38mm black 5m` |
-| 14 | Metal side-release buckle 38 mm | 1 | 80–200 | MEETEE | `side release buckle 38mm metal` |
-| 15 | Conformal coating, brush-on insulating varnish (optional) | 1 | 150–300 | GlobalTechMart | `conformal coating acrylic pcb` |
-| 16 | Si2301 MOSFET SOT-23 (×2 for GPS/LoRa rail control) | 1 pack (50 pcs) | 40–80 | Circuitrocks, AliExpress PH | `si2301 mosfet sot23` |
-| 17 | AP2112-3.3 SMD LDO (SOT-23-5, 800 mA, 1 µA quiescent) | 1 (or small pack) | 15–30 | Makerlab PH, AI-VA | `ap2112-3.3 smd` |
+| 1 | ESP32 DevKit 38-pin WROOM-32 (**select 38-pin variant**) | 1 | 200–350 | Makerlab PH | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) · search `esp32 devkit 38 pin ch340g` |
+| 2 | Neo-8M GPS module breakout (u.FL) | 1 | 600–900 | Makerlab PH | [search](https://www.lazada.com.ph/catalog?q=neo+m8n+gps+u.fl&search=1) · alt [pdp-i229344891](https://www.lazada.com.ph/products/pdp-i229344891.html) |
+| 3 | SX1276 LoRa module Ra-02 **915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) · search `sx1276 lora 915mhz ra-02` |
+| 4 | 915 MHz rubber whip antenna + IPX→SMA pigtail | 1 | 100–250 | KISSCATI | [search](https://www.lazada.com.ph/catalog?q=lora+whip+antenna+915mhz+sma&search=1) |
+| 5 | MPU6050 GY-521 module (I²C) | 1 | 60–150 | diymore | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) · search `mpu6050 gy-521` |
+| 6 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 250–400 | Power World | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) · search `liitokala 18650 3500mah 2pcs` |
+| 7 | SS14 Schottky diode (for future solar — Phase 2) | 3 | 30–60 | China Electronic, any electronics supplier | [buy](https://www.lazada.com.ph/products/pdp-i3679917267.html) · search `ss14 sma schottky diode` |
+| 8 | IP67 ABS enclosure 150×150×70 mm | 1 | 100–250 | Allan Headset, ZJW_MALL | [buy](https://www.lazada.com.ph/products/pdp-i2890742842.html) · search `ip67 enclosure abs 150x150x70` |
+| 9 | IP68 nylon cable glands PG7 (10-pc pack) | 1 pack | 100–200 | Solar Bright | [buy](https://www.lazada.com.ph/products/pdp-i2686431923.html) · alt kit [pdp-i15409284123](https://www.lazada.com.ph/products/pdp-i15409284123.html) · search `pg7 cable gland ip68 nylon` |
+| 10 | T7000 black sealant adhesive 50 ml | 1 | 60–150 | MYDirect | [buy](https://www.lazada.com.ph/products/pdp-i3516299335.html) · search `t7000 black sealant` |
+| 11 | Rubber grommet assortment (70-pc kit) | 1 kit | 150–250 | GlobalTechMart | [buy](https://www.lazada.com.ph/products/pdp-i5316174145.html) · search `rubber grommet assortment kit` |
+| 12 | 304 SS wire rope 1 mm × 10 m | 1 | 100–200 | Mago-Toyu | [buy](https://www.lazada.com.ph/products/pdp-i2903511446.html) · search `304 stainless wire rope 1mm` |
+| 13 | Nylon webbing 38 mm × 5 m (black) | 1 | 95–200 | P S I Online Store | [buy](https://www.lazada.com.ph/products/pdp-i2676755461.html) · alt [pdp-i1139904263](https://www.lazada.com.ph/products/pdp-i1139904263.html) · search `nylon webbing 38mm black 5m` |
+| 14 | Metal side-release buckle 38 mm | 1 | 80–200 | MEETEE | [search](https://www.lazada.com.ph/catalog?q=side+release+buckle+38mm+metal&search=1) · alt YKK-plastic [pdp-i3042222312](https://www.lazada.com.ph/products/pdp-i3042222312.html) |
+| 15 | Conformal coating, brush-on insulating varnish (optional) | 1 | 150–300 | GlobalTechMart | [buy](https://www.lazada.com.ph/products/pdp-i15444551779.html) · search `conformal coating acrylic pcb` |
+| 16 | Si2301 MOSFET SOT-23 (×2 for GPS/LoRa rail control) | 1 pack (50 pcs) | 40–80 | Circuitrocks, AliExpress PH | [search](https://www.lazada.com.ph/catalog?q=si2301+mosfet+sot23&search=1) · alt AO3401 |
+| 17 | AP2112-3.3 SMD LDO (SOT-23-5, 800 mA, 1 µA quiescent) | 1 (or small pack) | 15–30 | Makerlab PH, AI-VA | [search](https://www.lazada.com.ph/shop/ap2112-33/) · search `ap2112-3.3 smd` |
 | — | **GPS patch antenna** | bundled with board | — | — | Confirm included in cart; no separate purchase needed |
 
 **Sourced collar total: ~₱2,873** (excl. optional conformal coating).
@@ -82,18 +80,18 @@ Notes:
 
 **Base station subtotal: ~₱1,160–2,510**
 
-### Base station — recommended sellers and search terms (Lazada PH)
+### Base station — sourced order list (Lazada PH)
 
-| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Search term for Lazada |
+| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Listing |
 |---|---|---:|---:|---|---|
-| 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 200–350 | Makerlab PH | `esp32 devkit 38 pin` |
-| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | `ra-02 sx1276 915mhz` |
-| 3 | 915 MHz 5 dBi dipole antenna, SMA, 3 m cable | 1 | 200–300 | Jimmy Ya, generic | `915mhz dipole antenna sma 3m` |
-| 4 | ES-626 siren 110 dB 12V | 1 | 150–250 | Beautec, ALAZON | `es-626 siren 12v 110db` · [alt IP65] |
-| 5 | 1-ch 5V relay module | 1 | 30–80 | DavWorkx, Circuitrocks | `1 channel 5v relay module opto` |
-| 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) — powers the 12 V siren directly and feeds the buck | 1 | 250–350 | Generic electronics suppliers | `s-60-12 psu 12v 5a` |
-| 7 | Circuitrocks buck / step-down DC-DC **36 V→5 V 5 A** (9–36 V in, screw terminals) | 1 | 100–130 | Circuitrocks | `dc dc buck converter 36v to 5v 5a` |
-| 8 | ZJW IP65 CCTV junction box (**select 150×150×70**) | 1 | 100–250 | ZJW_MALL | `ip65 junction box cctv 150x150x70` |
+| 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 200–350 | Makerlab PH | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) · search `esp32 devkit 38 pin` |
+| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) · search `ra-02 sx1276 915mhz` |
+| 3 | 915 MHz 5 dBi dipole antenna, SMA, 3 m cable | 1 | 200–300 | Jimmy Ya, generic | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) · search `915mhz dipole antenna sma 3m` |
+| 4 | ES-626 siren 110 dB 12V | 1 | 150–250 | Beautec, ALAZON | [buy](https://www.lazada.com.ph/products/pdp-i2913980824.html) · alt IP65 [pdp-i5181387263](https://www.lazada.com.ph/products/pdp-i5181387263.html) |
+| 5 | 1-ch 5V relay module | 1 | 30–80 | DavWorkx, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i8192223.html) · alt KY-019 [pdp-i3675717534](https://www.lazada.com.ph/products/pdp-i3675717534.html) |
+| 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) | 1 | 250–350 | Generic electronics suppliers | [buy](https://www.lazada.com.ph/products/switching-power-supply-s-60-12-12v-5a-60w-lrs-50-5-5v-10a-12v-42a-24v-21a-50w-i118492443-s16906981189.html) · search `s-60-12 psu 12v 5a` |
+| 7 | Circuitrocks buck / step-down DC-DC **36 V→5 V 5 A** | 1 | 100–130 | Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i299280311-s514886405.html) · search `dc dc buck converter 36v to 5v 5a` |
+| 8 | ZJW IP65 CCTV junction box (**select 150×150×70**) | 1 | 100–250 | ZJW_MALL | [buy](https://www.lazada.com.ph/products/pdp-i2199716972.html) · search `ip65 junction box cctv 150x150x70` |
 
 **Sourced base-station total: ~₱1,720** + mast & mounting hardware (hardware-store items — pole, U-bolts, clamps: ~₱200–500).
 
@@ -131,13 +129,13 @@ Per-block roll-up (estimates, November 2026):
 | Li charge module | CN3065 mini solar charger (VIN 4.4–6 V, ≤500 mA, micro-USB backup input) | 1 | Safe solar charging of the 18650 | 65–85 |
 | Solar lid | Enclosure top carrying the panel array + gasket | 1 | Drop-in replacement lid | 50–150 |
 
-### Solar — recommended sellers and search terms (Lazada PH)
+### Solar — sourced order list (Lazada PH)
 
-| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Search term for Lazada |
+| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Listing |
 |---|---|---:|---:|---|---|
-| 1 | Mini solar panel 5 V 0.3 W, epoxy, wired | 2–3 | 90–130 ea | MotorFactory, generic solar sellers | `5v 0.3w solar panel epoxy mini` |
-| 2 | SS14 Schottky diode, SMA DO-214AC (100-pc pack) | 1 pack | 100–150 | China Electronic, any electronics supplier | `ss14 sma schottky diode 100pc` |
-| 3 | CN3065 mini USB solar Li charger board | 1 | 90–120 | Circuitrocks, AI-VA | `cn3065 usb solar lithium charger` |
+| 1 | Mini solar panel 5 V 0.3 W, epoxy, wired | 2–3 | 90–130 ea | MotorFactory, generic solar sellers | [buy](https://www.lazada.com.ph/products/pdp-i4141765650.html) · search `5v 0.3w solar panel epoxy mini` |
+| 2 | SS14 Schottky diode, SMA DO-214AC (100-pc pack) | 1 pack | 100–150 | China Electronic, any electronics supplier | [buy](https://www.lazada.com.ph/products/pdp-i3679917267.html) · alt [pdp-i1836021223](https://www.lazada.com.ph/products/pdp-i1836021223.html) · search `ss14 sma schottky diode 100pc` |
+| 3 | CN3065 mini USB solar Li charger board | 1 | 90–120 | Circuitrocks, AI-VA | [buy](https://www.lazada.com.ph/products/pdp-i566666537.html) · search `cn3065 usb solar lithium charger` |
 
 **Sourced solar total: ~₱407 (2 panels) / ~₱500 (3 panels)** + solar lid (DIY per [ENCLOSURE.md](ENCLOSURE.md)).
 
