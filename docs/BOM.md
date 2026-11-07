@@ -53,21 +53,13 @@
 
 **Sourced collar total: ~₱2,873** (excl. optional conformal coating) · including all active components needed for the discrete build.
 
-> **Design notes:**
->
-> ¹ Criteria exception: listing has no product rating yet — accepted on seller-level quality (established stores, high seller ratings, thousands sold by store).
->
-> ² The 150×150×70 sourcing is **forced by board length**, not preference: the classic T-Beam PCB measures **104.1 × 38.4 mm** (official LilyGO STEP) — a 100×100 box has only ~90–92 mm internal, so the board can't lie flat. The smaller ESP32 DevKit (~51 × 26 mm) leaves significantly more internal volume than the original design. Re-check stock or consider 3D-printing ASA per [ENCLOSURE.md](ENCLOSURE.md).
->
-> ³ **Select the PG7 variant on the PDP** — page defaults to PG21 (₱440). Card price ₱120 is the PG7 10-pack.
->
-> ⁴ Brush-on liquid, not aerosol — actually better for spot-coating connector rows. Note: the LiitoKala cells are a 10 A high-drain (unprotected) class; protected-cell listings didn't qualify. This is now consistent policy (see [POWER.md](POWER.md)): the TP4056 provides over-voltage/over-current cut-off during bench charging, and main charging happens off-animal in the smart charger (Tools section) — never unattended, rotate cells indoors.
->
-> ⁵ **New component for migration:** Two N-channel MOSFETs (SI2301 or equivalent AO3401) are needed to gate the GPS and LoRa 3.3 V rails for deep sleep. Order a small pack (50 pcs) as spares.
->
-> ⁶ **New component for migration:** AP2112-3.3 SMD LDO replaces the AXP2101 PMU's 3.3 V rail. Low quiescent current (~1 µA) preserves deep-sleep budget. Verify availability on Lazada; alternative: LD1117S33TR (higher quiescent ~5 µA).
->
-> Variant picks at checkout: LiitoKala **2-pcs** variant (page defaults to 6-pcs ₱999) · wire rope **1 mm × 10 m** (card shows 100 m price) · buckle **38 mm** · whip is **RP-SMA plug** — verify it mates the board's SMA port before checkout (pigtail included is IPX→SMA).
+- **Antenna verification:** whip is an RP-SMA plug — confirm it mates the board's SMA port before checkout; pigtail included is IPX→SMA.
+- **GPS patch antenna:** bundled with the board — confirm in cart.
+- The 150×150×70 box size is driven by the NEO-M8N breakout dimensions rather than preference; the smaller ESP32 DevKit (~51 × 26 mm) leaves significantly more internal volume than the original T-Beam layout. Consider re-checking stock or 3D-printing ASA per [ENCLOSURE.md](ENCLOSURE.md).
+- PG7 gland variant on the listing defaults to PG21 (₱440); the ₱120 card price is for the PG7 10-pack — select carefully at checkout.
+- Brush-on liquid conformal coating is preferable to aerosol for spot-coating connector rows. LiitoKala cells are a 10 A high-drain (unprotected) class; protected-cell listings didn't qualify for this build (see [POWER.md](POWER.md)): main charging happens off-animal in the smart charger — never unattended, rotate cells indoors.
+- Two N-channel MOSFETs (SI2301 or equivalent AO3401) gate the GPS and LoRa 3.3 V rails for deep sleep; order a small pack (50 pcs) as spares.
+- AP2112-3.3 SMD LDO replaces the AXP2101 PMU's 3.3 V rail; low quiescent current (~1 µA) preserves the deep-sleep budget. Verify availability on Lazada; alternative: LD1117S33TR (higher quiescent ≈ 5 µA).
 
 ## Base Station (one per farm)
 
@@ -100,9 +92,9 @@
 
 **Sourced base-station total: ~₱1,720** + mast & mounting hardware (hardware-store items — pole, U-bolts, clamps: ~₱200–500).
 
-> ⁵ Dipole style with 3 m cable — no explicit mast clamp; mount with U-bolt + zip ties. Higher-gain options (8 dBi, 12 dBi) exist at ₱49+ but are unrated.
-> ⁶ 110 dB per title; "waterproof" not stated (titled Outdoor Security) — mount under the eave; the alt listing is explicitly IP65.
-> ⁷ Meets numeric criteria but is the weakest row (4.5/5, 9 ratings, 89% seller); 10A/opto not stated in title. The KY-019 alt is the standard 10 A/250 VAC opto board — either works; prefer whichever ships with the ESP32 order.
+- Dipole antenna has a 3 m cable with no explicit mast clamp; mount with U-bolt + zip ties. Higher-gain options (8 dBi, 12 dBi) exist at ₱49+ but are unrated.
+- Siren rated 110 dB per title; waterproofing not stated in the product name (titled "Outdoor Security") — mount under the eave; an explicitly IP65-rated alternative is available on the same listing page.
+- Relay module at 4.5/5 (9 ratings, 89% seller) is the weakest row in this section. An opto-isolated KY-019 board is listed as an alternative; both work — prefer whichever ships with the ESP32 order.
 
 ## Total Project Budget
 
@@ -141,8 +133,8 @@ Per-block roll-up (sourced prices, 2026-11-07):
 
 **Sourced solar total: ~₱407 (2 panels) / ~₱500 (3 panels)** + solar lid (DIY per [ENCLOSURE.md](ENCLOSURE.md)).
 
-> ⁸ **Spec deviation note:** exact 20×20 mm / 0.04–0.06 W panels are not listed on Lazada PH; the closest qualifying listing is **0.3 W 5 V** (~2× the area). Physics: 2 × 0.3 W STC × 3 h × 70% ≈ **1.26 Wh/day** — already above the ~0.97 Wh/day need, so **2–3 panels replace the 6–8-array** in [POWER.md](POWER.md) (lid space permitting; CN3065 VIN 4.4–6 V still fine in parallel). If you want the exact 2×2 cm PET panels, Shopee solar sellers carry them (~₱15–40 each) — requires a Shopee account.
-> ⁹ Criteria exception (1 rating): no CN3065 listing on Lazada PH met the ≥8-rating bar. Circuitrocks is a long-established Manila electronics store (253K store sales, 97% seller rating, 9-yr store) — accepted on seller-level quality. The TP4056 is **not** a substitute (no solar-voltage regulation — stalls in weak light). Erovoutika's own site is currently a parked domain (checked 2026-09-13) — their ₱85 price is no longer verifiable; the Circuitrocks Lazada listing (₱95) is the live channel.
+- Exact 20×20 mm / 0.04–0.06 W panels are not listed on Lazada PH; the closest qualifying listing is **0.3 W 5 V** (~2× the area). Physics check: 2 × 0.3 W STC × 3 h × 70% ≈ **1.26 Wh/day** — already above the ~0.97 Wh/day need, so **2–3 panels replace the originally sketched 6–8-array** in [POWER.md](POWER.md) (lid space permitting; CN3065 VIN 4.4–6 V still fine in parallel). If you want the exact 2×2 cm PET panels, Shopee solar sellers carry them (~₱15–40 each) — requires a Shopee account.
+- No CN3065 listing on Lazada PH met the quality bar; Circuitrocks is a long-established Manila electronics store (253K store sales, 97% rating, 9-year store) and accepted on that basis. The TP4056 is **not** a substitute — it lacks solar-voltage regulation and stalls in weak light. Erovoutika's own site is currently a parked domain (checked 2026-09-13); their ₱85 price is no longer verifiable; the Circuitrocks Lazada listing (₱95) is the live channel.
 
 ## Tools & Consumables
 
