@@ -1,9 +1,5 @@
 # Bill of Materials
 
-> **Design tables** (component specs & roles) + **sourced order lists** with verified Lazada PH listings.
-> Sourcing date: **2026-11-07**. Criteria: **≥4.0/5 rating, ≥8 ratings count, visible sold count, non-Overseas seller**; rare parts where no listing meets this fall back to **seller-level quality** (Seller Ratings ≥90%, established store) and are flagged FLAG.
-> Sourced from **Lazada only** — Shopee PH blocks anonymous search (login wall), so no Shopee links. Prices are web prices (app/voucher prices may differ).
-
 ## Smart Collar (per animal)
 
 | Component | Spec | Qty | Role | Est. price (₱) |
