@@ -12,7 +12,7 @@ flowchart TB
     L4["L4 · APPLICATION (base)<br/>BLE GATT server + USB serial · config endpoints<br/>siren driver · ACK/re-arm handling<br/>maintenance-mode gate"]
     L3["L3 · RULES &amp; DATA (base)<br/>alarm engine: geofence / tamper / 24 h no-move<br/>ring buffer + LittleFS history (CSV/JSON)"]
     L2["L2 · EDGE DEVICES<br/>collar firmware: duty-cycle state machine, GPS,<br/>tamper sense, activity counter, LoRa MAC<br/>base firmware: RX, dedupe, rules feed"]
-    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1276 LoRa radios (915 MHz) · 18650 + AP2112 LDO + GPIO-gated rails (discrete build — see MIGRATION-SUMMARY.md)"]
+    L1["L1 · SENSING &amp; PHYSICS<br/>NEO-M8N GPS · supervised tamper loop · MPU6050<br/>SX1276 LoRa radios (915 MHz) · 18650 + AP2112 LDO + GPIO-gated rails"]
     L1 -- "GPIO electrical" --> L2
     L2 -- "LoRa 915 MHz radio" --> L3
     L3 --- L4

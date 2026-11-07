@@ -2,7 +2,7 @@
 
 Covers the smart collar's electronics (ESP32 DevKit + NEO-M8N GPS + SX1276 LoRa + tamper loop + accelerometer), wiring, and step-by-step assembly into the enclosure and strap. Base station hardware is in [BASE-STATION.md](BASE-STATION.md).
 
-Full migration details from the original T-Beam v2.x design are in [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md).
+Full migration details from the original T-Beam v2.x design are documented inline in this file's pin maps, wiring tables, and power architecture sections below.
 
 ---
 

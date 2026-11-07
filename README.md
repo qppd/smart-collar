@@ -35,7 +35,7 @@ The collar is worn by the animal full-time, so the **mechanical design is as cri
 
 | Component | Location | Role |
 |---|---|---|
-| **Smart Collar** | Worn by the carabao | GPS positioning, LoRa uplink, tamper detection, battery telemetry (discrete ESP32 build — see [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md)) |
+| **Smart Collar** | Worn by the carabao | GPS positioning, LoRa uplink, tamper detection, battery telemetry (discrete ESP32 build) |
 | **Base Station** | Fixed, powered point at the farm | Receives LoRa data, evaluates alarm rules, drives the siren; pairs to the app over Bluetooth LE |
 | **Offline Mobile/Desktop App** | Farmer's device | Location & status dashboard, geofence configuration |
 | **Siren Alarm** | At the base station | Loud audible alert on any detected abnormal condition |
@@ -81,7 +81,7 @@ Additional capabilities:
 
 ```mermaid
 flowchart TB
-    GPS["GPS satellites"] --> COLLAR["SMART COLLAR (on carabao)\nESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 (915 MHz)\ntamper loop · MPU6050 · 18650\n(migration: [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md))"]
+    GPS["GPS satellites"] --> COLLAR["SMART COLLAR (on carabao)\nESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 (915 MHz)\ntamper loop · MPU6050 · 18650"]
     LOOP["Tamper loop (wire rope)"] --> COLLAR
     COLLAR <-. "LoRa 915 MHz · offline radio link" .-> BASE["BASE STATION\nESP32 DevKit + SX1276 · alarm rules engine\ngeofence / tamper / 24 h no-move\nsiren driver · local app server"]
     BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]
@@ -95,7 +95,7 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 
 | Component | Role |
 |---|---|
-| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core — discrete ESP32 board with external GPS and LoRa modules (replaces integrated T-Beam; full migration details in [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md)) |
+| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core — discrete ESP32 board with external GPS and LoRa modules (replaces integrated T-Beam) |
 | 18650 Li-ion cell + holder | Collar power (Phase 1) — PMU-protected, charged off-animal in a smart charger |
 | Conductive tamper loop (stainless wire rope) with buckle break-away link | Tamper detection on the adjustable strap |
 | IP67 enclosure + PG7 glands + Suxun T7000 silicone sealant | Waterproof housing (carabaos wallow in water/mud) |
@@ -228,11 +228,4 @@ Pilot client: **[Farm name]** — who recommended the solar collar direction and
 
 The original design used a LilyGO T-Beam v2.x integrated board. For improved sourcing reliability and modularity in the Philippines, the project has been migrated to a **discrete ESP32 DevKit 38-pin** build with separate NEO-M8N GPS and SX1276 LoRa modules.
 
-All original objectives, features, and functionality are preserved. See **[MIGRATION-SUMMARY.md](MIGRATION-SUMMARY.md)** for:
-- Pin assignment changes
-- Power architecture modifications (loss of AXP2101 PMU, new GPIO-gated rail control)
-- Enclosure fit updates (smaller board = more internal volume)
-- Firmware library differences
-- NTC compliance guidance ([docs/NTC-COMPLIANCE.md](docs/NTC-COMPLIANCE.md))
-
-For sourcing: all components are now available from Makerlab Electronics and verified Lazada PH sellers — no AliExpress dependency for the core board.
+All original objectives, features, and functionality are preserved. The migration details are documented inline in each guide: [HARDWARE.md](docs/HARDWARE.md) for pin maps and power architecture, [BOM.md](docs/BOM.md) for sourcing, [NTC-COMPLIANCE.md](docs/NTC-COMPLIANCE.md) for regulatory guidance.

@@ -8,7 +8,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Board | **ESP32 DevKit 38-pin** (ESP32-WROOM-32) + external NEO-M8N GPS + SX1276 LoRa | Discrete build; replaces LilyGO T-Beam v2.x (see [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md)) |
+| Board | **ESP32 DevKit 38-pin** (ESP32-WROOM-32) + external NEO-M8N GPS + SX1276 LoRa | Discrete build replaces LilyGO T-Beam v2.x |
 | IDE / toolchain | **Arduino IDE 2.x** + esp32 by Espressif (core v2.x+) | |
 | LoRa driver | **RadioLib** | Better SX127x power control than the stock LoRa.h |
 | GPS parsing | **TinyGPSPlus** | NEO-M8N NMEA sentences over UART2 (GPIO16/17) |
@@ -55,7 +55,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 | Component | Role |
 |---|---|
-| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core (MCU + GPS + LoRa — discrete build replacing T-Beam); see [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md) |
+| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core (MCU + GPS + LoRa — discrete build replacing T-Beam) |
 | Supervised tamper loop | Adjustable-strap cut/bypass detection — see [TAMPER.md](TAMPER.md) |
 | MPU6050 (GY-521) | 24-hour no-movement rule |
 | IP67 enclosure + glands + sealant | Wallow/submersion-proof housing — see [ENCLOSURE.md](ENCLOSURE.md) |

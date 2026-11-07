@@ -12,7 +12,7 @@ flowchart TB
 
     subgraph COW["CARABAO — wears it 24/7"]
         subgraph COLLAR["SMART COLLAR (IP67)"]
-            ESP32["ESP32 DevKit 38-pin<br/>NEO-M8N GPS · SX1276 LoRa<br/>MPU6050 accel · tamper loop<br/>18650 cell + TP4056 charge<br/>(discrete build — see MIGRATION-SUMMARY.md)"]
+            ESP32["ESP32 DevKit 38-pin\nNEO-M8N GPS · SX1276 LoRa\nMPU6050 accel · tamper loop\n18650 cell + TP4056 charge"]
             LOOP["Supervised tamper loop<br/>wire rope + buckle break-away link + far-end 100 Ω<br/>+ 10 kΩ bias → GPIO36 ADC · GPIO25 drive"]
             ACCEL["MPU6050 accelerometer (GY-521)<br/>I²C · motion flag polled each wake cycle"]
             CELL["18650 Li-ion cell<br/>3,500 mAh (Phase 2: solar lid)"]
