@@ -9,25 +9,25 @@ Two-phase strategy, driven by the farm's own recommendation:
 
 ## Phase 1 — Battery Budget (per collar)
 
-Assume the **LilyGO T-Beam v2.x** (ESP32 + NEO-M8N GPS + SX1276-class LoRa, 915 MHz variant, + AXP2101 PMU) on one 18650 (3,500 mAh, ~11.5 Wh — the cell itself is unprotected; the AXP2101 PMU provides the protection, see Battery Care below).
+Assume an **ESP32 DevKit 38-pin** + **NEO-M8N GPS** + **SX1276-class LoRa (915 MHz)** on one 18650 (3,500 mAh, ~11.5 Wh). No integrated PMU — rail shutdown via GPIO-gated N-channel MOSFETs.
 
 ### Component current draw (order-of-magnitude, datasheet-typical)
 
 | State | Subsystems on | Current | Duration per cycle |
 |---|---|---:|---|
-| GPS fix acquisition | ESP32 active + GPS | ~90 mA | 30–60 s (TTFF from cold; warm fix ~5–15 s) |
+| GPS fix acquisition | ESP32 active + GPS module | ~90 mA | 30–60 s (TTFF from cold; warm fix ~5–15 s) |
 | LoRa TX (1 packet, SF7–SF9) | ESP32 active + radio | ~120 mA | 0.1–0.3 s |
 | Accelerometer watch (movement rule) | MPU6050 in accel-only cycle mode | ~10–70 µA | continuous while sleeping |
-| Deep sleep between cycles | AXP2101 + RTC (wake: RTC timer only — motion is polled each wake, no INT) | ~0.5–2 mA* | rest of interval |
+| Deep sleep between cycles | ESP32 deep sleep + RTC + MPULDO off | **~0.5–2 mA\*** | rest of interval |
 
-\* T-Beam deep sleep is famously **not** sub-100 µA unless PMU rails are turned off carefully — budget 1.5 mA average and measure the real figure early (see test below).
+\* With GPIO-gated rail cutoff (GPS/LoRa rails off), ESP32 deep-sleep base is ~10 mA but only RTC runs (~0.1 mA). With GPS and LoRa modules powered down via MOSFETs, total system sleep approaches **~0.5–1.5 mA**. Measure real current early.
 
 ### Duty cycle scenarios (10-min reporting interval, 1-min GPS window)
 
 Average current ≈ (GPS 60 s × 90 mA + TX 0.3 s × 120 mA + RX window 3 s × 90 mA + sleep 536.7 s × 1.5 mA) / 600 s ≈ **~10.95 mA**
 
 | Reporting interval | Est. average current | Runtime on 3,500 mAh |
-|---|---:|---:|
+|---|---:|---|
 | 5 min | ~19.5 mA | ~7 days |
 | **10 min (chosen)** | ~11.0 mA | **~13 days** |
 | 15 min | ~7.9 mA | ~18 days |
@@ -45,13 +45,13 @@ The accelerometer must run *while the collar sleeps* — use the **MPU6050 motio
 
 **Critical power rule:** motion is **polled, never an interrupt** — each 10-min wake reads the MPU6050's latched motion flag (INT_STATUS), increments the activity counter if set, and goes straight back to sleep. Motion **never** triggers a full GPS/TX cycle (an actively grazing carabao would destroy the budget). Full cycles run on the RTC timer only. If the counter hasn't incremented in 24 h, the next scheduled LoRa packet is flagged `NO_MOVEMENT` → base station raises the alarm.
 
-**GY-521 module caution (sleeper current):** the common purple GY-521 breakout has a power LED (~1–2 mA) and an LDO (~1 mA quiescent) that never sleep — 2–3 mA that would dominate the whole sleep budget. Fix at assembly: **strip the power LED** and **bypass the LDO** (feed 3V3 straight to VCC), or budget for it. Bare-die MPU6050 on a custom board avoids this entirely. Verify with the µA meter — same rule as the T-Beam rails.
+**GY-521 module caution (sleeper current):** the common purple GY-521 breakout has a power LED (~1–2 mA) and an LDO (~1 mA quiescent) that never sleep — 2–3 mA that would dominate the whole sleep budget. Fix at assembly: **strip the power LED** and **bypass the LDO** (feed 3V3 straight to VCC), or budget for it. Bare-die MPU6050 on a custom board avoids this entirely. Verify with the µA meter — same rule as the discrete build rails.
 
 ### Measured-first policy
 
 All figures above are estimates. In Week 1, measure for real (see [TESTING.md](TESTING.md)):
 
-1. Actual deep-sleep current of the T-Beam build (USB power meter + inline ammeter; expect surprises)
+1. Actual deep-sleep current of the ESP32 build (USB power meter + inline ammeter; expect surprises)
 2. Actual TTFF warm vs cold at the farm (open sky)
 3. Actual energy per GPS+TX cycle
 
@@ -59,7 +59,7 @@ Then finalize the reporting interval that gives ≥ 2 weeks.
 
 ## Battery Care & Safety
 
-- **The protection story is the AXP2101 PMU, not the cell:** the sourced LiitoKala cells are an unprotected 10 A high-drain class (protected-cell listings didn't qualify — see [BOM.md](BOM.md)). The PMU provides over-voltage/over-current cut-off; never bypass it. All main charging happens off-animal in the smart charger (below), never on-animal, never unattended.
+- **Protection story:** the sourced LiitoKala cells are an unprotected 10 A high-drain class (protected-cell listings didn't qualify — see [BOM.md](BOM.md)). The TP4056 charging module provides over-voltage/over-current cut-off during USB charging; all main charging happens off-animal in the smart charger (below), never on-animal, never unattended.
 - Low-battery alarm at 20% (app notification), critical at 10% (collar reduces interval to conserve, still must alarm).
 - Charge at ≤ 0.5 C on the LiitoKala Lii-500 smart charger (4-slot, capacity-test mode — its test figure drives the cell-retirement log); rotate cells FIFO; retire cells at < 80% rated capacity (log per cell ID in the app maintenance record).
 - Temperature: Li-ion must never charge below 0 °C or above 45 °C — carabao collar interior can exceed this in direct sun; the charger must be temperature-compensated or charging happens indoors during the swap (Phase 1: **charging happens off-animal, indoors** — simplest and safest).
@@ -85,9 +85,9 @@ Sizing logic (10-min interval, ~10.95 mA avg @ 3.7 V ≈ **~41 mW** continuous �
 
 At a 30-min reporting interval the need drops to ~0.43 Wh/day → **one panel breaks even** there. **Sourced panels are 5 V 0.3 W epoxy units (~₱93 each, see [BOM.md](BOM.md))** — the exact 20×20 mm / 0.04–0.06 W class isn't listed on Lazada PH, so **2–3 sourced panels replace the originally sketched 6–8× 2×2 cm array**. Target stays: battery as buffer, solar as trickle — the collar rides through nights and rainy days on the 18650, and the array tops it up during grazing. Rainy-season expectations: solar extends the swap interval from 2 weeks toward 1–2 months rather than making it infinite.
 
-### Wiring (validated against CN3065 + T-Beam v2.x)
+### Wiring (validated against CN3065 + ESP32 build)
 
-Chain: **array → per-panel Schottky → potted junction → PG7 gland → sealed JST 2-pin → CN3065 VIN; CN3065 BAT → 18650 tabs (in parallel with the T-Beam battery connection)**. The T-Beam v2.x charges its 18650 via the AXP2101 USB path — bypass that for solar (USB charger stays for bench charging); the CN3065 feeds the cell directly and the T-Beam draws from the cell as normal.
+Chain: **array → per-panel Schottky → potted junction → PG7 gland → sealed JST 2-pin → CN3065 VIN; CN3065 BAT → 18650 tabs (in parallel with the ESP32 battery connection)**. The ESP32 draws from the cell directly via the AP2112 LDO; the CN3065 charges the cell independently (USB charger stays for bench charging).
 
 1. **Parallel only, never series.** Series stacking pushes input past the CN3065's 6.5 V absolute maximum (operating range 4.4–6.0 V). Parallel adds current only — exactly what a trickle array wants.
 2. **One Schottky diode (1N5819/SS14) in series with each panel.** Without it, a shaded panel *sinks* current from the lit ones — the animal's head shadow is the common case, not an edge case. Diodes cost ~₱2 each and cut shading loss to roughly the shaded fraction.
@@ -95,8 +95,8 @@ Chain: **array → per-panel Schottky → potted junction → PG7 gland → seal
 4. **Charge rate is inherently safe.** ~80–160 mA from the array into a 3,500 mAh cell = **0.02–0.05 C trickle** — thermally gentle even when the enclosure interior warms past ambient (Li-ion charge window 0–45 °C; PH never approaches 0 °C). The Phase-1 rule "0.5 C charging happens indoors" stays for USB smart-charger swaps.
 5. **TS/TEMP pin grounded** (stock module default) — no NTC on tab-soldered 18650s; the low trickle rate is the safety margin instead.
 6. **Night drain:** the CN3065 sleeps at < 3 µA with no input (datasheet) — negligible against the 1.5 mA deep-sleep budget.
-7. **Telemetry unaffected:** the AXP2101 gauge reads the cell regardless of charge source — the battery % in every LoRa packet stays truthful with solar in parallel.
-8. **Feed the cell, not the T-Beam USB/5V pin.** The AXP2101 charge path has no input-voltage regulation — in weak light the panel sags below its VBUS threshold and charging stops entirely; the CN3065 throttles charge current to hold the panel near its power point (its "MPPT-ish" behavior). This is why a solar charge module is required, not just a diode.
+7. **Telemetry unaffected:** battery percentage comes from ADC reading (GPIO35) through a resistive divider — truthful with solar in parallel.
+8. **Feed the cell, not the ESP32 USB/5V pin.** The CN3065 charges the cell directly; the ESP32 draws from the cell through the AP2112 LDO. This is why a solar charge module is required, not just a diode.
 
 ## Solar Roadmap Checklist
 

@@ -23,7 +23,7 @@ The collar lives in one of the harshest consumer-IoT environments possible: **wa
 |---|---|---|---|---|
 | Off-the-shelf IP67 junction box + PG7 glands | Excellent | Needs glands for external antennas | Low | **Baseline choice** — fast, reliable, ugly but proven |
 | 3D-printed ASA/PC + silicone gasket + bolted lid | Good (IP65–67 achievable with care) | Glands or embedded antenna window | Medium | Good for custom form factor; print in **ASA** (UV + heat), never PLA |
-| Potting the whole T-Beam in epoxy | Excellent | Antennas must be fully external | Low | Phase-2 consideration; makes repair impossible |
+| Potting the whole board in epoxy | Excellent | Antennas must be fully external | Low | Phase-2 consideration; makes repair impossible |
 
 **Chosen approach: IP67 box + glands for Phase 1**, custom 3D-printed ASA housing on the solar-ready roadmap.
 
@@ -37,9 +37,9 @@ The collar lives in one of the harshest consumer-IoT environments possible: **wa
 6. **Serviceability:** battery is reached by opening the lid — replace gasket on re-close; log every opening in the app maintenance record.
 7. **Cure time:** Suxun T7000 needs **24–48 h to fully cure** before immersion testing — schedule waterproof tests at least two days after assembly.
 
-## Antenna Strategy (the T-Beam problem)
+## Antenna Strategy (the discrete build advantage)
 
-The LilyGO T-Beam's stock antennas stick out on SMA connectors — exposed metal whips that will snap or leak at the collar's gasket line. Options:
+With separate modules, antenna placement is more flexible than the integrated T-Beam design:
 
 | Approach | LoRa link budget | GPS | Mechanical risk | Verdict |
 |---|---|---|---|---|
@@ -60,7 +60,7 @@ Design rules:
 ```mermaid
 flowchart TB
     TOP["TOP OF NECK — ANTENNAS UP<br/>GPS window: RF-transparent lid region, no metal above<br/>LoRa whip: bulkhead SMA top-rear + strain-relief boot"]
-    BOX["ENCLOSURE · 150×150×70 mm (sourced IP67 box)<br/>T-Beam + 18650 · tamper terminal block · desiccant<br/>Phase-2 CN3065 space reserved · PG7 glands + vent patch low edge"]
+    BOX["ENCLOSURE · 150×150×70 mm (sourced IP67 box)<br/>ESP32 DevKit + NEO-M8N + Ra-02 · tamper terminal block · desiccant<br/>Phase-2 CN3065 space reserved · PG7 glands + vent patch low edge"]
     PAD["BOTTOM — FACES NECK<br/>rounded corners · closed-cell foam padding (never open-cell)"]
     TOP --- BOX
     BOX --- PAD
@@ -72,50 +72,51 @@ flowchart TB
 - **Anti-rotation:** two rubber "keeper" blocks on the strap either side of the box keep it riding on the top of the neck.
 - **Padding:** closed-cell foam on the underside for comfort; open-cell foam would soak water — avoid.
 - **Edges:** everything chamfered/rounded; no zip-tie heads against skin.
-- **Weight target:** entire collar < 600 g (comfort + avoids behavior change) — re-weigh with the sourced 150×150×70 box, which is larger than the original 100×60×30 sketch.
+- **Weight target:** entire collar < 600 g (comfort + avoids behavior change) — re-weigh with the sourced 150×150×70 box.
 - **Tamper baseline (build-time):** the loop's *normal* resistance is whatever the built strap measures (target 40–200 Ω incl. far-end 100 Ω) — record it per collar. The firmware alarm bands are defined **relative to that baseline**, not fixed numbers (see [TAMPER.md](TAMPER.md)).
 - **Torque/pull test:** hang 100 kg from assembled collar for 10 min — no deformation, no seal breach, loop resistance unchanged.
 
 ## Component Dimensions & Fit Check (measured)
 
-All board sizes measured from LilyGO's official CAD exports (`dimensions/` folder of the LilyGo-LoRa-Series repo) — not vendor marketing copy. The "T-Beam with builtin battery" means the board + 18650 cell in the on-board holder.
+All board sizes measured from manufacturer datasheets and verified on arrival — not vendor marketing copy.
 
 | Part | Footprint (mm) | Stack height (mm) | Source |
 |---|---|---|---|
-| **T-Beam v2.x (classic, SX1276)** — PCB | **104.1 × 38.4** | 1.6 (board) + ~2.5 top-side components | official STEP `T-Beam-V1X-PCB.stp` (same footprint as v2.x) |
-| — with 18650 in on-board holder | 104.1 × 38.4 | **~20 total** — holder + cell extend 17.7 below the PCB (cell Ø18.2 × 65) | STEP, z < −1.6 extents |
-| — board SMAs (one short edge) | at edge only | 13.6 above PCB — unused (antennas re-route via u.FL to enclosure bulkheads); keep that edge clear or remove the SMAs | STEP |
-| T-Beam Supreme (alt path) | PCB 95.3 × 32.9 (100.1 incl. SMA tab) | LilyGO's own shell: 43.2 × 109.2 × 34.3 external (battery incl.) | DXF `T-BEAM-SUPREME-V3.0` + shell STL |
-| 18650 cell (LiitoKala 3500) | Ø18.2–18.5 × 65.1 | — (sits in on-board holder) | cell spec |
+| **ESP32 DevKit 38-pin** — PCB | **51 × 26** | 1.6 (board) + ~3 top-side components | Espressif ESP32-DevKitC-32E datasheet |
+| — with GPIO headers (both sides) | 51 × 26 | **~8 total** (includes header pins) | Standard DevKit variant |
+| NEO-M8N GPS breakout (u.FL) | 25 × 25 (ceramic patch) + ~15 × 10 (module) | ~4 (patch) + ~3 (module) | u-blox NEO-M8 datasheet |
 | MPU6050 (GY-521 module) | **20.5 × 15.5** | ~4 incl. header pins | standard GY-521 |
+| Ai-Thinker Ra-02 (SX1276) | **17 × 36** | ~3 incl. SMA tab | datasheet |
 | CN3065 solar charger (sourced) | **~40 × 20** | ~8 incl. PH2.0 + micro-USB (listing publishes no dims — verify on arrival) | Circuitrocks listing |
-| GPS patch antenna | 25 × 25 | ~4 ceramic + u.FL pigtail | bundled with board |
+| AP2112-3.3 LDO (SOT-23-5) | ~3 × 3 | ~1.5 | Diodes Inc. datasheet |
+| SI2301 MOSFET (SOT-23) | ~3 × 1.5 | ~1 | Vishay datasheet |
+| TP4056 charge module | **18 × 14** | ~3 | common module |
+| 18650 cell (LiitoKala 3500) | Ø18.2–18.5 × 65.1 | — (sits in external holder) | cell spec |
 | **Sourced enclosure (ALLAN/ZJW)** | **150 × 150 × 70 external** | **internal ≈ 140 × 140 × 58–60** (walls ~3–5 + lid lip — verify on arrival) | listing variants |
 
 **Fit check vs the sourced 150×150×70 box (internal ≈ 140×140×60):**
 
-- **Floor:** the T-Beam (38.4 wide × 104.1 long) along one wall leaves a **~102 × 140 mm free strip** beside it — GY-521 (20.5×15.5), CN3065 (40×20), tamper terminal block and desiccant all fit on that strip with room to spare; >40% of the floor stays free for Phase-2 solar wiring.
-- **Height:** standoffs ~5 + battery stack 17.7 + PCB 1.6 + top components ~2.5 ≈ **27 mm**; lid hardware (GPS patch ~4 + u.FL + SMA bulkhead nut) consumes ~8 mm → **~35 mm of ~60 mm used, ~25 mm spare.**
-- **The 150×150 size is required, not just a stock workaround:** the T-Beam PCB is **104.1 mm long** — a "100×100×70" box has only ~90–92 mm internal, so the board does **not** fit lying flat (diagonal mount would be hacky with the 17.7 mm battery stack). See the corrected note in [BOM.md](BOM.md).
+- **Floor:** the ESP32 DevKit (26 wide × 51 long) along one wall leaves a **~89 × 140 mm free strip** beside it — NEO-M8N (~25×25), Ra-02 (17×36), GY-521 (20.5×15.5), CN3065 (40×20), tamper terminal block and desiccant all fit on that strip with room to spare; >50% of the floor stays free for Phase-2 solar wiring.
+- **Height:** standoffs ~5 + DevKit board stack 8 + top components ~3 ≈ **16 mm**; lid hardware (GPS patch ~4 + u.FL + SMA bulkhead nut) consumes ~8 mm → **~24 mm of ~60 mm used, ~36 mm spare.**
+- **The 150×150 size remains appropriate** — generous internal volume with the smaller DevKit board, allowing clean routing and future expansion.
 - Weight note: re-weigh the assembled collar against the < 600 g target — the 150×150×70 ABS box alone is ~200–300 g.
 
 ## Solar-Ready Design (Phase 2 prep)
 
 The farm recommends solar collars (sample video in `references/`). Phase 1 must not paint us into a corner:
 
-1. **Lid is a separate, swappable part** — the Phase-2 lid carries a **parallel array of 2–3× 5 V 0.3 W panels** (the sourced Lazada units, ~70×70 mm epoxy — see [BOM.md](BOM.md); the originally sketched 6–8× 2×2 cm class isn't locally listed) bonded to the flat top with **Suxun T7000** (electronics-safe, non-corrosive cure — never use acidic-cure RTV near the board). Two panels (~145×75 mm combined) fit the 150×150 mm lid flanking the SMA bulkhead; a third goes forward of it. Round/pro protect panel corners — no snag points on branches.
+1. **Lid is a separate, swappable part** — the Phase-2 lid carries a **parallel array of 2–3× 5 V 0.3 W panels** (the sourced Lazada units, ~70×70 mm epoxy — see [BOM.md](BOM.md); the originally sketched 6–8× 2×2 cm class isn't locally listed) bonded to the flat top with **Suxun T7000** (electronics-safe, non-corrosive cure — never use acidic-cure RTV near the board). Two panels (~145×75 mm combined) fit the 150×150 mm lid flanking the SMA bulkhead; a third goes forward of it. Round/protect panel corners — no snag points on branches.
 2. **Wiring pre-provisioned:** a 2-pin sealed connector (JST with silicone gasket) from the lid area to the charge module space is already routed/terminated in Phase 1, capped with a dummy plug. Phase 2: a single 2-wire harness through the reserved PG7 gland with a drip loop below the gland. Electrical wiring details (Schottky diodes, CN3065, parallel topology): [POWER.md](POWER.md).
-3. **Volume reserved** in the enclosure layout for a CN3065 solar charge module — real boards are **~40×20×8 mm** (not 15×15) — no relocation later. The 150×150×70 sourced box has this volume to spare (the original 100×60×30 sketch did not — one more reason the bigger box was bought).
+3. **Volume reserved** in the enclosure layout for a CN3065 solar charge module — real boards are **~40×20×8 mm** (not 15×15) — no relocation later. The 150×150×70 sourced box has this volume to spare.
 4. Panels face up on the **top of the neck** — where the antennas are — so they sit **between** antennas (GPS window forward, solar panels rear) on the enclosure's flat top with antennas at the rear edge. Panel shading by the animal's head is a real loss factor; accept partial shading (per-panel Schottky diodes keep lit panels producing) — MPPT not needed at 0.6 W.
 5. See [POWER.md](POWER.md) for the electrical side.
 
 ## Environmental Test Checklist
 
 - [ ] **Immersion:** 1 m depth, 30 min (IP67) — no ingress; repeat after 10 lid cycles
-- [ ] **Wallow simulation:** 24 h in mud + water slurry, pressure-washed, then full function test
-- [ ] **Thermal:** enclosure interior < 60 °C under direct noon sun with battery inside (Li-ion must stay < 45 °C — light-colored enclosure if this fails)
-- [ ] **Impact:** drop 2 kg mass onto enclosure from 1 m; strap whacked against post 50×
-- [ ] **Pull:** 100 kg static load 10 min on assembled collar
+- [ ] **Wallow simulation:** 24 h in mud + water slurry, then hose wash | Function OK; loop window intact
+- [ ] **Pull test:** 100 kg static, 10 min, assembled collar | No deformation/slippage; loop resistance unchanged
+- [ ] **Impact:** drop 2 kg mass onto enclosure from 1 m; strap whacked against post 50× | No crack; antenna intact; no false alarms
 - [ ] **Flex:** 10k bend cycles at the gland/antenna boots — no conductor fatigue
-- [ ] **UV:** outdoor 2-week exposure — no gasket hardening (check datasheet ratings)
+- [ ] **Thermal:** enclosure interior < 60 °C under direct noon sun with battery inside (Li-ion must stay < 45 °C — light-colored enclosure if this fails)
 - [ ] **Animal trial:** worn 72 h by actual carabao — no sores, no rotation, antennas intact, seal intact

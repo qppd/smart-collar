@@ -4,7 +4,7 @@ Arduino-IDE C++ (Arduino-ESP32 core) for both collar and base station. One repo,
 
 ```
 firmware/
-├── collar/        ← LilyGO T-Beam v2.x
+├── collar/        ← ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa
 └── basestation/   ← ESP32 DevKit + Ra-02 (SX1276)
 ```
 
@@ -16,7 +16,7 @@ firmware/
 
 ```mermaid
 flowchart TB
-    SLEEP["Deep sleep<br/>accelerometer armed (activity-count only) · tamper ADC on RTC-timer wake"] -- "every REPORT_INTERVAL (default 10 min, RTC timer)" --> WAKE["Wake"]
+    SLEEP["Deep sleep<br/>GPS rail off · LoRa rail off · accelerometer armed (activity-count only) · tamper ADC on RTC-timer wake"] -- "every REPORT_INTERVAL (default 10 min, RTC timer)" --> WAKE["Wake"]
     WAKE --> LOOPM["Measure tamper loop<br/>GPIO25 excite → ADC → window check"]
     LOOPM --> GPSF["GPS fix attempt<br/>max GPS_TIMEOUT 90 s · warm-start ephemeris in RTC RAM<br/>(no fix → reuse last fix, flag STALE)"]
     GPSF --> SND["Build + send LoRa packet<br/>(emergency packets retry 3× @ 30 s)"]
@@ -41,7 +41,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 ### Power-critical implementation notes
 
-1. **Deep sleep current is the project's #1 silent killer.** A naive T-Beam deep sleep drains in days. In `esp_sleep` setup, disable: LoRa (SX1276 sleep opmode), GPS power rail (AXP2101 GPS rail off), and unused AXP rails. Measure with a µA meter — target < 2 mA whole-system sleep, ideally < 500 µA. See [POWER.md](POWER.md).
+1. **Deep sleep current is the project's #1 silent killer.** With GPIO-gated rail cutoff (GPS rail off via GPIO13, LoRa rail off via GPIO15), target < 2 mA whole-system sleep, ideally < 500 µA. Measure with a µA meter. See [POWER.md](POWER.md).
 2. **Motion-gated GPS, motion never wakes the radio:** the motion flag is polled each wake and only increments the activity counter — at the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS and resend last position with `moved=false`. Motion never triggers a full cycle. Power rationale: [POWER.md](POWER.md).
 3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (prevents corrosion and saves power).
 4. **Ephemeris warm start:** RTC RAM retained across deep sleep keeps ephemeris alive — warm fixes in 5–15 s vs 30–60 s cold. Power impact: [POWER.md](POWER.md).
@@ -53,9 +53,28 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 |---|---|
 | `RadioLib` | SX127x LoRa — `SX1276` class for the 915 MHz variant (better power control than LoRa.h) |
 | `TinyGPSPlus` | NEO-M8N NMEA parsing |
-| `Adafruit_MPU6050` | Accelerometer, accel-only cycle mode — motion flag **polled each wake cycle** from INT_STATUS (latched since last read); no INT wire |
-| `AXP2101` (LilyGO / x-lqi) | PMU rail management on T-Beam v2.x |
+| `Adafruit_MPU6050` | Accelerometer, accel-only cycle mode — motion flag **polled each wake** from INT_STATUS (latched since last read); no INT wire |
+| ~~`AXP2101`~~ | **Removed** — replaced by GPIO-gated rail control (GPIO13 = GPS, GPIO15 = LoRa) and manual AP2112 3.3 V rail management |
 | `ArduinoJson` | Packet serialization + app/base config messages |
+
+### GPIO Gating for Deep Sleep
+
+```cpp
+// Pin assignments for rail control
+#define GPIO_GPS_VCC  13   // N-channel MOSFET gate → GPS module 3.3V
+#define GPIO_LORA_VCC 15   // N-channel MOSFET gate → LoRa module 3.3V
+#define GPIO_BATT_ADC 35   // ADC1_CH7 — battery voltage divider read
+
+void enterDeepSleep() {
+  digitalWrite(GPIO_GPS_VCC, LOW);   // Turn OFF GPS rail
+  digitalWrite(GPIO_LORA_VCC, LOW);  // Turn OFF LoRa rail
+  esp_deep_sleep_start();
+}
+
+void wakeFromDeepSleep() {
+  // Rails remain off until explicitly enabled
+}
+```
 
 ## LoRa Radio Settings
 
@@ -166,7 +185,7 @@ flowchart TB
 
 ## Flashing & Config
 
-1. Arduino IDE → board "ESP32 Dev Module" (T-Beam), 921600 upload; USB-C on v2.x powers and flashes directly.
+1. Arduino IDE → board "ESP32 Dev Module", 921600 upload; USB-C flash directly.
 2. First boot creates NVS config with defaults; set `COLLAR_ID` via serial CLI (`id 7`) or app.
 3. Serial console at 115200 — keep it attached for the first week of field testing (log everything).
 4. OTA over the app link is a stretch goal — bench flash until it's proven in the field.

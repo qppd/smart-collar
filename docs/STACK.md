@@ -4,16 +4,17 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 ---
 
-## Collar Firmware (LilyGO T-Beam v2.x)
+## Collar Firmware (ESP32 DevKit 38-pin + NEO-M8N + SX1276)
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Board | **LilyGO T-Beam v2.x** — ESP32 + NEO-M8N GPS + SX1276 LoRa + AXP2101 PMU + 18650 holder | One board = the whole collar |
+| Board | **ESP32 DevKit 38-pin** (ESP32-WROOM-32) + external NEO-M8N GPS + SX1276 LoRa | Discrete build; replaces LilyGO T-Beam v2.x (see [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md)) |
 | IDE / toolchain | **Arduino IDE 2.x** + esp32 by Espressif (core v2.x+) | |
 | LoRa driver | **RadioLib** | Better SX127x power control than the stock LoRa.h |
-| GPS parsing | **TinyGPSPlus** | NEO-M8N NMEA sentences |
+| GPS parsing | **TinyGPSPlus** | NEO-M8N NMEA sentences over UART2 (GPIO16/17) |
 | Motion / activity | **Adafruit MPU6050** | Motion-detect interrupt (MOT_THR / MOT_DUR, accel-only cycle mode) feeds **activity counting only** — motion never triggers a GPS/TX cycle (power guard, see POWER.md) |
-| Power management | **AXP2101** library (LilyGO / x-lqi) | Rail shutoff for sub-2 mA deep sleep |
+| Power management | **GPIO-gated rail control**: AP2112 LDO for 3.3 V, SI2301 MOSFETs on GPIO13 (GPS) and GPIO15 (LoRa); battery ADC via GPIO35 | No AXP2101 PMU — manual rail shutdown in deep sleep |
+| Battery gauge | **ADC-based** (GPIO35, resistive divider) | ±5% accuracy across 3.0–4.2 V cell range |
 | Serialization | **ArduinoJson** | Packet + config messages |
 
 ## Base Station Firmware (ESP32 DevKit + SX1276)
@@ -54,7 +55,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 | Component | Role |
 |---|---|
-| LilyGO T-Beam v2.x + 18650 | Collar core (MCU + GPS + LoRa + PMU + battery) |
+| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core (MCU + GPS + LoRa — discrete build replacing T-Beam); see [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md) |
 | Supervised tamper loop | Adjustable-strap cut/bypass detection — see [TAMPER.md](TAMPER.md) |
 | MPU6050 (GY-521) | 24-hour no-movement rule |
 | IP67 enclosure + glands + sealant | Wallow/submersion-proof housing — see [ENCLOSURE.md](ENCLOSURE.md) |
@@ -70,5 +71,5 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 - **One radio library both ends** — RadioLib on collar and base keeps packet handling identical and debuggable.
 - **PWA instead of native** — one codebase covers "offline mobile/desktop app" with no store, no build chain per platform.
 - **ESP32 everywhere** — collar, base, and app server share one toolchain, one firmware skill set.
-- **Power-first choices** — RadioLib power control, AXP2101 rail shutoff, motion flag polled (never an interrupt wake), 3 s post-TX RX windows, MPU6050 accel-only cycle mode (GY-521 LED/LDO stripped — see POWER.md): every pick was made for the ~2-week battery target.
+- **Power-first choices** — RadioLib power control, GPIO-gated rail shutoff, motion flag polled (never an interrupt wake), 3 s post-TX RX windows, MPU6050 accel-only cycle mode (GY-521 LED/LDO stripped — see POWER.md): every pick was made for the ~2-week battery target.
 - **All free & open-source** — software cost ₱0; budget lives in hardware.

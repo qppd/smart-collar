@@ -21,7 +21,7 @@ Radio settings and packet format: [FIRMWARE.md](FIRMWARE.md).
 
 LoRa at SF7–SF9, 915 MHz, with a mast-mounted base antenna reaches **2–8 km** in open/rolling terrain, **300 m–2 km** through dense trees — enough for a typical grazing farm, but the site survey decides.
 
-1. **Site survey first (before buying the mast):** carry a battery-packaged collar prototype (or T-Beam + power bank) around the farm boundary and paddock corners; walk with the base on a bench (or a second person at the base); log RSSI/SNR at each waypoint. A Saturday afternoon of walking beats a month of "why is collar 3 always missing."
+1. **Site survey first (before buying the mast):** carry a battery-packaged collar prototype (or ESP32 DevKit + power bank) around the farm boundary and paddock corners; walk with the base on a bench (or a second person at the base); log RSSI/SNR at each waypoint. A Saturday afternoon of walking beats a month of "why is collar 3 always missing."
 2. **Mast:** 3–5 m above ground at the farmstead's highest practical point; antenna vertical, clear of metal roofing by ≥ 1 m.
 3. **Fallback modes:** if a paddock is dead-zone, options: raise mast, higher SF for that collar, or a second base station (the protocol supports >1 base — collars just need one to hear them).
 4. **Siren audibility:** the siren sounds at the base; place it where it's heard at the farmhouse — that's the point of the alarm.

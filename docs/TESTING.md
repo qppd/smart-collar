@@ -10,11 +10,11 @@ Every test below has a pass criterion — the capstone evaluation needs measured
 |---|---|---|---|
 | B1 | GPS fix time | 20 fixes: 10 cold (ephemeris cleared), 10 warm | Cold < 90 s, warm < 15 s, open sky |
 | B2 | LoRa bench link | Collar→base across 10 m + one wall, 100 packets | 100% received, RSSI > −100 dBm |
-| B3 | Sleep current | µA meter in-line, full sleep build | < 2 mA (target < 500 µA) — see [POWER.md](POWER.md) |
+|| B3 | Sleep current | µA meter in-line, full sleep build (GPS rail + LoRa rail OFF via GPIO13/15) | < 2 mA (target < 500 µA) — see [POWER.md](POWER.md) and [HARDWARE.md](HARDWARE.md) § Power Architecture |
 | B4 | Tamper cut | Bench loop, cut at 5 positions | Every cut → LOOP_OPEN alarm |
 | B5 | Tamper bypass | Jumper across loop terminals | LOOP_SHORT alarm |
 | B6 | Buckle detection | Unbuckle w/o maintenance mode | OPEN alarm (break-away link separates); with maintenance mode: logged, no alarm |
-| B7 | Battery gauge | AXP2101 % vs discharge curve | ±10% of actual |
+|| B7 | Battery gauge | ADC reading (GPIO35 resistive divider) vs true cell voltage | ±10% across 3.0–4.2 V range |
 | B8 | 48 h soak run | Full system, 10-min interval, bench range | 0 missed packets; battery drop matches POWER.md model |
 | B9 | Base clock sync | Pair phone (app sends TIME_SET), reboot base, reconnect | Clock re-syncs on connect; `unsynced` flag while phone away; history timestamps continuous after reconnect |
 | B10 | Downlink delivery | Push geofence (1-chunk and 2-chunk), interval change, ACK | Collar applies within one cycle; corrupt chunk rejected, old polygon kept |

@@ -35,7 +35,7 @@ The collar is worn by the animal full-time, so the **mechanical design is as cri
 
 | Component | Location | Role |
 |---|---|---|
-| **Smart Collar** | Worn by the carabao | GPS positioning, LoRa uplink, tamper detection, battery telemetry |
+| **Smart Collar** | Worn by the carabao | GPS positioning, LoRa uplink, tamper detection, battery telemetry (discrete ESP32 build — see [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md)) |
 | **Base Station** | Fixed, powered point at the farm | Receives LoRa data, evaluates alarm rules, drives the siren; pairs to the app over Bluetooth LE |
 | **Offline Mobile/Desktop App** | Farmer's device | Location & status dashboard, geofence configuration |
 | **Siren Alarm** | At the base station | Loud audible alert on any detected abnormal condition |
@@ -81,9 +81,9 @@ Additional capabilities:
 
 ```mermaid
 flowchart TB
-    GPS["GPS satellites"] --> TBEAM["SMART COLLAR (on carabao)<br/>T-Beam: ESP32 + NEO-M8N + SX1276 (915 MHz)<br/>tamper loop · MPU6050 · 18650"]
-    LOOP["Tamper loop (wire rope)"] --> TBEAM
-    TBEAM <-. "LoRa 915 MHz · offline radio link" .-> BASE["BASE STATION<br/>ESP32 DevKit + SX1276 · alarm rules engine<br/>geofence / tamper / 24 h no-move<br/>siren driver · local app server"]
+    GPS["GPS satellites"] --> COLLAR["SMART COLLAR (on carabao)\nESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 (915 MHz)\ntamper loop · MPU6050 · 18650\n(migration: [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md))"]
+    LOOP["Tamper loop (wire rope)"] --> COLLAR
+    COLLAR <-. "LoRa 915 MHz · offline radio link" .-> BASE["BASE STATION\nESP32 DevKit + SX1276 · alarm rules engine\ngeofence / tamper / 24 h no-move\nsiren driver · local app server"]
     BASE -- "relay" --> SIREN["SIREN ALARM<br/>12 V, loud"]
     BASE <-. "Bluetooth LE / USB — offline" .-> APP["OFFLINE APP (PWA)<br/>mobile / desktop<br/>MapLibre + offline OSM data<br/>map + geofence editor"]
 ```
@@ -95,7 +95,7 @@ Core components (full list with indicative prices: **[docs/BOM.md](docs/BOM.md)*
 
 | Component | Role |
 |---|---|
-| LilyGO T-Beam v2.x | Collar core — ESP32 + GPS (NEO-M8N) + LoRa (SX1276) + 18650 battery interface in one board |
+| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core — discrete ESP32 board with external GPS and LoRa modules (replaces integrated T-Beam; full migration details in [MIGRATION-SUMMARY.md](../MIGRATION-SUMMARY.md)) |
 | 18650 Li-ion cell + holder | Collar power (Phase 1) — PMU-protected, charged off-animal in a smart charger |
 | Conductive tamper loop (stainless wire rope) with buckle break-away link | Tamper detection on the adjustable strap |
 | IP67 enclosure + PG7 glands + Suxun T7000 silicone sealant | Waterproof housing (carabaos wallow in water/mud) |
@@ -140,7 +140,8 @@ smartcollar/
 │   ├── STACK.md            ← full technology stack reference
 │   ├── BLOCK-DIAGRAM.md    ← hardware blocks & signal chains
 │   ├── FLOWCHART.md        ← runtime decision logic
-│   └── SYSTEM-ARCHITECTURE.md ← layers, interfaces, failure modes
+│   ├── SYSTEM-ARCHITECTURE.md ← layers, interfaces, failure modes
+│   └── NTC-COMPLIANCE.md   ← PH radio regulations & certification guidance
 ├── model/
 │   └── SmartCollar.f3z  ← Fusion 360 3D model
 ├── wiring/
@@ -157,7 +158,7 @@ The build is organized into stages. Follow in order:
 |---:|---|---|
 | 1 | [docs/BOM.md](docs/BOM.md) | Order all parts |
 | 2 | [docs/WIRING.md](docs/WIRING.md) | Study the circuit diagram + netlist (collar & base) |
-| 3 | [docs/HARDWARE.md](docs/HARDWARE.md) | Assemble collar electronics, verify T-Beam GPS + LoRa |
+|| 3 | [docs/HARDWARE.md](docs/HARDWARE.md) | Assemble collar electronics, verify ESP32 GPS + LoRa |
 | 4 | [docs/TAMPER.md](docs/TAMPER.md) | Build and validate the adjustable tamper loop |
 | 5 | [docs/ENCLOSURE.md](docs/ENCLOSURE.md) | Seal the enclosure, mount antenna, solar-ready lid |
 | 6 | [docs/POWER.md](docs/POWER.md) | Configure duty cycling, measure battery endurance |
@@ -173,7 +174,7 @@ The build is organized into stages. Follow in order:
 |---|---|
 | [BOM.md](docs/BOM.md) | Collar + base station parts, specs, indicative PH prices |
 | [WIRING.md](docs/WIRING.md) | Circuit diagram, full netlist, power rails, build-order notes |
-| [HARDWARE.md](docs/HARDWARE.md) | T-Beam pin map, wiring tables, accelerometer, assembly |
+|| [HARDWARE.md](docs/HARDWARE.md) | Collar electronics, wiring tables, accelerometer, assembly (discrete ESP32 build) |
 | [TAMPER.md](docs/TAMPER.md) | Tamper loop options, supervised-loop circuit, bypass resistance, alarm codes |
 | [ENCLOSURE.md](docs/ENCLOSURE.md) | IP-rating targets, sealing strategy, antenna mounting, solar-ready design, mechanical tests |
 | [POWER.md](docs/POWER.md) | Power budget, duty cycle, charging rotation, solar sizing |
@@ -196,7 +197,7 @@ The build is organized into stages. Follow in order:
 
 - [x] Circuit diagram + netlist drawn (Cirkit Designer — [WIRING.md](docs/WIRING.md))
 - [ ] Parts ordered & verified (BOM)
-- [ ] T-Beam bench test: GPS fix + LoRa link
+|- [ ] Discrete ESP32 collar bench test: GPS fix + LoRa link
 - [ ] Tamper loop working on an adjustable strap
 - [ ] Enclosure passes immersion test
 - [ ] Full collar worn-test on animal (comfort, anti-rotation, wallow test)
@@ -219,4 +220,19 @@ Adviser: `[Adviser Name]`
 
 Pilot client: **[Farm name]** — who recommended the solar collar direction and provided a sample collar video (kept in `references/`).
 
-*This project is an academic prototype. The full manuscript is available from the team on request.*
+| *This project is an academic prototype. The full manuscript is available from the team on request.*
+
+---
+
+## Hardware Migration Note (2026-11)
+
+The original design used a LilyGO T-Beam v2.x integrated board. For improved sourcing reliability and modularity in the Philippines, the project has been migrated to a **discrete ESP32 DevKit 38-pin** build with separate NEO-M8N GPS and SX1276 LoRa modules.
+
+All original objectives, features, and functionality are preserved. See **[MIGRATION-SUMMARY.md](MIGRATION-SUMMARY.md)** for:
+- Pin assignment changes
+- Power architecture modifications (loss of AXP2101 PMU, new GPIO-gated rail control)
+- Enclosure fit updates (smaller board = more internal volume)
+- Firmware library differences
+- NTC compliance guidance ([docs/NTC-COMPLIANCE.md](docs/NTC-COMPLIANCE.md))
+
+For sourcing: all components are now available from Makerlab Electronics and verified Lazada PH sellers — no AliExpress dependency for the core board.
