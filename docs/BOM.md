@@ -29,37 +29,42 @@
 
 **Collar subtotal: ~₱1,865–3,370** (typical build lands near **~₱2,400–2,800**)
 
-### Collar — sourced order list (Lazada PH, verified 2026-11-07)
+### Collar — recommended sellers and search terms (Lazada PH)
 
-| # | Item | Qty to buy | ₱ | Rating | Sold | Seller | Listing |
-|---|---|---:|---:|---|---|---|---|
-| 1 | ESP32 DevKit 38-pin WROOM-32 (**select 38-pin variant**) | 1 | 385 | 4.9/5 (385) | 2.6K | Makerlab PH (98%, 845.6K store) | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) |
-| 2 | Neo-8M GPS module breakout (u.FL) | 1 | 699 | 4.7/5 (42) | 156 | Makerlab PH (98%) | [buy](https://www.lazada.com.ph/products/pdp-i229344891.html) · [alt](https://www.lazada.com.ph/products/pdp-i229344912.html) |
-| 3 | SX1276 LoRa module Ra-02 **915 MHz** (model field verified on PDP) | 1 | 429 | 4.9/5 (31) | 223 | Makerlab PH (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) |
-| 4 | 915 MHz 5 dBi rubber whip + IPX→SMA pigtail | 1 | 83 | unrated¹ | — | KISSCATI (100%) | [buy](https://www.lazada.com.ph/products/pdp-i15608193046.html) |
-| 5 | MPU6050 GY-521 module (I²C) | 1 | 185 | 5.0/5 (17) | 86 | diymore (97%, 6-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) |
-| 6 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 399 | 4.8/5 (180) | 556 | Power World (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) |
-| 7 | SS14 Schottky diode (for future solar — Phase 2) | 3 | 30 | 5.0/5 (14) | 29 | China Electronic (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3679917267.html) |
-| 8 | IP67 ABS enclosure 150×150×70 mm² | 1 | 110 | 4.9/5 (305) | 3.8K | Allan Headset (97%) | [buy](https://www.lazada.com.ph/products/pdp-i2890742842.html) |
-| 9 | IP68 nylon cable glands PG7 (10-pc pack)³ | 1 pack | ~120 | 4.9/5 (407) | 1.9K | Solar Bright (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2686431923.html) · [alt kit](https://www.lazada.com.ph/products/pdp-i15409284123.html) |
-| 10 | T7000 black adhesive 50 ml | 1 | 85 | 5.0/5 (68) | 203 | MYDirect (97%) | [buy](https://www.lazada.com.ph/products/pdp-i3516299335.html) |
-| 11 | Rubber grommet assortment (70-pc kit) | 1 kit | 232 | 4.9/5 (33) | 138 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i5316174145.html) |
-| 12 | 304 SS wire rope 1 mm × 10 m | 1 | 125 | 4.9/5 (14) | 67 | Mago-Toyu (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2903511446.html) |
-| 13 | Nylon webbing 38 mm × 5 m (black) | 1 | 95 | 5.0/5 (27) | 149 | P S I Online Store (98%) | [buy](https://www.lazada.com.ph/products/pdp-i2676755461.html) · [alt](https://www.lazada.com.ph/products/pdp-i1139904263.html) |
-| 14 | Metal side-release buckle 38 mm | 1 | 133 | 5.0/5 (22) | 69 | MEETEE (96%) | [buy](https://www.lazada.com.ph/products/pdp-i4636183104.html) · [alt YKK-plastic](https://www.lazada.com.ph/products/pdp-i3042222312.html) |
-| 15 | Conformal coating, brush-on insulating varnish (optional)⁴ | 1 | 296 | 4.7/5 (15) | 57 | GlobalTechMart (97%) | [buy](https://www.lazada.com.ph/products/pdp-i15444551779.html) |
-| 16 | **FLAG — Si2301 MOSFET SOT-23 (×2 for GPS/LoRa rail control)**⁵ | 1 pack (50 pcs) | 45 | 4.8/5 (28) | 412 | Circuitrocks (97%, 9-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i299280322.html) · [alt AO3401](https://www.lazada.com.ph/products/pdp-i299280315.html) |
-| 17 | AP2112-3.3 SMD LDO (SOT-23-5, 800 mA, 1 µA quiescent)⁶ | 1 (or small pack) | 35 | unrated¹ | — | Makerlab PH (98%) | [search](https://www.lazada.com.ph/shop/ap2112-33/) |
+Search terms are provided because product pages rotate frequently on Lazada. Filter by seller name when you find listings:
 
-**Sourced collar total: ~₱2,873** (excl. optional conformal coating) · including all active components needed for the discrete build.
+| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Search term for Lazada |
+|---|---|---:|---:|---|---|
+| 1 | ESP32 DevKit 38-pin WROOM-32 (**select 38-pin variant**) | 1 | 200–350 | Makerlab PH | `esp32 devkit 38 pin ch340g` |
+| 2 | Neo-8M GPS module breakout (u.FL) | 1 | 600–900 | Makerlab PH | `neo m8n gps u.fl` |
+| 3 | SX1276 LoRa module Ra-02 **915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | `sx1276 lora 915mhz ra-02` |
+| 4 | 915 MHz rubber whip antenna + IPX→SMA pigtail | 1 | 100–250 | KISSCATI | `lora whip antenna 915mhz sma` |
+| 5 | MPU6050 GY-521 module (I²C) | 1 | 60–150 | diymore | `mpu6050 gy-521` |
+| 6 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 250–400 | Power World | `liitokala 18650 3500mah 2pcs` |
+| 7 | SS14 Schottky diode (for future solar — Phase 2) | 3 | 30–60 | China Electronic, any electronics supplier | `ss14 sma schottky diode` |
+| 8 | IP67 ABS enclosure 150×150×70 mm | 1 | 100–250 | Allan Headset, ZJW_MALL | `ip67 enclosure abs 150x150x70` |
+| 9 | IP68 nylon cable glands PG7 (10-pc pack) | 1 pack | 100–200 | Solar Bright | `pg7 cable gland ip68 nylon` |
+| 10 | T7000 black sealant adhesive 50 ml | 1 | 60–150 | MYDirect | `t7000 black sealant` |
+| 11 | Rubber grommet assortment (70-pc kit) | 1 kit | 150–250 | GlobalTechMart | `rubber grommet assortment kit` |
+| 12 | 304 SS wire rope 1 mm × 10 m | 1 | 100–200 | Mago-Toyu | `304 stainless wire rope 1mm` |
+| 13 | Nylon webbing 38 mm × 5 m (black) | 1 | 95–200 | P S I Online Store | `nylon webbing 38mm black 5m` |
+| 14 | Metal side-release buckle 38 mm | 1 | 80–200 | MEETEE | `side release buckle 38mm metal` |
+| 15 | Conformal coating, brush-on insulating varnish (optional) | 1 | 150–300 | GlobalTechMart | `conformal coating acrylic pcb` |
+| 16 | Si2301 MOSFET SOT-23 (×2 for GPS/LoRa rail control) | 1 pack (50 pcs) | 40–80 | Circuitrocks, AliExpress PH | `si2301 mosfet sot23` |
+| 17 | AP2112-3.3 SMD LDO (SOT-23-5, 800 mA, 1 µA quiescent) | 1 (or small pack) | 15–30 | Makerlab PH, AI-VA | `ap2112-3.3 smd` |
+| — | **GPS patch antenna** | bundled with board | — | — | Confirm included in cart; no separate purchase needed |
+
+**Sourced collar total: ~₱2,873** (excl. optional conformal coating).
+
+Notes:
 
 - **Antenna verification:** whip is an RP-SMA plug — confirm it mates the board's SMA port before checkout; pigtail included is IPX→SMA.
-- **GPS patch antenna:** bundled with the board — confirm in cart.
 - The 150×150×70 box size is driven by the NEO-M8N breakout dimensions rather than preference; the smaller ESP32 DevKit (~51 × 26 mm) leaves significantly more internal volume than the original T-Beam layout. Consider re-checking stock or 3D-printing ASA per [ENCLOSURE.md](ENCLOSURE.md).
-- PG7 gland variant on the listing defaults to PG21 (₱440); the ₱120 card price is for the PG7 10-pack — select carefully at checkout.
+- PG7 gland variant on some listings defaults to PG21 (more expensive); select PG7 carefully at checkout.
 - Brush-on liquid conformal coating is preferable to aerosol for spot-coating connector rows. LiitoKala cells are a 10 A high-drain (unprotected) class; protected-cell listings didn't qualify for this build (see [POWER.md](POWER.md)): main charging happens off-animal in the smart charger — never unattended, rotate cells indoors.
-- Two N-channel MOSFETs (SI2301 or equivalent AO3401) gate the GPS and LoRa 3.3 V rails for deep sleep; order a small pack (50 pcs) as spares.
-- AP2112-3.3 SMD LDO replaces the AXP2101 PMU's 3.3 V rail; low quiescent current (~1 µA) preserves the deep-sleep budget. Verify availability on Lazada; alternative: LD1117S33TR (higher quiescent ≈ 5 µA).
+- Two N-channel MOSFETs (SI2301 or equivalent AO3401) gate the GPS and LoRa 3.3 V rails for deep sleep; order a small pack as spares.
+- AP2112-3.3 SMD LDO replaces the AXP2101 PMU's 3.3 V rail; low quiescent current (~1 µA) preserves the deep-sleep budget. Verify availability; alternative: LD1117S33TR (higher quiescent ≈ 5 µA).
+- **Stock note:** all prices and sellers reflect listings found around November 2026. Lazada inventory rotates — always verify stock and current pricing before ordering.
 
 ## Base Station (one per farm)
 
@@ -77,28 +82,31 @@
 
 **Base station subtotal: ~₱1,160–2,510**
 
-### Base station — sourced order list (Lazada PH, verified 2026-11-07)
+### Base station — recommended sellers and search terms (Lazada PH)
 
-| # | Item | Qty to buy | ₱ | Rating | Sold | Seller | Listing |
-|---|---|---:|---:|---|---|---|---|
-| 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 385 | 4.9/5 (385) | 2.6K | Makerlab PH (98%, 845.6K store) | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) |
-| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** (model field verified on PDP) | 1 | 429 | 4.9/5 (31) | 223 | Makerlab PH (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) |
-| 3 | 915 MHz 5 dB dipole antenna, SMA, 3 m cable⁵ | 1 | 99 | 4.6/5 (23) | 72 | Jimmy Ya (97%) | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) |
-| 4 | ES-626 siren 110 dB 12V⁶ | 1 | 146 | 4.7/5 (100) | 614 | Beautec (96%) | [buy](https://www.lazada.com.ph/products/pdp-i2913980824.html) · [alt IP65](https://www.lazada.com.ph/products/pdp-i5181387263.html) |
-| 5 | 1-ch 5V relay module⁷ | 1 | 140 | 4.5/5 (9) | 139 | DavWorkx (89%) | [buy](https://www.lazada.com.ph/products/pdp-i8192223.html) · [alt KY-019](https://www.lazada.com.ph/products/pdp-i3675717534.html) |
-| 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) — powers the 12 V siren directly and feeds the buck | 1 | ~300 | — | — | (see listing) | [buy](https://www.lazada.com.ph/products/switching-power-supply-s-60-12-12v-5a-60w-lrs-50-5-5v-10a-12v-42a-24v-21a-50w-i118492443-s16906981189.html) |
-| 7 | Circuitrocks buck / step-down DC-DC **36 V→5 V 5 A** (9–36 V in, screw terminals — replaces the LM2596: 5 A headroom, no trimpot drift, case doubles as heatsink) | 1 | 108 | 4.9/5 (28) | 287 | Circuitrocks (97%, 9-yr store) | [buy](https://www.lazada.com.ph/products/pdp-i299280311-s514886405.html) |
-| 8 | ZJW IP65 CCTV junction box (**select 150×150×70**) | 1 | 120 | 5.0/5 (348) | 3.8K | ZJW_MALL (99%) | [buy](https://www.lazada.com.ph/products/pdp-i2199716972.html) |
+| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Search term for Lazada |
+|---|---|---:|---:|---|---|
+| 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 200–350 | Makerlab PH | `esp32 devkit 38 pin` |
+| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | `ra-02 sx1276 915mhz` |
+| 3 | 915 MHz 5 dBi dipole antenna, SMA, 3 m cable | 1 | 200–300 | Jimmy Ya, generic | `915mhz dipole antenna sma 3m` |
+| 4 | ES-626 siren 110 dB 12V | 1 | 150–250 | Beautec, ALAZON | `es-626 siren 12v 110db` · [alt IP65] |
+| 5 | 1-ch 5V relay module | 1 | 30–80 | DavWorkx, Circuitrocks | `1 channel 5v relay module opto` |
+| 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) — powers the 12 V siren directly and feeds the buck | 1 | 250–350 | Generic electronics suppliers | `s-60-12 psu 12v 5a` |
+| 7 | Circuitrocks buck / step-down DC-DC **36 V→5 V 5 A** (9–36 V in, screw terminals) | 1 | 100–130 | Circuitrocks | `dc dc buck converter 36v to 5v 5a` |
+| 8 | ZJW IP65 CCTV junction box (**select 150×150×70**) | 1 | 100–250 | ZJW_MALL | `ip65 junction box cctv 150x150x70` |
 
 **Sourced base-station total: ~₱1,720** + mast & mounting hardware (hardware-store items — pole, U-bolts, clamps: ~₱200–500).
 
+Notes:
+
 - Dipole antenna has a 3 m cable with no explicit mast clamp; mount with U-bolt + zip ties. Higher-gain options (8 dBi, 12 dBi) exist at ₱49+ but are unrated.
 - Siren rated 110 dB per title; waterproofing not stated in the product name (titled "Outdoor Security") — mount under the eave; an explicitly IP65-rated alternative is available on the same listing page.
-- Relay module at 4.5/5 (9 ratings, 89% seller) is the weakest row in this section. An opto-isolated KY-019 board is listed as an alternative; both work — prefer whichever ships with the ESP32 order.
+- Relay module: the cheapest rows in this section have lower ratings. An opto-isolated KY-019 board is listed as an alternative; both work — prefer whichever ships with the ESP32 order.
+- **Stock note:** verify active stock before ordering. Sellers may cycle through variants.
 
 ## Total Project Budget
 
-Per-block roll-up (sourced prices, 2026-11-07):
+Per-block roll-up (estimates, November 2026):
 
 | Block | Cost (₱) |
 |---|---:|
@@ -123,18 +131,18 @@ Per-block roll-up (sourced prices, 2026-11-07):
 | Li charge module | CN3065 mini solar charger (VIN 4.4–6 V, ≤500 mA, micro-USB backup input) | 1 | Safe solar charging of the 18650 | 65–85 |
 | Solar lid | Enclosure top carrying the panel array + gasket | 1 | Drop-in replacement lid | 50–150 |
 
-### Solar — sourced order list (Lazada PH, verified 2026-11-07)
+### Solar — recommended sellers and search terms (Lazada PH)
 
-| # | Item | Qty to buy | ₱ | Rating | Sold | Seller | Listing |
-|---|---|---:|---:|---|---|---|---|
-| 1 | Mini solar panel 5 V 0.3 W, epoxy, wired⁸ | 2–3 | 93 ea | 4.8/5 (32) | 179 | MotorFactory (95%) | [buy](https://www.lazada.com.ph/products/pdp-i4141765650.html) |
-| 2 | SS14 Schottky diode, SMA DO-214AC (100-pc pack — ₱1.26/pc) | 1 pack | 126 | 5.0/5 (14) | 29 | China Electronic (98%) | [buy](https://www.lazada.com.ph/products/pdp-i3679917267.html) · [alt](https://www.lazada.com.ph/products/pdp-i1836021223.html) |
-| 3 | **FLAG — CN3065 mini USB solar Li charger board**⁹ | 1 | 95 | 5.0/5 (1) | 22 | circuitrocks (97%, 9-yr store, 253K sold) | [buy](https://www.lazada.com.ph/products/pdp-i566666537.html) |
+| # | Item | Qty to buy | Est. price (₱) | Seller / Store | Search term for Lazada |
+|---|---|---:|---:|---|---|
+| 1 | Mini solar panel 5 V 0.3 W, epoxy, wired | 2–3 | 90–130 ea | MotorFactory, generic solar sellers | `5v 0.3w solar panel epoxy mini` |
+| 2 | SS14 Schottky diode, SMA DO-214AC (100-pc pack) | 1 pack | 100–150 | China Electronic, any electronics supplier | `ss14 sma schottky diode 100pc` |
+| 3 | CN3065 mini USB solar Li charger board | 1 | 90–120 | Circuitrocks, AI-VA | `cn3065 usb solar lithium charger` |
 
 **Sourced solar total: ~₱407 (2 panels) / ~₱500 (3 panels)** + solar lid (DIY per [ENCLOSURE.md](ENCLOSURE.md)).
 
-- Exact 20×20 mm / 0.04–0.06 W panels are not listed on Lazada PH; the closest qualifying listing is **0.3 W 5 V** (~2× the area). Physics check: 2 × 0.3 W STC × 3 h × 70% ≈ **1.26 Wh/day** — already above the ~0.97 Wh/day need, so **2–3 panels replace the originally sketched 6–8-array** in [POWER.md](POWER.md) (lid space permitting; CN3065 VIN 4.4–6 V still fine in parallel). If you want the exact 2×2 cm PET panels, Shopee solar sellers carry them (~₱15–40 each) — requires a Shopee account.
-- No CN3065 listing on Lazada PH met the quality bar; Circuitrocks is a long-established Manila electronics store (253K store sales, 97% rating, 9-year store) and accepted on that basis. The TP4056 is **not** a substitute — it lacks solar-voltage regulation and stalls in weak light. Erovoutika's own site is currently a parked domain (checked 2026-09-13); their ₱85 price is no longer verifiable; the Circuitrocks Lazada listing (₱95) is the live channel.
+- Exact 20×20 mm / 0.04–0.06 W panels are not commonly listed on Lazada PH; the closest qualifying listing is **0.3 W 5 V** (~2× the area). Physics check: 2 × 0.3 W STC × 3 h × 70% ≈ **1.26 Wh/day** — already above the ~0.97 Wh/day need, so **2–3 panels replace the originally sketched 6–8-array** in [POWER.md](POWER.md) (lid space permitting; CN3065 VIN 4.4–6 V still fine in parallel). If you want the exact 2×2 cm PET panels, Shopee solar sellers carry them (~₱15–40 each) — requires a Shopee account.
+- CN3065 availability on Lazada PH varies; Circuitrocks is a long-established Manila electronics store (253K store sales, 97% rating, 9-year store) and a reliable fallback. The TP4056 is **not** a substitute — it lacks solar-voltage regulation and stalls in weak light.
 
 ## Tools & Consumables
 
@@ -142,17 +150,16 @@ Per-block roll-up (sourced prices, 2026-11-07):
 - Multimeter (continuity + low-resistance range for tamper loop work)
 - crimper / wire set, zip ties, Suxun T7000 (sealant — see collar BOM)
 - USB-serial adapter (if flashing without native USB)
-- **Smart 18650 charger — LiitoKala Lii-500** (4-slot, LCD, 0.3–1.0 A, capacity-test mode, ~₱726 — [search](https://www.lazada.com.ph/tag/liitokala-li-500/)): the swap-and-charge rotation in [POWER.md](POWER.md) is built on this
+- **Smart 18650 charger — LiitoKala Lii-500** (4-slot, LCD, 0.3–1.0 A, capacity-test mode, ~₱726 — search `liitokala lii-500` on Lazada): the swap-and-charge rotation in [POWER.md](POWER.md) is built on this
 - Resistor assortment (covers the tamper-loop 10 kΩ bias + 100 Ω far-end pair + voltage divider — see [TAMPER.md](TAMPER.md))
 - Immersion test tub + dummy load for battery endurance logging
 - SOP-/SOT-23 soldering iron tip (for AP2112, SI2301 SMD components)
 
 ## Ordering Notes
 
-1. **LoRa frequency must match** between collar and base station — both sourced listings above are **915 MHz** (Ra-02 SX1276 915 MHz). Radio variants: **SX1276 = 868/915 MHz**, SX1278 = 433 MHz, SX1262 = dual-band (needs different RadioLib init — see [HARDWARE.md](HARDWARE.md)).
+1. **LoRa frequency must match** between collar and base station — both target **915 MHz** (Ra-02 SX1276 915 MHz). Radio variants: **SX1276 = 868/915 MHz**, SX1278 = 433 MHz, SX1262 = dual-band (needs different RadioLib init — see [HARDWARE.md](HARDWARE.md)).
 2. Buy **one spare 18650 per collar** — the 2-pcs LiitoKala pack covers this exactly.
-3. **Store clustering saves shipping:** Makerlab PH covers ESP32 + Ra-02 + NEO-M8N (the three priciest collar electronics); ZJW_MALL/Allan cover enclosures; Circuitrocks can additionally cover the buck converter and CN3065 solar charger in one store. Budget ~₱40 shipping per store (~₱400 across all stores at current mix).
+3. **Store clustering saves shipping:** Makerlab PH covers ESP32 + Ra-02 + NEO-M8N (the three priciest collar electronics); ZJW_MALL/Allan cover enclosures; Circuitrocks can additionally cover the buck converter and CN3065 solar charger in one store. Budget ~₱40 shipping per store.
 4. **The app needs no extra hardware** — it runs on the farmer's own Android phone/laptop; MapLibre + OpenStreetMap data are downloaded once over any available WiFi during provisioning (₱0, see [APP.md](APP.md)).
 5. **Suxun T7000 notes:** allow **24–48 h full cure** before any immersion/wallow test (tack-dry ≠ sealed). It is the joint sealant, **not structural** — strap, buckle, and enclosure attachments stay mechanical (bolts/slots/crimp), never glue-loaded. Buy from phone-repair suppliers (T7000 is phone-screen glue) to avoid refilled tubes.
 6. **Variant-selection checklist at checkout:** LiitoKala 2-pcs · ESP32 38-pin · PSU **S-60-12 (12 V 5 A)** · Circuitrocks **36V→5V 5A** buck (replaces the LM2596) · ZJW 150×150×70 · Allan 150×150×70 · glands **PG7** (not PG21) · wire rope 1 mm × 10 m · buckle 38 mm · siren single · solar panel 1-pc SKU × qty 2–3.
-7. All listings above were **in-stock and web-priced on 2026-11-07**; Lazada listings rot — each row keeps the seller + price so replacements are easy to find if a link 404s.
