@@ -88,7 +88,7 @@
 | Cell interface | On-board JST-PH2.0 holder | External 18650 holder with JST-PH2.0 (same connector compatible) |
 | Charging circuit | AXP2101 internal charge path (USB path) | TP4056 module (micro-USB input, 1 A constant-current/constant-voltage); charge occurs off-animal via smart charger (Lii-500) or USB port |
 | 3.3 V rail | AXP2101 switched LDO (configurable rail shut-off) | AP2112-3.3 SMD LDO (800 mA, low dropout, 1 µA quiescent) or equivalent (LD1117S33TR — higher quiescent ≈ 5 µA) |
-| Rail shutdown for deep sleep | AXP2101 I²C register writes | GPIO-controlled P-channel MOSFET (e.g., AO3401) on 3.3 V rail, driven by GPIO13; OR leave 3.3 V rail always-on and instead shut down only GPS/LoRa/VDD3V3_PERIPH via separate FETs |
+| Rail shutdown for deep sleep | AXP2101 I²C register writes | GPIO-controlled N-channel MOSFET (SI2301) on GPIO13 (GPS rail) and GPIO15 (LoRa rail); **external 10 kΩ pull-up resistors mandatory on both pins** (GPIO15 = MTCK boot strap, LOW = download mode) |
 
 ### Deep-Sleep Current Target
 
@@ -125,7 +125,8 @@ axp2101.setPowerOutPut(AXP2101_DCDC3, AXP2101_OFF);  // LoRa rail off
 // NEW (Discrete build):
 digitalWrite(GPIO_GPS_VCC, LOW);    // Turn off GPS 3.3V rail
 digitalWrite(GPIO_LORA_VCC, LOW);   // Turn off LoRa 3.3V rail
-// Use GPIO13 (GPS) and GPIO15 (LoRa) — both are free and non-strap pins
+// Use GPIO13 (GPS) and GPIO15 (LoRa) — both require external 10 kΩ pull-up to 3.3 V
+// GPIO15 = MTCK boot strap pin; missing pull-up causes bootloader hang on power-on
 ```
 
 ---
@@ -211,10 +212,11 @@ All of the following remain unchanged:
 
 ---
 
-## Known Open Items
+### Known Open Items
 
 1. **Deep-sleep current measurement required** — without AXP2101's ultra-low-power modes, actual sleep current will differ from T-Beam benchmarks. Bench-measure after first assembly.
 2. **TP4056 charging module voltage rating** — ensure module supports 4.2 V cutoff and is compatible with unprotected 18650 cells (LiitoKala 3500 mAh high-drain).
 3. **GPS module 3.3 V regulation** — the NEO-M8N datasheet lists 2.7–3.6 V nominal; confirm that the on-board LDO on your breakout module can handle input from a depleting 18650 (down to ~3.0 V). If marginal, feed 5 V from the buck rail directly.
 4. **NTC EASA filing** — confirm whether prototype LoRa collars need formal registration or qualify for research exemption.
 5. **Antenna placement** — verify GPS patch and LoRa whip do not mutually degrade each other when co-located on the same enclosure face; consider 90° orientation or spacing ≥ 5 cm.
+6. **GPIO15 external pull-up resistor** — GPIO15 (MTCK) **must** have a ≥10 kΩ pull-up to 3.3 V on the board; internal weak pull-up alone is unreliable. Same applies to GPIO13 (GPS rail gate). Without these, the ESP32 may fail to boot into application firmware and hang in download mode instead.

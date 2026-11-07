@@ -20,8 +20,8 @@ Components: ESP32 DevKit 38-pin, NEO-M8N GPS breakout, Ai-Thinker Ra-02 (SX1276,
 |---|---|---|---|
 | Battery (+) | 18650 cell (3.0–4.2 V) | Collar electronics via AP2112 LDO; solar chain input | Main power rail |
 | 3.3 V | AP2112 SMD LDO (from battery+) | ESP32, sensors, LoRa, GPS | Low-quiescent regulator; add 10 µF + 100 nF decoupling |
-| GPS rail | GPIO13-gated N-FET (SI2301) | NEO-M8N VCC | Shuts off in deep sleep |
-| LoRa rail | GPIO15-gated N-FET (SI2301) | Ra-02 VCC (via 100 µF + 100 nF) | Shuts off in deep sleep |
+| GPS rail | GPIO13-gated N-FET (SI2301) **← external 10 kΩ pull-up to 3.3 V required** | NEO-M8N VCC | Shuts off in deep sleep |
+| LoRa rail | GPIO15-gated N-FET (SI2301) **← external 10 kΩ pull-up to 3.3 V mandatory (MTCK boot strap)** | Ra-02 VCC (via 100 µF + 100 nF) | Shuts off in deep sleep |
 | Solar bus (+) | 3 × 5 V 0.3 W panels (parallel) → SS14 diodes | CN3065 solar input | Per-panel blocking diodes prevent back-feed |
 | CN3065 Batt Out | Cell + terminal | 18650 positive tab | Parallel with main cell connection |
 

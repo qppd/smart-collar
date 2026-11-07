@@ -12,13 +12,16 @@ Full migration details from the original T-Beam v2.x design are in [MIGRATION-SU
 
 | Signal | ESP32 pin | Notes |
 |---|---|---|
-| Tamper loop ADC | GPIO36 (input-only, ADC1_CH0) | Loop sense node via 10 kΩ bias resistor |
-| Tamper loop drive | GPIO25 (GPIO-capable, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks) |
+| Tamper loop ADC | GPIO36 (input-only, ADC1_CH0) | Loop sense node via 10 kΩ bias resistor. Input-only pin — safe for analog sensing, no drive conflicts |
+| Tamper loop drive | GPIO25 (logic output, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks). No boot-strap or flash conflict |
 | Accelerometer SDA | GPIO21 (I²C SDA) | MPU6050 (GY-521) at addr 0x68 (AD0 low) |
 | Accelerometer SCL | GPIO22 (I²C SCL) | I²C bus: MPU6050 (0x68) — no address clash |
-| GPS UART TX (to M8N RX) | GPIO16 (UART2_TX) | Connected to NEO-M8N RX via 1 kΩ |
+| GPS UART TX (to M8N RX) | GPIO16 (UART2_TX) | Connected to NEO-M8N RX via 1 kΩ. UART2 is isolated from UART0 (console) |
 | GPS UART RX (from M8N TX) | GPIO17 (UART2_RX) | Connected to NEO-M8N TX |
-| Status LED | GPIO2 or GPIO4 (board-dependent) | Fix quality + alarm indication; verify silk screen |
+| Status LED | GPIO2 (active-low on most CH340G DevKit boards) | Fix quality + alarm indication; verify silk screen on your board variant |
+| Rail gate — GPS 3.3V | GPIO13 ← 10 kΩ pull-up to 3.3 V | Controls SI2301 MOSFET for GPS rail cutoff; pull-up required for reliable boot |
+| Rail gate — LoRa 3.3V | GPIO15 ← 10 kΩ pull-up to 3.3 V | **MTCK boot strap pin** — external 10 kΩ pull-up mandatory; without it device won't boot |
+| Battery ADC | GPIO35 (ADC1_CH7, input-only) | Resistive divider from cell (+); input-only pin, safe for ADC use |
 
 ### GPS Module — u-blox NEO-M8N breakout (UART2)
 
@@ -72,6 +75,12 @@ The integrated AXP2101 PMU on the T-Beam v2.x provided per-rail shutdown and an 
 - **TP4056 charging module** (micro-USB input, constant-current/constant-voltage) for bench/USB charging. The cell is charged off-animal in the LiitoKala Lii-500 smart charger as before — TP4056 is a fallback for quick top-ups only.
 - **AP2112-3.3 SMD LDO** (800 mA, ~1 µA quiescent) for the main 3.3 V rail powering the ESP32, sensors, and LoRa.
 - **GPIO-gated rails for deep sleep:** Two N-channel MOSFETs (SI2301 or AO3401) controlled by GPIO13 (GPS rail) and GPIO15 (LoRa rail) shut down the external modules before sleep. The ESP32's own 3.3 V rail stays live (needed for RTC and wake).
+
+> **Critical board-level note for GPIO15 (MTCK / rail gate):**
+> GPIO15 is the ESP32's MTCK boot-strapping pin — it **must be held HIGH** (≥ 3 V) at power-on, otherwise the chip enters download/bootloader mode and refuses to run firmware. This means:
+> 1. Add a **10 kΩ pull-up resistor** from GPIO15 to 3.3 V on the PCB / proto-board. Do not rely on the internal weak pull-up alone; it is marginal under load transients.
+> 2. When GPIO15 drives the MOSFET gate LOW during sleep, the pull-up ensures the MOSFET turns back ON automatically when the rail voltage rises after the next boot sequence.
+> 3. Same applies to GPIO13 (GPS rail): add a 10 kΩ pull-up to 3.3 V so the GPS rail re-enables correctly on every wake cycle.
 - **No PMU fuel gauge.** Battery percentage comes from direct ADC reading of the cell voltage through a resistive divider (GPIO35 or any available ADC1 pin). Accuracy: ±5% across the 3.0–4.2 V range.
 
 ### Deep-Sleep Current Target
