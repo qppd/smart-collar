@@ -1,7 +1,7 @@
 # NTC Compliance — Philippine National Telecommunications Commission Regulations
 
 **Document version:** 1.0 · **Date:** 2026-11-07  
-**Applicable to:** SmartCollar LoRa collar system (433 MHz ISM band)  
+**Applicable to:** SmartCollar LoRa collar system (915 MHz ISM band)  
 **Prepared for:** Capstone prototype deployment in the Philippines
 
 ---
@@ -10,7 +10,7 @@
 
 This document identifies the regulations, certifications, and compliance steps applicable to the SmartCollar project under Philippine law. The project uses two radio technologies:
 
-- **LoRa at 433 MHz** (primary, short-range point-to-multipoint)
+- **LoRa at 915 MHz** (primary, short-range point-to-multipoint)
 - **GPS L1 band** (receive-only, no transmission — not regulated by NTC)
 
 No cellular (GSM/LTE) module is included in the current design. The SIM800L referenced in the REPLAN-PROMPT is **not part of this project**.
@@ -56,8 +56,8 @@ The NTC publishes and periodically updates permitted frequency bands for unlicen
 | Operating frequency | **915 ± 5 MHz** (i.e., 910–920 MHz minimum; full band 902–928 MHz per ITU-R) | NTC MO on ISM bands; ITU-R Radio Regulations Art. 5.239 |
 | Maximum EIRP | **≤ 20 dBm (100 mW)** recommended for prototype safety margin; absolute legal ceiling depends on current NTC MO | ITU-R SM.398; NTC ISM guidelines |
 | Spreading factor / bandwidth | Not directly restricted (SF7–SF9, 125 kHz BW common) | N/A |
-| Duty cycle | No explicit PH duty-cycle mandate for 433 MHz ISM (unlike EU's 1%) | NTC ISM guidelines |
-| Spectrum mask | Must stay within assigned 433 MHz channel; no spurious emissions > −30 dBc | NTC equipment standards |
+| Duty cycle | No explicit PH duty-cycle mandate for 915 MHz ISM (unlike EU's 1%) | NTC ISM guidelines |
+| Spectrum mask | Must stay within assigned 915 MHz channel; no spurious emissions > −30 dBc | NTC equipment standards |
 
 ### 3.2 GPS (Receive-Only)
 
@@ -83,10 +83,10 @@ Even though the SmartCollar is a **prototype/capstone project** (not a commercia
 
 | Practice | Action | Priority |
 |---|---|---|
-| **Module selection** | Choose LoRa modules with existing **FCC ID** and **CE mark** documentation (e.g., AI-Thinker Ra-02 SX1278, Heltec Wireless Kit) | High |
+| **Module selection** | Choose LoRa modules with existing **FCC ID** and **CE mark** documentation (e.g., AI-Thinker Ra-02 SX1276, Heltec Wireless Kit) | High |
 | **Certificate retention** | Keep module datasheets, FCC IDs, and test reports on file — NTC may request them for EASA filing | High |
 | **Labeling** | Affix a permanent label on each collar with: manufacturer name, model, frequency, max EIRP | Medium |
-| **Power limiting** | Program firmware to respect max EIRP (set `SX1278` TX power to ≤ 17 dBm via RadioLib) | High |
+| **Power limiting** | Program firmware to respect max EIRP (set `SX1276` TX power to ≤ 17 dBm via RadioLib) | High |
 | **Spectral measurements** | If producing beyond prototype, engage a certified RF test lab for pre-compliance testing | Low (prototype stage) |
 | **Antenna gain disclosure** | Document external antenna gain (dBi) so effective EIRP can be calculated (EIRP = Tx power + antenna gain − cable loss) | Medium |
 
@@ -99,7 +99,7 @@ The following items require direct consultation with the NTC Radiation Protectio
 | Item | Question | Why It Needs Verification |
 |---|---|---|
 | **Prototype/EASA eligibility** | Does the EASA (Equipment Authorization for Scientific and Educational Applications) pathway apply to university capstone projects deploying LoRa collars on private farm land? | NTC has not published explicit criteria for "educational prototypes" outside formal academic institutions |
-| **Max EIRP at 433 MHz** | What is the exact maximum permitted EIRP for ISM equipment at 433 MHz under current NTC MO? | Published values vary across NTC circulars; the definitive value is in the latest MO series |
+| **Max EIRP at 915 MHz** | What is the exact maximum permitted EIRP for ISM equipment at 915 MHz under current NTC MO? | Published values vary across NTC circulars; the definitive value is in the latest MO series |
 | **Outdoor deployment notification** | Must the team notify local NTC field offices before placing a base-station antenna on a farm mast? | NTC generally requires notification for fixed outdoor transmitters above certain power thresholds |
 | **Multiple-collar coordination** | Are there rules about simultaneous transmissions from multiple collars on the same frequency? | Relevant for herd-scale deployments (>3 collars) |
 | **Importation of LoRa modules** | Do individual LoRa modules require separate import clearance, or is a single EASA covering the complete device sufficient? | Customs may question imported radio modules without end-use declarations |
@@ -126,9 +126,9 @@ If a future Phase 3 introduces cellular fallback, budget for a dedicated NTC Typ
 
 | # | Action | Status |
 |---|---|---|
-| 1 | Confirm 433 MHz ISM band is permitted under current NTC MO | ✅ Confirmed (ITU-R compliant; verify with NTC directly for final deployment) |
+| 1 | Confirm 915 MHz ISM band is permitted under current NTC MO | ✅ Confirmed (ITU-R compliant; verify with NTC directly for final deployment) |
 | 2 | Set firmware TX power to ≤ 17 dBm (100 mW EIRP with typical antenna) | ⬜ To-do in firmware config |
-| 3 | Obtain and archive FCC ID / CE certificate for SX1278 module | ⬜ Request from supplier |
+| 3 | Obtain and archive FCC ID / CE certificate for SX1276 module | ⬜ Request from supplier |
 | 4 | Affix identification label on each collar unit | ⬜ During assembly |
 | 5 | Contact NTC RPB for EASA inquiry (optional for prototype) | ⬜ Before field trial |
 | 6 | Document antenna gain and calculate confirmed EIRP | ⬜ Measure at bench |

@@ -6,8 +6,8 @@
 |---|---|---:|---|---:|
 | ESP32 DevKit 38-pin | ESP32-WROOM-32, 38-pin breakout | 1 | Collar MCU | 200–350 |
 | NEO-M8N GPS module | GY-NEO6MV2 (u-blox NEO-M8N, ceramic 25×25 mm antenna, UART TTL, 3–5 V) | 1 | GPS positioning | **699** |
-| SX1278 LoRa module | Ai-Thinker Ra-02, **433 MHz** (SX1278 chip) | 1 | LoRa uplink/downlink | 250–300 |
-| Flexible whip antenna | **433 MHz**, SMA/u.FL, flexible | 1 | LoRa antenna | 100–250 |
+| SX1276 LoRa module | Ai-Thinker Ra-02, **915 MHz** (SX1276 chip) | 1 | LoRa uplink/downlink | 150–300 |
+| Flexible whip antenna | **915 MHz**, SMA/u.FL, flexible | 1 | LoRa antenna | 100–250 |
 | GPS patch antenna | Passive ceramic, 25×25 mm, u.FL | 1 | GPS reception | 80–150 |
 | Accelerometer | MPU6050 (GY-521 module, I²C) | 1 | Movement activity / no-movement rule | 60–150 |
 | AP2112-3.3 LDO | SOT-23-5, 800 mA, 1 µA quiescent | 1 | Main 3.3 V rail | 15–30 |
@@ -35,8 +35,8 @@
 |---|---|---:|---:|---|---|
 | 1 | ESP32 DevKit 38-pin WROOM-32 (**select 38-pin variant**) | 1 | 200–350 | Makerlab PH | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) · search `esp32 devkit 38 pin ch340g` |
 | 2 | Neo-6M / NEO-M8N GPS module breakout (ceramic antenna, UART TTL) | 1 | **699** | Makerlab PH (LazMall) | [buy](https://www.lazada.com.ph/products/gy-neo6mv2-neo-6m-ublox-neo-m8n-flight-controller-gps-module-i141829587-s24261148033.html) · ⭐4.6 (137) · QC Project 6 |
-| 3 | SX1278 LoRa module Ra-02 **433 MHz** | 1 | **267** | GlobalLifestyle | [buy](https://www.lazada.com.ph/products/pdp-i5363704346-s32079063512.html) · Seller 97% · QC Project 6 |
-| 4 | 433 MHz rubber whip antenna + IPX→SMA pigtail | 1 | 100–250 | KISSCATI | [search](https://www.lazada.com.ph/catalog?q=lora+whip+antenna+433mhz+sma&search=1) |
+| 3 | SX1276 LoRa module Ra-02 **915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) · search `sx1276 lora 915mhz ra-02` |
+| 4 | 915 MHz rubber whip antenna + IPX→SMA pigtail | 1 | 100–250 | KISSCATI | [search](https://www.lazada.com.ph/catalog?q=lora+whip+antenna+915mhz+sma&search=1) |
 | 5 | MPU6050 GY-521 module (I²C) | 1 | 60–150 | diymore | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) · search `mpu6050 gy-521` |
 | 6 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 250–400 | Power World | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) · search `liitokala 18650 3500mah 2pcs` |
 | 7 | SS14 Schottky diode (for future solar — Phase 2) | 3 | 30–60 | China Electronic, any electronics supplier | [buy](https://www.lazada.com.ph/products/pdp-i3679917267.html) · search `ss14 sma schottky diode` |
@@ -52,7 +52,7 @@
 | 17 | AP2112-3.3 SMD LDO (SOT-23-5, 800 mA, 1 µA quiescent) | 1 (or small pack) | 15–30 | Makerlab PH, AI-VA | [search](https://www.lazada.com.ph/shop/ap2112-33/) · search `ap2112-3.3 smd` |
 | — | **GPS ceramic antenna** | built into board | — | — | Included with GY-NEO6MV2; no separate purchase needed |
 
-**Sourced collar total: ~₱2,873 → ₱2,973** (excl. optional conformal coating; includes new GPS at ₱699 + LoRa at ₱267).
+**Sourced collar total: ~₱2,873** (excl. optional conformal coating).
 
 Notes:
 
@@ -69,8 +69,8 @@ Notes:
 | Component | Spec | Qty | Role | Est. price (₱) |
 |---|---|---:|---|---:|
 | ESP32 DevKit | ESP32-WROOM-32, 38-pin | 1 | Base station controller | 200–350 |
-| LoRa module | Ai-Thinker Ra-02 (**SX1278**, **433 MHz**) — must match collar frequency | 1 | LoRa receiver | 150–300 |
-| Base antenna | **433 MHz**, high-gain (3–5 dBi), with mast clamp | 1 | Maximize coverage | 200–500 |
+| LoRa module | Ai-Thinker Ra-02 (SX1276, **915 MHz**) — must match collar frequency | 1 | LoRa receiver | 150–300 |
+| Base antenna | **915 MHz**, high-gain (3–5 dBi), with mast clamp | 1 | Maximize coverage | 200–500 |
 | Siren | 12V DC, ≥ 110 dB, waterproof | 1 | Audible alarm | 150–350 |
 | Relay module | 1-channel, 5V logic, 10A | 1 | Drive the 12V siren from ESP32 | 30–60 |
 | Power supply | Enclosed switching PSU, **S-60-12 type: 12 V 5 A 60 W**, universal mains input, screw terminals | 1 | 12 V rail — siren direct + buck input | 250–350 |
@@ -85,8 +85,8 @@ Notes:
 | # | Item | Qty to buy | Est. price (₱) | Seller / Store | Listing |
 |---|---|---:|---:|---|---|
 | 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 200–350 | Makerlab PH | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) · search `esp32 devkit 38 pin` |
-| 2 | Ai-Thinker Ra-02 **SX1278 433 MHz** | 1 | **267** | GlobalLifestyle | [buy](https://www.lazada.com.ph/products/pdp-i5363704346-s32079063512.html) · search `ra-02 sx1278 433mhz` |
-| 3 | **433 MHz** 5 dBi dipole antenna, SMA, 3 m cable | 1 | 200–300 | Jimmy Ya, generic | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) · search `433mhz dipole antenna sma 3m` |
+| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) · search `ra-02 sx1276 915mhz` |
+| 3 | **915 MHz** 5 dBi dipole antenna, SMA, 3 m cable | 1 | 200–300 | Jimmy Ya, generic | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) · search `915mhz dipole antenna sma 3m` |
 | 4 | ES-626 siren 110 dB 12V | 1 | 150–250 | Beautec, ALAZON | [buy](https://www.lazada.com.ph/products/pdp-i2913980824.html) · alt IP65 [pdp-i5181387263](https://www.lazada.com.ph/products/pdp-i5181387263.html) |
 | 5 | 1-ch 5V relay module | 1 | 30–80 | DavWorkx, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i8192223.html) · alt KY-019 [pdp-i3675717534](https://www.lazada.com.ph/products/pdp-i3675717534.html) |
 | 6 | Switching power supply **S-60-12 — 12 V 5 A 60 W** (enclosed, screw terminals; **select the S-60-12 variant**) | 1 | 250–350 | Generic electronics suppliers | [buy](https://www.lazada.com.ph/products/switching-power-supply-s-60-12-12v-5a-60w-lrs-50-5-5v-10a-12v-42a-24v-21a-50w-i118492443-s16906981189.html) · search `s-60-12 psu 12v 5a` |
@@ -155,7 +155,7 @@ Per-block roll-up (estimates, November 2026):
 
 ## Ordering Notes
 
-1. **LoRa frequency must match** between collar and base station — both target **433 MHz** (Ra-02 SX1278 433 MHz). Radio variants: **SX1278 = 433 MHz**, SX1276 = 868/915 MHz, SX1262 = dual-band (needs different RadioLib init — see [HARDWARE.md](HARDWARE.md)).
+1. **LoRa frequency must match** between collar and base station — both target **915 MHz** (Ra-02 SX1276 915 MHz). Radio variants: **SX1276 = 868/915 MHz**, SX1278 = 433 MHz, SX1262 = dual-band (needs different RadioLib init — see [HARDWARE.md](HARDWARE.md)).
 2. Buy **one spare 18650 per collar** — the 2-pcs LiitoKala pack covers this exactly.
 3. **Store clustering saves shipping:** Makerlab PH covers ESP32 + Ra-02 + NEO-M8N (the three priciest collar electronics); ZJW_MALL/Allan cover enclosures; Circuitrocks can additionally cover the buck converter and CN3065 solar charger in one store. Budget ~₱40 shipping per store.
 4. **The app needs no extra hardware** — it runs on the farmer's own Android phone/laptop; MapLibre + OpenStreetMap data are downloaded once over any available WiFi during provisioning (₱0, see [APP.md](APP.md)).

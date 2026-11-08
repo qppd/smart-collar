@@ -9,7 +9,7 @@ Two-phase strategy, driven by the farm's own recommendation:
 
 ## Phase 1 — Battery Budget (per collar)
 
-Assume an **ESP32 DevKit 38-pin** + **NEO-M8N GPS** + **SX1278-class LoRa (433 MHz)** on one 18650 (3,500 mAh, ~11.5 Wh). No integrated PMU — rail shutdown via GPIO-gated N-channel MOSFETs.
+Assume an **ESP32 DevKit 38-pin** + **NEO-M8N GPS** + **SX1276-class LoRa (915 MHz)** on one 18650 (3,500 mAh, ~11.5 Wh). No integrated PMU — rail shutdown via GPIO-gated N-channel MOSFETs.
 
 ### Component current draw (order-of-magnitude, datasheet-typical)
 

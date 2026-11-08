@@ -9,7 +9,7 @@ The base station is the farm's single fixed infrastructure point: it receives Lo
 | Part | Role |
 |---|---|
 | ESP32 DevKit (38-pin) | Controller: LoRa RX, alarm rules, siren, app server |
-| Ai-Thinker Ra-02 (**SX1278**, **433 MHz**) | LoRa receiver — **must match collar band** |
+| Ai-Thinker Ra-02 (**SX1276**, **915 MHz**) | LoRa receiver — **must match collar band** |
 | 3–5 dBi antenna + 3–5 m mast | Coverage (height = range) |
 | 12 V ≥ 110 dB siren + relay module | Audible alarm — relay IN1 on ESP32 GPIO17 (wiring: [WIRING.md](WIRING.md)) |
 | Switching PSU **S-60-12 (12 V 5 A 60 W)** + Circuitrocks 36V→5V 5A buck | Power — 12 V rail drives the siren directly; buck makes the 5 V rail |
@@ -19,7 +19,7 @@ Radio settings and packet format: [FIRMWARE.md](FIRMWARE.md).
 
 ## Placement & Coverage
 
-**LoRa at SF7–SF9, 433 MHz**, with a mast-mounted base antenna reaches **2–8 km** in open/rolling terrain, **300 m–2 km** through dense trees — enough for a typical grazing farm, but the site survey decides.
+**LoRa at SF7–SF9, 915 MHz**, with a mast-mounted base antenna reaches **2–8 km** in open/rolling terrain, **300 m–2 km** through dense trees — enough for a typical grazing farm, but the site survey decides.
 
 1. **Site survey first (before buying the mast):** carry a battery-packaged collar prototype (or ESP32 DevKit + power bank) around the farm boundary and paddock corners; walk with the base on a bench (or a second person at the base); log RSSI/SNR at each waypoint. A Saturday afternoon of walking beats a month of "why is collar 3 always missing."
 2. **Mast:** 3–5 m above ground at the farmstead's highest practical point; antenna vertical, clear of metal roofing by ≥ 1 m.

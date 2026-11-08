@@ -4,11 +4,11 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 ---
 
-## Collar Firmware (ESP32 DevKit 38-pin + NEO-M8N + SX1278)
+## Collar Firmware (ESP32 DevKit 38-pin + NEO-M8N + SX1276)
 
 | Layer | Choice | Notes |
 |---|---|---|
-| Board | **ESP32 DevKit 38-pin** (ESP32-WROOM-32) + external NEO-M8N GPS + SX1278 LoRa | Discrete build replaces LilyGO T-Beam v2.x |
+| Board | **ESP32 DevKit 38-pin** (ESP32-WROOM-32) + external NEO-M8N GPS + SX1276 LoRa | Discrete build replaces LilyGO T-Beam v2.x |
 | IDE / toolchain | **Arduino IDE 2.x** + esp32 by Espressif (core v2.x+) | |
 | LoRa driver | **RadioLib** | Better SX127x power control than the stock LoRa.h |
 | GPS parsing | **TinyGPSPlus** | NEO-M8N NMEA sentences over UART2 (GPIO16/17) |
@@ -17,12 +17,12 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | Battery gauge | **ADC-based** (GPIO35, resistive divider) | ±5% accuracy across 3.0–4.2 V cell range |
 | Serialization | **ArduinoJson** | Packet + config messages |
 
-## Base Station Firmware (ESP32 DevKit + SX1278)
+## Base Station Firmware (ESP32 DevKit + SX1276)
 
 | Layer | Choice | Notes |
 |---|---|---|
 | Board | **ESP32 DevKit 38-pin** | LoRa RX, alarm rules, siren, app server |
-| LoRa RX module | **Ai-Thinker Ra-02 (SX1278, 433 MHz)** | Must match collar band |
+| LoRa RX module | **Ai-Thinker Ra-02 (SX1276, 915 MHz)** | Must match collar band |
 | LoRa driver | **RadioLib** | Same library both ends |
 | App server | **ESP32 BLE stack (NimBLE-Arduino) + USB serial** | GATT server `SmartCollar-Base`; JSON over notify/write characteristics, MTU-chunked |
 | History store | **LittleFS** (CSV/JSON per collar) | ~100 KB/collar/month at 10-min intervals |
@@ -45,7 +45,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 | Setting | Value | Why |
 |---|---|---|
 | Type | **Raw point-to-multipoint LoRa** (not LoRaWAN) | No gateway/network-server exists offline; we control both ends. CRC16 on every frame, 3 s RX window after every TX (downlink spec: [FIRMWARE.md](FIRMWARE.md)) |
-| Frequency | 433 MHz ISM (PH allocation; 433 variant must match base) | |
+| Frequency | 915 MHz ISM (PH allocation; 433 variant must match base) | |
 | Spreading factor | SF7–SF9 | SF7 fast/short; SF9 for far paddocks — per-site config |
 | Sync word | private `0x2B` | Keeps foreign LoRa traffic out |
 | MAC | interval TX + ±5% jitter · 3× emergency retry @ 30 s · daily timeslot-sync broadcast | Herd-sync collisions and battery drain avoided |
@@ -55,7 +55,7 @@ Everything SmartCollar is built on — offline-first, low-power, and free.
 
 | Component | Role |
 |---|---|
-| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1278 LoRa | Collar core (MCU + GPS + LoRa — discrete build replacing T-Beam) |
+| ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa | Collar core (MCU + GPS + LoRa — discrete build replacing T-Beam) |
 | Supervised tamper loop | Adjustable-strap cut/bypass detection — see [TAMPER.md](TAMPER.md) |
 | MPU6050 (GY-521) | 24-hour no-movement rule |
 | IP67 enclosure + glands + sealant | Wallow/submersion-proof housing — see [ENCLOSURE.md](ENCLOSURE.md) |
