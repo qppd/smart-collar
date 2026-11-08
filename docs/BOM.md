@@ -35,7 +35,7 @@
 |---|---|---:|---:|---|---|
 | 1 | ESP32 DevKit 38-pin WROOM-32 (**select 38-pin variant**) | 1 | 200–350 | Makerlab PH | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) · search `esp32 devkit 38 pin ch340g` |
 | 2 | Neo-6M / NEO-M8N GPS module breakout (ceramic antenna, UART TTL) | 1 | **699** | Makerlab PH (LazMall) | [buy](https://www.lazada.com.ph/products/gy-neo6mv2-neo-6m-ublox-neo-m8n-flight-controller-gps-module-i141829587-s24261148033.html) · ⭐4.6 (137) · QC Project 6 |
-| 3 | SX1276 LoRa module Ra-02 **915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) · search `sx1276 lora 915mhz ra-02` |
+| 3 | SX1276 LoRa module Ra-02 **915 MHz** | 1 | **388** | Green Life | [buy](https://www.lazada.com.ph/products/pdp-i15680306857.html) · Seller 96% · 40.5K sold · QC Project 6 |
 | 4 | 915 MHz rubber whip antenna + IPX→SMA pigtail | 1 | 100–250 | KISSCATI | [search](https://www.lazada.com.ph/catalog?q=lora+whip+antenna+915mhz+sma&search=1) |
 | 5 | MPU6050 GY-521 module (I²C) | 1 | 60–150 | diymore | [buy](https://www.lazada.com.ph/products/pdp-i1001684320.html) · search `mpu6050 gy-521` |
 | 6 | LiitoKala 18650 3,500 mAh 3.7 V (2-pcs pack) | 1 pack (=1+1 spare) | 250–400 | Power World | [buy](https://www.lazada.com.ph/products/pdp-i3274268797.html) · search `liitokala 18650 3500mah 2pcs` |
@@ -52,7 +52,7 @@
 | 17 | AP2112-3.3 SMD LDO (SOT-23-5, 800 mA, 1 µA quiescent) | 1 (or small pack) | 15–30 | Makerlab PH, AI-VA | [search](https://www.lazada.com.ph/shop/ap2112-33/) · search `ap2112-3.3 smd` |
 | — | **GPS ceramic antenna** | built into board | — | — | Included with GY-NEO6MV2; no separate purchase needed |
 
-**Sourced collar total: ~₱2,873** (excl. optional conformal coating).
+**Sourced collar total: ~₱2,873 → ~₱2,653** (excl. optional conformal coating; includes new GPS at ₱699 + LoRa at ₱388).
 
 Notes:
 
@@ -85,7 +85,7 @@ Notes:
 | # | Item | Qty to buy | Est. price (₱) | Seller / Store | Listing |
 |---|---|---:|---:|---|---|
 | 1 | ESP32 DevKit WROOM-32 (**select 38-pin**) | 1 | 200–350 | Makerlab PH | [buy](https://www.lazada.com.ph/products/pdp-i229344573.html) · search `esp32 devkit 38 pin` |
-| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** | 1 | 150–300 | Makerlab PH, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i3965590587.html) · search `ra-02 sx1276 915mhz` |
+| 2 | Ai-Thinker Ra-02 **SX1276 915 MHz** | 1 | **388** | Green Life | [buy](https://www.lazada.com.ph/products/pdp-i15680306857.html) · search `ra-02 sx1276 915mhz` |
 | 3 | **915 MHz** 5 dBi dipole antenna, SMA, 3 m cable | 1 | 200–300 | Jimmy Ya, generic | [buy](https://www.lazada.com.ph/products/pdp-i3736818609.html) · search `915mhz dipole antenna sma 3m` |
 | 4 | ES-626 siren 110 dB 12V | 1 | 150–250 | Beautec, ALAZON | [buy](https://www.lazada.com.ph/products/pdp-i2913980824.html) · alt IP65 [pdp-i5181387263](https://www.lazada.com.ph/products/pdp-i5181387263.html) |
 | 5 | 1-ch 5V relay module | 1 | 30–80 | DavWorkx, Circuitrocks | [buy](https://www.lazada.com.ph/products/pdp-i8192223.html) · alt KY-019 [pdp-i3675717534](https://www.lazada.com.ph/products/pdp-i3675717534.html) |
