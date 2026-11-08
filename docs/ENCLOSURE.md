@@ -86,7 +86,7 @@ All board sizes measured from manufacturer datasheets and verified on arrival �
 | — with GPIO headers (both sides) | 51 × 26 | **~8 total** (includes header pins) | Standard DevKit variant |
 | NEO-M8N GPS breakout (u.FL) | 25 × 25 (ceramic patch) + ~15 × 10 (module) | ~4 (patch) + ~3 (module) | u-blox NEO-M8 datasheet |
 | MPU6050 (GY-521 module) | **20.5 × 15.5** | ~4 incl. header pins | standard GY-521 |
-| Ai-Thinker Ra-02 (SX1276) | **17 × 36** | ~3 incl. SMA tab | datasheet |
+| Ai-Thinker Ra-02 (SX1278) | **17 × 36** | ~3 incl. SMA tab | datasheet |
 | CN3065 solar charger (sourced) | **~40 × 20** | ~8 incl. PH2.0 + micro-USB (listing publishes no dims — verify on arrival) | Circuitrocks listing |
 | AP2112-3.3 LDO (SOT-23-5) | ~3 × 3 | ~1.5 | Diodes Inc. datasheet |
 | SI2301 MOSFET (SOT-23) | ~3 × 1.5 | ~1 | Vishay datasheet |

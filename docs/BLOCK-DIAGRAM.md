@@ -12,7 +12,7 @@ flowchart TB
 
     subgraph COW["CARABAO — wears it 24/7"]
         subgraph COLLAR["SMART COLLAR (IP67)"]
-            ESP32["ESP32 DevKit 38-pin\nNEO-M8N GPS · SX1276 LoRa\nMPU6050 accel · tamper loop\n18650 cell + TP4056 charge"]
+            ESP32["ESP32 DevKit 38-pin\nNEO-M8N GPS · SX1278 LoRa\nMPU6050 accel · tamper loop\n18650 cell + TP4056 charge"]
             LOOP["Supervised tamper loop<br/>wire rope + buckle break-away link + far-end 100 Ω<br/>+ 10 kΩ bias → GPIO36 ADC · GPIO25 drive"]
             ACCEL["MPU6050 accelerometer (GY-521)<br/>I²C · motion flag polled each wake cycle"]
             CELL["18650 Li-ion cell<br/>3,500 mAh (Phase 2: solar lid)"]
@@ -22,7 +22,7 @@ flowchart TB
 
     subgraph BASE["BASE STATION — farmhouse, powered"]
         DEVKIT["ESP32 DevKit 38-pin<br/>LoRa RX · alarm rules engine · siren driver"]
-        RA02["Ai-Thinker Ra-02<br/>SX1276 915 MHz<br/>(must match collar band)"]
+        RA02["Ai-Thinker Ra-02<br/>SX1278 433 MHz<br/>(must match collar band)"]
         MAST["3–5 dBi antenna<br/>3–5 m mast, grounded"]
         SIREN["12 V ≥ 110 dB siren<br/>via relay module"]
         STORE["LittleFS history<br/>CSV/JSON per collar"]
@@ -37,9 +37,9 @@ flowchart TB
     LOOP -- "ADC band check vs R₀" --> ESP32
     ACCEL -- "I²C poll (motion flag)" --> ESP32
     CELL -.-> ESP32
-    ESP32 -- "SX1276 TX" --> WHIP
-    WHIP <-. "LoRa 915 MHz · SF7–SF9 · ≤23 B packet<br/>2–8 km open / 300 m–2 km trees" .-> MAST
-    MAST -- "SX1276 RX" --> RA02
+    ESP32 -- "SX1278 TX" --> WHIP
+    WHIP <-. "LoRa 433 MHz · SF7–SF9 · ≤23 B packet<br/>2–8 km open / 300 m–2 km trees" .-> MAST
+    MAST -- "SX1278 RX" --> RA02
     RA02 -- "SPI" --> DEVKIT
     DEVKIT -- "relay" --> SIREN
     DEVKIT --- STORE
@@ -81,11 +81,11 @@ flowchart LR
 | Motion flag | MPU6050 ↔ I²C (21/22), polled each wake | accel-only cycle mode, INT_STATUS read | activity counter for the 24 h rule (no INT wire) |
 | Service mode | app BLE command (MAINT_ON) | maintenance window, auto-expires | alarm suppression (no magnet sensor) |
 | Battery telemetry | GPIO35 ADC via resistive divider | BAT_PERCENT in packet | low-battery app alert (< 20%) |
-| LoRa uplink | collar SX1276 → base Ra-02 (SX1276) | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |
+| LoRa uplink | collar SX1278 → base Ra-02 (SX1278) | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |
 | LoRa downlink | base → collar | at wake windows / daily sync | geofence polygon, interval, ACK, latch clear |
 | Maintenance mode | app → BLE → rules engine | MAINT_ON {min} / MAINT_OFF, auto-expires | gates siren/alarm path; events logged as `suppressed` |
 | Siren drive | GPIO17 → relay IN1 → 12 V siren | patterned per alarm type | geofence 3-short/2-min · tamper continuous · no-move 10 s/5 min |
-| Base LoRa SPI | Ra-02 ↔ ESP32 (VSPI 18/19/23/5 · RST 14 · DIO0 26) | 3.3 V only — decoupled supply | SX1276 RX/TX control ([WIRING.md](WIRING.md)) |
+| Base LoRa SPI | Ra-02 ↔ ESP32 (VSPI 18/19/23/5 · RST 14 · DIO0 26) | 3.3 V only — decoupled supply | SX1278 RX/TX control ([WIRING.md](WIRING.md)) |
 | GPS UART | NEO-M8N ↔ ESP32 (UART2: GPIO16/17) | NMEA parsing via TinyGPSPlus | position fixes at up to 5 Hz |
 
 ---

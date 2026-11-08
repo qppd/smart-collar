@@ -12,7 +12,7 @@ The netlist below is extracted programmatically from the `.ckt` project file —
 
 ## 1. Collar sub-circuit
 
-Components: ESP32 DevKit 38-pin, NEO-M8N GPS breakout, Ai-Thinker Ra-02 (SX1276, 915 MHz), MPU6050, stainless wire rope + series resistors (tamper loop), TP4056 charge module, AP2112 LDO, 18650 cell in holder, 3× 5 V solar panels (Phase 2), 3× SS14 Schottky diodes, CN3065 solar charge controller.
+Components: ESP32 DevKit 38-pin, NEO-M8N GPS breakout, Ai-Thinker Ra-02 (SX1278, 433 MHz), MPU6050, stainless wire rope + series resistors (tamper loop), TP4056 charge module, AP2112 LDO, 18650 cell in holder, 3× 5 V solar panels (Phase 2), 3× SS14 Schottky diodes, CN3065 solar charge controller.
 
 ### Power distribution
 
@@ -34,11 +34,11 @@ Components: ESP32 DevKit 38-pin, NEO-M8N GPS breakout, Ai-Thinker Ra-02 (SX1276,
 | NEO-M8N VCC | 3.3 V | Module power (verify LDO dropout at low cell voltage) |
 | NEO-M8N GND | GND | Common ground |
 
-### LoRa Module — Ra-02 (SX1276, 915 MHz) via VSPI
+### LoRa Module — Ra-02 (SX1278, 433 MHz) via VSPI
 
 | Ra-02 pin | ESP32 38-pin | Purpose |
 |---|---|---|
-| VCC | 3.3 V | 3.3 V **only** — 5 V destroys the SX1276 |
+| VCC | 3.3 V | 3.3 V **only** — 5 V destroys the SX1278 |
 | GND | GND | Common ground |
 | SCK | GPIO18 | VSPI SCK |
 | MISO | GPIO19 | VSPI MISO |
@@ -85,11 +85,11 @@ Components: AC plug, 12 V 5 A switching PSU (S-60-12), 12 V → 5 V buck (Circui
 
 **Connection summary:** AC → PSU (12 V 5 A) → two branches: (a) 12 V → relay COM → siren (NO), (b) 12 V → buck → 5 V → ESP32. GPIO17 → relay IN1 switches the siren. NC contact unused (siren off by default).
 
-### Base LoRa receiver — SX1276 (Ra-02) → ESP32 DevKit (as drawn in the diagram)
+### Base LoRa receiver — SX1278 (Ra-02) → ESP32 DevKit (as drawn in the diagram)
 
 | Ra-02 pin | ESP32 38-pin | Purpose |
 |---|---|---|
-| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1276 |
+| VCC | 3V3 | 3.3 V **only** — 5 V destroys the SX1278 |
 | GND | GND | Common ground |
 | SCK | GPIO18 | VSPI SCK |
 | MISO | GPIO19 | VSPI MISO |

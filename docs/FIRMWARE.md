@@ -4,8 +4,8 @@ Arduino-IDE C++ (Arduino-ESP32 core) for both collar and base station. One repo,
 
 ```
 firmware/
-├── collar/        ← ESP32 DevKit 38-pin + NEO-M8N GPS + SX1276 LoRa
-└── basestation/   ← ESP32 DevKit + Ra-02 (SX1276)
+├── collar/        ← ESP32 DevKit 38-pin + NEO-M8N GPS + SX1278 LoRa
+└── basestation/   ← ESP32 DevKit + Ra-02 (SX1278)
 ```
 
 ---
@@ -51,7 +51,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 | Library | Use |
 |---|---|
-| `RadioLib` | SX127x LoRa — `SX1276` class for the 915 MHz variant (better power control than LoRa.h) |
+| `RadioLib` | SX127x LoRa — `SX1278` class for the 433 MHz variant (better power control than LoRa.h) |
 | `TinyGPSPlus` | NEO-M8N NMEA parsing |
 | `Adafruit_MPU6050` | Accelerometer, accel-only cycle mode — motion flag **polled each wake** from INT_STATUS (latched since last read); no INT wire |
 | ~~`AXP2101`~~ | **Removed** — replaced by GPIO-gated rail control (GPIO13 = GPS, GPIO15 = LoRa) and manual AP2112 3.3 V rail management |
@@ -80,7 +80,7 @@ void wakeFromDeepSleep() {
 
 | Parameter | Value |
 |---|---|
-| Frequency | 915 MHz (or 433 — **must match base station**; PH allocations: 915 MHz ISM band allowed for this use) |
+| Frequency | 433 MHz (or 433 — **must match base station**; PH allocations: 433 MHz ISM band allowed for this use) |
 | Spreading factor | SF7–SF9 (SF7 fast/short range; SF9 for far paddocks — configurable per site) |
 | Bandwidth | 125 kHz |
 | Coding rate | 4/5 |
