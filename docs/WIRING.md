@@ -6,7 +6,7 @@ The complete electrical design lives in one diagram, built in Cirkit Designer:
 |---|---|
 | ![SmartCollar wiring diagram](../wiring/SmartCollar.png) | Full wiring diagram — collar circuit (solar chain + tamper loop) and base-station circuit (power + siren) |
 | [`wiring/SmartCollar.ckt`](../wiring/SmartCollar.ckt) | Editable Cirkit Designer project |
-| [Cirkit Designer — SmartCollar project](https://app.cirkitdesigner.com/project/fdca6758-069a-49d6-b99e-c560568bd131) | Online source of truth (open, then edit/export) |
+| [Cirkit Designer — SmartCollar project](https://app.cirkitdesigner.com/project/2b4c2486-0f23-43f7-b1c3-9170f4e5a570) | Online source of truth (open, then edit/export) |
 
 The netlist below is extracted programmatically from the `.ckt` project file — it is the authoritative connection list. Two sub-circuits share the sheet: **Collar** (one of three identical collars) and **Base Station** (single unit).
 
