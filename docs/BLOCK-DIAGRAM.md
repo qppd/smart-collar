@@ -13,7 +13,7 @@ flowchart TB
     subgraph COW["CARABAO — wears it 24/7"]
         subgraph COLLAR["SMART COLLAR (IP67)"]
             ESP32["ESP32 DevKit 38-pin\nNEO-M8N GPS · SX1276 LoRa\nMPU6050 accel · tamper loop\n18650 cell + TP4056 charge"]
-            LOOP["Supervised tamper loop<br/>wire rope + buckle break-away link + far-end 100 Ω<br/>+ 10 kΩ bias → GPIO36 ADC · GPIO25 drive"]
+            LOOP["Supervised tamper loop<br/>wire rope + buckle break-away link + far-end 100 Ω<br/>+ 10 kΩ bias → GPIO36 ADC · GPIO33 drive"]
             ACCEL["MPU6050 accelerometer (GY-521)<br/>I²C · motion flag polled each wake cycle"]
             CELL["18650 Li-ion cell<br/>3,500 mAh (Phase 2: solar lid)"]
             WHIP["Whip antenna<br/>bulkhead + strain relief"]
@@ -55,7 +55,7 @@ flowchart TB
 
 ```mermaid
 flowchart LR
-    G25["GPIO25 drive<br/>(excites only during measure)"] -- "10 kΩ bias" --> NODE["sense node"]
+    G25["GPIO33 drive<br/>(excites only during measure)"] -- "10 kΩ bias" --> NODE["sense node"]
     NODE -- "GPIO36 ADC<br/>band check vs R₀ ± 30%" --> ESP["ESP32 band check<br/>8-sample avg, 100 ms debounce"]
     NODE -- "wire rope + buckle break-away link<br/>+ far-end 100 Ω" --> FAR["far end"]
     FAR -- "GND" --> GND["GND"]
@@ -77,15 +77,15 @@ flowchart LR
 |---|---|---|---|
 | GPS fix | NEO-M8N → ESP32 UART2 (TinyGPSPlus) | warm-start ephemeris in RTC RAM | position; no fix → last fix flagged STALE |
 | Tamper ADC | loop → GPIO36 via 10 kΩ bias | 8-sample avg, 100 ms debounce, bands vs baseline R₀ (R₀ ± 30% OK · < 40 Ω short · > 2 kΩ open) | resistance signature vs. cut/bypass |
-| Loop drive | GPIO25 → loop | excited only during measurement | power save + defeats corrosion-offset attacks |
-| Motion flag | MPU6050 ↔ I²C (21/22), polled each wake | accel-only cycle mode, INT_STATUS read | activity counter for the 24 h rule (no INT wire) |
+| Loop drive | GPIO33 → loop | excited only during measurement | power save + defeats corrosion-offset attacks |
+| Motion flag | MPU6050 ↔ I²C (21/22), polled each wake | accel-only cycle mode, INT_STATUS read | activity counter for the 24 h rule; INT also wired to GPIO32 |
 | Service mode | app BLE command (MAINT_ON) | maintenance window, auto-expires | alarm suppression (no magnet sensor) |
 | Battery telemetry | GPIO35 ADC via resistive divider | BAT_PERCENT in packet | low-battery app alert (< 20%) |
 | LoRa uplink | collar SX1276 → base Ra-02 (SX1276) | SF7–SF9, sync 0x2B, ≤23 B, ±5% jitter | position + flags + battery + activity |
 | LoRa downlink | base → collar | at wake windows / daily sync | geofence polygon, interval, ACK, latch clear |
 | Maintenance mode | app → BLE → rules engine | MAINT_ON {min} / MAINT_OFF, auto-expires | gates siren/alarm path; events logged as `suppressed` |
 | Siren drive | GPIO17 → relay IN1 → 12 V siren | patterned per alarm type | geofence 3-short/2-min · tamper continuous · no-move 10 s/5 min |
-| Base LoRa SPI | Ra-02 ↔ ESP32 (VSPI 18/19/23/5 · RST 14 · DIO0 26) | 3.3 V only — decoupled supply | SX1276 RX/TX control ([WIRING.md](WIRING.md)) |
+| Base LoRa SPI | Ra-02 ↔ ESP32 (VSPI 18/19/23/5 · RST 14 · DIO0 26) → updated: NSS→GPIO27, RST→GPIO26, DIO0→GPIO25 for collar; base keeps GPIO5/14/26 | 3.3 V only — decoupled supply | SX1276 RX/TX control ([WIRING.md](WIRING.md)) |
 | GPS UART | NEO-M8N ↔ ESP32 (UART2: GPIO16/17) | NMEA parsing via TinyGPSPlus | position fixes at up to 5 Hz |
 
 ---

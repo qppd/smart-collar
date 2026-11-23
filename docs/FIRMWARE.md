@@ -17,7 +17,7 @@ firmware/
 ```mermaid
 flowchart TB
     SLEEP["Deep sleep<br/>GPS rail off · LoRa rail off · accelerometer armed (activity-count only) · tamper ADC on RTC-timer wake"] -- "every REPORT_INTERVAL (default 10 min, RTC timer)" --> WAKE["Wake"]
-    WAKE --> LOOPM["Measure tamper loop<br/>GPIO25 excite → ADC → window check"]
+    WAKE --> LOOPM["Measure tamper loop<br/>GPIO33 excite → ADC → window check"]
     LOOPM --> GPSF["GPS fix attempt<br/>max GPS_TIMEOUT 90 s · warm-start ephemeris in RTC RAM<br/>(no fix → reuse last fix, flag STALE)"]
     GPSF --> SND["Build + send LoRa packet<br/>(emergency packets retry 3× @ 30 s)"]
     SND --> RXW["RX window 3 s<br/>ACK · interval · geofence chunks"]
@@ -43,7 +43,7 @@ Key configuration (stored in NVS, editable over-the-air from app via base statio
 
 1. **Deep sleep current is the project's #1 silent killer.** With GPIO-gated rail cutoff (GPS rail off via GPIO13, LoRa rail off via GPIO15), target < 2 mA whole-system sleep, ideally < 500 µA. Measure with a µA meter. See [POWER.md](POWER.md).
 2. **Motion-gated GPS, motion never wakes the radio:** the motion flag is polled each wake and only increments the activity counter — at the scheduled cycle, if the counter hasn't moved since the last fix, skip GPS and resend last position with `moved=false`. Motion never triggers a full cycle. Power rationale: [POWER.md](POWER.md).
-3. **Tamper excitation only during measurement** (GPIO25 drive) — no constant current through the loop (prevents corrosion and saves power).
+3. **Tamper excitation only during measurement** (GPIO33 drive) — no constant current through the loop (prevents corrosion and saves power).
 4. **Ephemeris warm start:** RTC RAM retained across deep sleep keeps ephemeris alive — warm fixes in 5–15 s vs 30–60 s cold. Power impact: [POWER.md](POWER.md).
 5. **Latched alarms:** a *confirmed* tamper event (`LOOP_OPEN` / `LOOP_SHORT` — steady out-of-window reading, debounced) latches a flag; the next wake sends the alarm immediately, then keeps sending at 1-min intervals until ACKed by base. (Keep-alive: a collar under attack must not go quiet.) A *brief* out-of-band glitch that re-closes within the debounce window latches `LOOP_SUSPECT` instead — a telemetry warning, never a siren trigger (strap-flex false-alarm guard). Tamper detection logic and band definitions: [TAMPER.md](TAMPER.md).
 

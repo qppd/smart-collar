@@ -13,7 +13,7 @@ Full migration details from the original T-Beam v2.x design are documented inlin
 | Signal | ESP32 pin | Notes |
 |---|---|---|
 | Tamper loop ADC | GPIO36 (input-only, ADC1_CH0) | Loop sense node via 10 kΩ bias resistor. Input-only pin — safe for analog sensing, no drive conflicts |
-| Tamper loop drive | GPIO25 (logic output, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks). No boot-strap or flash conflict |
+| Tamper loop drive | GPIO33 (logic output, free on header) | Excites the loop only during measurement (saves power, defeats corrosion-offset attacks). No boot-strap or flash conflict |
 | Accelerometer SDA | GPIO21 (I²C SDA) | MPU6050 (GY-521) at addr 0x68 (AD0 low) |
 | Accelerometer SCL | GPIO22 (I²C SCL) | I²C bus: MPU6050 (0x68) — no address clash |
 | GPS UART TX (to M8N RX) | GPIO16 (UART2_TX) | Connected to NEO-M8N RX via 1 kΩ. UART2 is isolated from UART0 (console) |
@@ -43,9 +43,9 @@ Full migration details from the original T-Beam v2.x design are documented inlin
 | SCK | GPIO18 | VSPI SCK |
 | MISO | GPIO19 | VSPI MISO |
 | MOSI | GPIO23 | VSPI MOSI |
-| NSS (CS) | GPIO5 | VSPI chip select |
-| RST | GPIO14 | RadioLib reset |
-| DIO0 | GPIO26 | TX/RX-done interrupt (RadioLib IRQ) |
+| NSS (CS) | GPIO27 | VSPI chip select |
+|| RST | GPIO26 | RadioLib reset |
+|| DIO0 | GPIO25 | TX/RX-done interrupt (RadioLib IRQ) |
 | DIO1–DIO5 | *unconnected* | Not needed for basic operation |
 
 > **Decoupling:** add 100 µF + 100 nF ceramic capacitors close to the Ra-02 VCC/GND pins. TX bursts draw ~120 mA — a weak 3.3 V rail will brown out without adequate bulk capacitance. Never transmit without the antenna attached.
@@ -54,11 +54,11 @@ Full migration details from the original T-Beam v2.x design are documented inlin
 
 | # | From | To | Wire | Notes |
 |---|---|---|---|---|
-| 1 | GPIO25 (drive) via 10 kΩ | Sense node | Kynar 30 AWG | Sense node junction — GPIO36 (ADC) taps the same node |
+|| 1 | GPIO33 (drive) via 10 kΩ | Sense node | Kynar 30 AWG | Sense node junction — GPIO36 (ADC) taps the same node |
 | 2 | Loop far-end | GND via 100 Ω series (at far end) | via loop | Sets the "signature" resistance — commissioning records R₀ and firmware bands are relative to it (see [TAMPER.md](TAMPER.md)) |
 | 3 | Tamper wire rope end A | Sense node | crimp lug | at enclosure gland A |
 | 4 | Tamper wire rope end B | GND rail | crimp lug | at enclosure gland B |
-| 5 | MPU6050 (GY-521) VCC/GND/SDA/SCL | 3V3/GND/21/22 | 4-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md). Motion flag **polled each wake** — no INT wire |
+| 5 | MPU6050 (GY-521) VCC/GND/SDA/SCL/INT | 3V3/GND/21/22/32 | 5-wire ribbon | Mount flat, axis Z up — strip PWR LED + bypass LDO (see POWER.md). Motion flag **polled each wake** — INT also wired to GPIO32 |
 
 ### I²C Bus Summary
 

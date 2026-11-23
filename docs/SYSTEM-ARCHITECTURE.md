@@ -45,7 +45,7 @@ flowchart TB
 | # | Interface | Protocol | Contract |
 |---|---|---|---|
 | I1 | GPS → collar UART | NMEA (TinyGPSPlus) | fix within 90 s or STALE reuse |
-| I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO25 excite | bands relative to baseline R₀; outside = latched alarm |
+| I2 | Tamper loop → GPIO36 | analog ADC via 10 kΩ bias, GPIO33 excite | bands relative to baseline R₀; outside = latched alarm |
 | I3 | MPU6050 → collar I²C | I²C poll each wake (21/22) | latched motion flag → activity counter; never a GPS/TX cycle |
 | I4 | Collar → base (SX1276 → Ra-02 SX1276) | raw LoRa 915 MHz, SF7–SF9, sync 0x2B, ≤23 B binary | position, battery, tamper flags, activity, SEQ |
 | I5 | Base → collar downlink | LoRa at wake windows / daily sync | geofence polygon, interval change, ACK, clear-tamper-latch |
